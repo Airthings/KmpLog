@@ -1,0 +1,961 @@
+build:
+  maxIssues: 0
+  excludeCorrectable: false
+  weights:
+  # complexity: 2
+  # LongParameterList: 1
+  # style: 1
+  # comments: 1
+
+config:
+  validation: true
+  # when writing own rules with new properties, exclude the property path e.g.: "my_rule_set,.*>.*>[my_property]"
+  excludes: ""
+
+processors:
+  active: true
+  exclude:
+    - 'DetektProgressListener'
+  # - 'FunctionCountProcessor'
+  # - 'PropertyCountProcessor'
+  # - 'ClassCountProcessor'
+  # - 'PackageCountProcessor'
+  # - 'KtFileCountProcessor'
+
+console-reports:
+  active: true
+  exclude:
+    - 'ProjectStatisticsReport'
+    - 'ComplexityReport'
+    - 'NotificationReport'
+    #  - 'FindingsReport'
+    - 'FileBasedFindingsReport'
+
+comments:
+  active: true
+  excludes:
+    - "**/build/**"
+  CommentOverPrivateFunction:
+    active: false
+  CommentOverPrivateProperty:
+    active: false
+  EndOfSentenceFormat:
+    active: true
+    endOfSentenceFormat: ([.?!][ \t\n\r\f<])|([.?!:]$)
+  UndocumentedPublicClass:
+    active: true
+    searchInNestedClass: true
+    searchInInnerClass: true
+    searchInInnerObject: true
+    searchInInnerInterface: true
+    excludes:
+      - "**/commonTest/**"
+      - "**/iosTest/**"
+      - "**/androidTest/**"
+      - "**/buildSrc/**"
+  UndocumentedPublicFunction:
+    active: false
+  UndocumentedPublicProperty:
+    active: false
+
+complexity:
+  active: true
+  ComplexCondition:
+    active: true
+    excludes:
+      - "**/build/**"
+    threshold: 4
+  ComplexInterface:
+    active: true
+    excludes:
+      - "**/build/**"
+    threshold: 15
+    includeStaticDeclarations: false
+  ComplexMethod:
+    active: true
+    excludes:
+      - "**/build/**"
+      - "**/shared/converter/**"
+      - "**/shared/network/api/converter/**"
+    threshold: 15
+    ignoreSingleWhenExpression: false
+    ignoreSimpleWhenEntries: false
+    ignoreNestingFunctions: false
+    nestingFunctions:
+      - "run"
+      - "let"
+      - "apply"
+      - "with"
+      - "also"
+      - "use"
+      - "forEach"
+      - "isNotNull"
+      - "ifNull"
+  LabeledExpression:
+    active: true
+    excludes:
+      - "**/build/**"
+  LargeClass:
+    active: true
+    excludes:
+      - "**/build/**"
+    threshold: 600
+  LongMethod:
+    active: true
+    excludes:
+      - "**/build/**"
+      - "**/shared/converter/**"
+      - "**/shared/network/api/converter/**"
+    threshold: 60
+  LongParameterList:
+    active: false
+    excludes:
+      - "**/build/**"
+    functionThreshold: 6
+    constructorThreshold: 6
+    ignoreDefaultParameters: false
+  MethodOverloading:
+    active: false
+    excludes:
+      - "**/build/**"
+    threshold: 6
+  NestedBlockDepth:
+    active: true
+    excludes:
+      - "**/build/**"
+    threshold: 4
+  StringLiteralDuplication:
+    active: true
+    excludes:
+      - "**/build/**"
+      - "**/commonTest/**"
+      - "**/iosTest/**"
+      - "**/androidTest/**"
+      - "**/test/**"
+    threshold: 3
+    ignoreAnnotation: true
+    excludeStringsWithLessThan5Characters: true
+    ignoreStringsRegex: '$^'
+  TooManyFunctions:
+    active: false
+  MemberVisibilityCanBePrivate:
+    active: true
+
+coroutines:
+  active: true
+  GlobalCoroutineUsage:
+    active: true
+    excludes:
+      - "**/build/**"
+  RedundantSuspendModifier:
+    active: true
+    excludes:
+      - "**/build/**"
+
+empty-blocks:
+  active: true
+  EmptyCatchBlock:
+    active: true
+    excludes:
+      - "**/build/**"
+    allowedExceptionNameRegex: "^(_|(ignore|expected).*)"
+  EmptyClassBlock:
+    active: true
+    excludes:
+      - "**/build/**"
+  EmptyDefaultConstructor:
+    active: false
+    excludes:
+      - "**/build/**"
+  EmptyDoWhileBlock:
+    active: true
+    excludes:
+      - "**/build/**"
+  EmptyElseBlock:
+    active: true
+    excludes:
+      - "**/build/**"
+  EmptyFinallyBlock:
+    active: true
+    excludes:
+      - "**/build/**"
+  EmptyForBlock:
+    active: true
+    excludes:
+      - "**/build/**"
+  EmptyFunctionBlock:
+    active: true
+    excludes:
+      - "**/build/**"
+    ignoreOverridden: false
+  EmptyIfBlock:
+    active: true
+    excludes:
+      - "**/build/**"
+  EmptyInitBlock:
+    active: true
+    excludes:
+      - "**/build/**"
+  EmptyKtFile:
+    active: true
+    excludes:
+      - "**/build/**"
+  EmptySecondaryConstructor:
+    active: true
+    excludes:
+      - "**/build/**"
+  EmptyWhenBlock:
+    active: true
+    excludes:
+      - "**/build/**"
+  EmptyWhileBlock:
+    active: true
+    excludes:
+      - "**/build/**"
+
+exceptions:
+  active: true
+  FileTooLong:
+    active: false
+  ExceptionRaisedInUnexpectedLocation:
+    active: true
+    excludes:
+      - "**/build/**"
+    methodNames:
+      - "toString"
+      - "hashCode"
+      - "equals"
+      - "finalize"
+  InstanceOfCheckForException:
+    active: true
+    excludes:
+      - "**/build/**"
+  NotImplementedDeclaration:
+    active: true
+    excludes:
+      - "**/build/**"
+  PrintStackTrace:
+    active: true
+    excludes:
+      - "**/build/**"
+  RethrowCaughtException:
+    active: true
+    excludes:
+      - "**/build/**"
+  ReturnFromFinally:
+    active: true
+    excludes:
+      - "**/build/**"
+    ignoreLabeled: false
+  SwallowedException:
+    active: true
+    excludes:
+      - "**/build/**"
+    ignoredExceptionTypes:
+      - "InterruptedException"
+      - "NumberFormatException"
+      - "ParseException"
+      - "MalformedURLException"
+    allowedExceptionNameRegex: "^(_|(ignore|expected).*)"
+  ThrowingExceptionFromFinally:
+    active: true
+    excludes:
+      - "**/build/**"
+  ThrowingExceptionInMain:
+    active: false
+    excludes:
+      - "**/build/**"
+  ThrowingExceptionsWithoutMessageOrCause:
+    active: true
+    excludes:
+      - "**/*openapi/**"
+      - "**/gen/**"
+    exceptions:
+      - "IllegalArgumentException"
+      - "IllegalStateException"
+      - "IOException"
+  ThrowingNewInstanceOfSameException:
+    active: true
+    excludes:
+      - "**/build/**"
+  TooGenericExceptionCaught:
+    active: false
+    excludes:
+      - "**/build/**"
+    exceptionNames:
+      - ArrayIndexOutOfBoundsException
+      - Error
+      - Exception
+      - IllegalMonitorStateException
+      - NullPointerException
+      - IndexOutOfBoundsException
+      - RuntimeException
+      - Throwable
+    allowedExceptionNameRegex: "^(_|(ignore|expected).*)"
+  TooGenericExceptionThrown:
+    active: true
+    excludes:
+      - "**/build/**"
+    exceptionNames:
+      - Error
+      - Exception
+      - Throwable
+      - RuntimeException
+
+formatting:
+  active: true
+  android: false
+  autoCorrect: true
+  AnnotationOnSeparateLine:
+    active: false
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  ChainWrapping:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  CommentSpacing:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  EnumEntryNameCase:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  Filename:
+    active: true
+    excludes:
+      - "**/build/**"
+  FinalNewline:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  ImportOrdering:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+    layout: "*" # Keep it the same as value of "ij_kotlin_imports_layout" in .editorconfig.
+  Indentation:
+    active: true
+    excludes: [ "**/build/**", "**/shared/config/**", "**/shared/cache/**" ]
+    autoCorrect: true
+    indentSize: 4
+    continuationIndentSize: 4
+  MaximumLineLength:
+    active: true
+    excludes:
+      - "**/build/**"
+    maxLineLength: 140
+  ModifierOrdering:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  MultiLineIfElse:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  NoBlankLineBeforeRbrace:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  NoConsecutiveBlankLines:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  NoEmptyClassBody:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  NoEmptyFirstLineInMethodBlock:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  NoLineBreakAfterElse:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  NoLineBreakBeforeAssignment:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  NoMultipleSpaces:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  NoSemicolons:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  NoTrailingSpaces:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  NoUnitReturn:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  NoUnusedImports:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  NoWildcardImports:
+    active: true
+    excludes:
+      - "**/build/**"
+  PackageName:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  ParameterListWrapping:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+    indentSize: 4
+  SpacingAroundColon:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  SpacingAroundComma:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  SpacingAroundCurly:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  SpacingAroundDot:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  SpacingAroundKeyword:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  SpacingAroundOperators:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  SpacingAroundParens:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  SpacingAroundRangeOperator:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+  StringTemplate:
+    active: true
+    excludes:
+      - "**/build/**"
+    autoCorrect: true
+
+naming:
+  active: true
+  ClassNaming:
+    active: true
+    excludes:
+      - "**/build/**"
+    classPattern: '[A-Z$][a-zA-Z0-9$]*'
+  ConstructorParameterNaming:
+    active: true
+    excludes:
+      - "**/build/**"
+    parameterPattern: '[a-z][A-Za-z0-9]*'
+    privateParameterPattern: '[a-z][A-Za-z0-9]*'
+    excludeClassPattern: '$^'
+    ignoreOverridden: true
+  EnumNaming:
+    active: true
+    excludes:
+      - "**/build/**"
+    enumEntryPattern: '^[A-Z][_a-zA-Z0-9]*'
+  ForbiddenClassName:
+    active: true
+    excludes:
+      - "**/build/**"
+  FunctionMaxLength:
+    active: true
+    excludes:
+      - "**/test/**"
+      - "**/androidTest/**"
+      - "**/commonTest/**"
+      - "**/iosTest/**"
+      - "**/shared/converter/**"
+      - "**/shared/network/api/converter/**"
+    maximumFunctionNameLength: 30
+  FunctionMinLength:
+    active: true
+    minimumFunctionNameLength: 2
+  FunctionNaming:
+    active: true
+    excludes:
+      - "**/build/**"
+    functionPattern: '^([a-z$][a-zA-Z$0-9]*)|(`.*`)$'
+    excludeClassPattern: '$^'
+    ignoreOverridden: true
+  FunctionParameterNaming:
+    active: true
+    excludes:
+      - "**/build/**"
+    parameterPattern: '[a-z][A-Za-z0-9]*'
+    excludeClassPattern: '$^'
+    ignoreOverridden: true
+  InvalidPackageDeclaration:
+    active: true
+    excludes: [ "**/build/**", "**/shared/db.dao/**", "**.kts**", "**/buildSrc/**" ]
+    rootPackage: ''
+  MatchingDeclarationName:
+    active: true
+    excludes: [ "**/build/**", '**/test/**', '**/androidTest/**', '**/commonTest/**', '**/iosTest/**' ]
+  MemberNameEqualsClassName:
+    active: true
+    excludes:
+      - "**/build/**"
+    ignoreOverridden: true
+  ObjectPropertyNaming:
+    active: true
+    excludes:
+      - "**/build/**"
+    constantPattern: '[A-Za-z][_A-Za-z0-9]*'
+    propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
+    privatePropertyPattern: '(_)?[A-Za-z][_A-Za-z0-9]*'
+  PackageNaming:
+    active: true
+    excludes:
+      - "**/build/**"
+    packagePattern: '^[a-z]+(\.[a-z][A-Za-z0-9]*)*$'
+  TopLevelPropertyNaming:
+    active: true
+    excludes:
+      - "**/build/**"
+    constantPattern: '[A-Z][_A-Z0-9]*'
+    propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
+    privatePropertyPattern: '_?[A-Za-z][_A-Za-z0-9]*'
+  VariableMaxLength:
+    active: true
+    excludes:
+      - "**/build/**"
+    maximumVariableNameLength: 32
+  VariableMinLength:
+    active: true
+    excludes: [ "**/build/**", "**.kts**", "**/buildSrc/**" ]
+    minimumVariableNameLength: 3
+  VariableNaming:
+    active: true
+    excludes:
+      - "**/build/**"
+    variablePattern: '[a-z][A-Za-z0-9]*'
+    privateVariablePattern: '(_)?[a-z][A-Za-z0-9]*'
+    excludeClassPattern: '$^'
+    ignoreOverridden: true
+
+performance:
+  active: true
+  ArrayPrimitive:
+    active: true
+    excludes:
+      - "**/build/**"
+  ForEachOnRange:
+    active: true
+    excludes:
+      - "**/build/**"
+  SpreadOperator:
+    active: true
+    excludes:
+      - "**/build/**"
+  UnnecessaryTemporaryInstantiation:
+    active: true
+    excludes:
+      - "**/build/**"
+
+potential-bugs:
+  active: true
+  Deprecation:
+    active: false
+    excludes:
+      - "**/build/**"
+  DuplicateCaseInWhenExpression:
+    active: true
+    excludes:
+      - "**/build/**"
+  EqualsAlwaysReturnsTrueOrFalse:
+    active: true
+    excludes:
+      - "**/build/**"
+  EqualsWithHashCodeExist:
+    active: true
+    excludes:
+      - "**/build/**"
+  ExplicitGarbageCollectionCall:
+    active: true
+    excludes:
+      - "**/build/**"
+  HasPlatformType:
+    active: true
+    excludes:
+      - "**/build/**"
+  ImplicitDefaultLocale:
+    active: true
+    excludes:
+      - "**/build/**"
+  InvalidRange:
+    active: true
+    excludes:
+      - "**/build/**"
+  IteratorHasNextCallsNextMethod:
+    active: true
+    excludes:
+      - "**/build/**"
+  IteratorNotThrowingNoSuchElementException:
+    active: true
+    excludes:
+      - "**/build/**"
+  LateinitUsage:
+    active: false
+    excludes:
+      - "**/build/**"
+    ignoreOnClassesPattern: ""
+  MapGetWithNotNullAssertionOperator:
+    active: true
+    excludes:
+      - "**/build/**"
+  MissingWhenCase:
+    active: true
+    excludes:
+      - "**/build/**"
+  RedundantElseInWhen:
+    active: true
+    excludes:
+      - "**/build/**"
+  UnconditionalJumpStatementInLoop:
+    active: true
+    excludes:
+      - "**/build/**"
+  UnreachableCode:
+    active: true
+    excludes:
+      - "**/build/**"
+  UnsafeCallOnNullableType:
+    active: true
+    excludes:
+      - "**/build/**"
+  UnsafeCast:
+    active: true
+    excludes:
+      - "**/build/**"
+  UselessPostfixExpression:
+    active: true
+    excludes:
+      - "**/build/**"
+  WrongEqualsTypeParameter:
+    active: true
+    excludes:
+      - "**/build/**"
+
+style:
+  active: true
+  CollapsibleIfStatements:
+    active: true
+    excludes:
+      - "**/build/**"
+  DataClassContainsFunctions:
+    active: true
+    excludes:
+      - "**/build/**"
+    conversionFunctionPrefix:
+      - "to"
+  DataClassShouldBeImmutable:
+    active: true
+    excludes:
+      - "**/build/**"
+  EqualsNullCall:
+    active: true
+    excludes:
+      - "**/build/**"
+  EqualsOnSignatureLine:
+    active: true
+    excludes:
+      - "**/build/**"
+  ExplicitCollectionElementAccessMethod:
+    active: true
+    excludes:
+      - "**/build/**"
+  ExplicitItLambdaParameter:
+    active: false
+    excludes:
+      - "**/build/**"
+  ExpressionBodySyntax:
+    active: true
+    excludes:
+      - "**/build/**"
+    includeLineWrapping: false
+  ForbiddenComment:
+    active: false
+    excludes:
+      - "**/build/**"
+    values:
+      - "TODO"
+      - "FIXME"
+      - "STOPSHIP"
+    allowedPatterns: "TODO\\([a-zA-Z -]+\\):"
+  ForbiddenImport:
+    active: false
+    excludes:
+      - "**/build/**"
+    forbiddenPatterns: ""
+  ForbiddenMethodCall:
+    active: false
+    excludes:
+      - "**/build/**"
+  ForbiddenPublicDataClass:
+    active: false
+    excludes:
+      - "**/build/**"
+    ignorePackages:
+      - "*.internal"
+      - "*.internal.*"
+  ForbiddenVoid:
+    active: true
+    excludes:
+      - "**/build/**"
+    ignoreOverridden: false
+    ignoreUsageInGenerics: false
+  FunctionOnlyReturningConstant:
+    active: true
+    excludes:
+      - "**/build/**"
+    ignoreOverridableFunction: true
+    excludedFunctions:
+      - "describeContents"
+  LibraryCodeMustSpecifyReturnType:
+    active: true
+    excludes:
+      - "**/build/**"
+  LoopWithTooManyJumpStatements:
+    active: true
+    excludes:
+      - "**/build/**"
+    maxJumpCount: 1
+  MagicNumber:
+    active: true
+    excludes:
+      - "**/build/**"
+      - "**/ui/res/**"
+      - "**/commonMain/kotlin/com/airthings/shared/ui/**"
+      - "**/commonTest/**"
+      - "**/iosTest/**"
+      - "**/androidTest/**"
+      - "**/test/**"
+    ignoreNumbers:
+      - "-1"
+      - "0"
+      - "1"
+      - "2"
+    ignoreHashCodeFunction: true
+    ignorePropertyDeclaration: false
+    ignoreLocalVariableDeclaration: false
+    ignoreConstantDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+    ignoreAnnotation: false
+    ignoreNamedArgument: true
+    ignoreEnums: false
+    ignoreRanges: false
+  MandatoryBracesIfStatements:
+    active: true
+    excludes: [ "**/build/**", "**.kts**" ]
+  MaxLineLength:
+    active: true
+    excludes:
+      - "**/build/**"
+      - "**/shared/converter/**"
+    maxLineLength: 140
+    excludePackageStatements: true
+    excludeImportStatements: true
+    excludeCommentStatements: false
+  MayBeConst:
+    active: true
+    excludes:
+      - "**/build/**"
+  ModifierOrder:
+    active: true
+    excludes:
+      - "**/build/**"
+  NestedClassesVisibility:
+    active: true
+    excludes:
+      - "**/build/**"
+  NewLineAtEndOfFile:
+    active: true
+    excludes:
+      - "**/build/**"
+  NoTabs:
+    active: true
+    excludes:
+      - "**/build/**"
+  OptionalAbstractKeyword:
+    active: true
+    excludes:
+      - "**/build/**"
+  OptionalUnit:
+    active: false
+    excludes:
+      - "**/build/**"
+  OptionalWhenBraces:
+    active: true
+    excludes:
+      - "**/build/**"
+  PreferToOverPairSyntax:
+    active: true
+    excludes:
+      - "**/build/**"
+  ProtectedMemberInFinalClass:
+    active: true
+    excludes:
+      - "**/build/**"
+  RedundantExplicitType:
+    active: true
+    excludes:
+      - "**/build/**"
+  RedundantVisibilityModifierRule:
+    active: true
+    excludes:
+      - "**/build/**"
+  ReturnCount:
+    active: true
+    excludes:
+      - "**/build/**"
+    max: 3
+    excludedFunctions:
+      - "equals"
+    excludeLabeled: true
+    excludeReturnFromLambda: true
+    excludeGuardClauses: true
+  SafeCast:
+    active: true
+    excludes:
+      - "**/build/**"
+  SerialVersionUIDInSerializableClass:
+    active: false
+    excludes:
+      - "**/build/**"
+  SpacingBetweenPackageAndImports:
+    active: true
+    excludes:
+      - "**/build/**"
+  ThrowsCount:
+    active: false
+  TrailingWhitespace:
+    active: true
+    excludes:
+      - "**/build/**"
+  UnderscoresInNumericLiterals:
+    active: true
+    excludes:
+      - "**/build/**"
+    acceptableLength: 5
+  UnnecessaryAbstractClass:
+    active: true
+    excludes:
+      - "**/build/**"
+  UnnecessaryAnnotationUseSiteTarget:
+    active: true
+    excludes:
+      - "**/build/**"
+  UnnecessaryApply:
+    active: true
+    excludes:
+      - "**/build/**"
+  UnnecessaryInheritance:
+    active: true
+    excludes:
+      - "**/build/**"
+  UnnecessaryLet:
+    active: true
+    excludes:
+      - "**/build/**"
+  UnnecessaryParentheses:
+    active: true
+    excludes:
+      - "**/build/**"
+  UntilInsteadOfRangeTo:
+    active: true
+    excludes:
+      - "**/build/**"
+  UnusedImports:
+    active: true
+    excludes:
+      - "**/build/**"
+  UnusedPrivateClass:
+    active: true
+    excludes:
+      - "**/build/**"
+  UnusedPrivateMember:
+    active: true
+    excludes: [ "**/build/**", "**.kts**" ]
+    allowedNames: "(_|ignored|expected|serialVersionUID)"
+  UseArrayLiteralsInAnnotations:
+    active: true
+    excludes:
+      - "**/build/**"
+  UseCheckOrError:
+    active: true
+    excludes:
+      - "**/build/**"
+  UseDataClass:
+    active: false
+    excludes:
+      - "**/build/**"
+    allowVars: false
+  UseIfInsteadOfWhen:
+    active: false
+    excludes:
+      - "**/build/**"
+  UseRequire:
+    active: true
+    excludes:
+      - "**/build/**"
+  UselessCallOnNotNull:
+    active: true
+    excludes:
+      - "**/build/**"
+  UtilityClassWithPublicConstructor:
+    active: true
+    excludes:
+      - "**/build/**"
+  VarCouldBeVal:
+    active: true
+    excludes:
+      - "**/build/**"
+  WildcardImport:
+    active: true
+    excludes:
+      - "**/build/**"
