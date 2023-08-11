@@ -38,7 +38,7 @@ allprojects {
 
 ```kotlin
 dependencies {
-    implementation("com.github.airthings:KmpLib:<version>")
+    implementation("com.github.airthings:kmplog:<version>")
 }
 ```
 
