@@ -35,6 +35,7 @@ buildscript {
 
 // Versions of plugins are now configured once in pluginManagement block in settings.gradle.kts.
 plugins {
+    id("maven-publish")
     id("io.gitlab.arturbosch.detekt")
     id("org.jlleitschuh.gradle.ktlint")
     id("com.github.ben-manes.versions")
