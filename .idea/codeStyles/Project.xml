@@ -1,6 +1,7 @@
 <component name="ProjectCodeStyleConfiguration">
   <code_scheme name="Project" version="173">
     <option name="RIGHT_MARGIN" value="120" />
+    <option name="SOFT_MARGINS" value="120" />
     <JavaCodeStyleSettings>
       <option name="LAYOUT_STATIC_IMPORTS_SEPARATELY" value="false" />
       <option name="IMPORT_LAYOUT_TABLE">
