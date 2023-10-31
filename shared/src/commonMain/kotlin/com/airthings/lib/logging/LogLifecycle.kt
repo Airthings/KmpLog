@@ -51,7 +51,8 @@ enum class LogLifecycle(private val value: String) {
     /**
      * The lifecycle state for when the app has ended its execution because the operating system terminated it.
      */
-    DESTROYED("destroyed");
+    DESTROYED("destroyed"),
+    ;
 
     override fun toString(): String = value
 
@@ -65,7 +66,7 @@ enum class LogLifecycle(private val value: String) {
         @Suppress("MagicNumber")
         fun format(
             event: LogLifecycle,
-            decoration: LogDecoration? = null
+            decoration: LogDecoration? = null,
         ): String = StringBuilder(128)
             .apply {
                 if (decoration != null && !decoration.prefix.isNullOrEmpty()) {

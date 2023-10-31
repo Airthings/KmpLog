@@ -30,8 +30,12 @@ kotlin {
     listOf(
         iosX64(),
         iosArm64(),
-        iosSimulatorArm64()
+        iosSimulatorArm64(),
     ).forEach {
+        // Fixes this: https://rdr.to/DkdMx1MXyeB
+        it.binaries.all {
+            linkerOpts += "-ld64"
+        }
         it.binaries.framework {
             baseName = "KmpLog"
         }
@@ -45,9 +49,18 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("co.touchlab:stately-concurrency:${properties["version.stately.concurrency"]}")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${properties["version.kotlin.coroutines"]}")
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:${properties["version.kotlin.datetime"]}")
+                implementation(
+                    "co.touchlab:stately-concurrency:" +
+                        "${properties["version.stately.concurrency"]}",
+                )
+                implementation(
+                    "org.jetbrains.kotlinx:kotlinx-coroutines-core:" +
+                        "${properties["version.kotlin.coroutines"]}",
+                )
+                implementation(
+                    "org.jetbrains.kotlinx:kotlinx-datetime:" +
+                        "${properties["version.kotlin.datetime"]}",
+                )
             }
         }
 

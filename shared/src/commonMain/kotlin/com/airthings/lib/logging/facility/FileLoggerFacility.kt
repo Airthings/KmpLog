@@ -49,7 +49,7 @@ class FileLoggerFacility(
     private val minimumLogLevel: LogLevel,
     private val baseFolder: String,
     private val scope: CoroutineScope,
-    private val notifier: PlatformFileInputOutputNotifier?
+    private val notifier: PlatformFileInputOutputNotifier?,
 ) : LoggerFacility {
     /**
      * Returns a [FileLoggerFacility] instance that handles only [WARNING][LogLevel.WARNING],
@@ -64,12 +64,12 @@ class FileLoggerFacility(
     constructor(
         baseFolder: String,
         scope: CoroutineScope,
-        notifier: PlatformFileInputOutputNotifier?
+        notifier: PlatformFileInputOutputNotifier?,
     ) : this(
         minimumLogLevel = LogLevel.WARNING,
         baseFolder = baseFolder,
         scope = scope,
-        notifier = notifier
+        notifier = notifier,
     )
 
     /**
@@ -87,7 +87,7 @@ class FileLoggerFacility(
         minimumLogLevel = minimumLogLevel,
         baseFolder = baseFolder,
         scope = scope,
-        notifier = null
+        notifier = null,
     )
 
     /**
@@ -100,12 +100,12 @@ class FileLoggerFacility(
     constructor(
         minimumLogLevel: LogLevel,
         baseFolder: String,
-        notifier: PlatformFileInputOutputNotifier?
+        notifier: PlatformFileInputOutputNotifier?,
     ) : this(
         minimumLogLevel = minimumLogLevel,
         baseFolder = baseFolder,
         scope = loggerCoroutineScope(),
-        notifier = notifier
+        notifier = notifier,
     )
 
     /**
@@ -118,12 +118,12 @@ class FileLoggerFacility(
      */
     constructor(
         minimumLogLevel: LogLevel,
-        baseFolder: String
+        baseFolder: String,
     ) : this(
         minimumLogLevel = minimumLogLevel,
         baseFolder = baseFolder,
         scope = loggerCoroutineScope(),
-        notifier = null
+        notifier = null,
     )
 
     private val io: PlatformFileInputOutput = PlatformFileInputOutputImpl()
@@ -150,12 +150,12 @@ class FileLoggerFacility(
     override fun log(
         source: String,
         level: LogLevel,
-        message: LogMessage
+        message: LogMessage,
     ) {
         withLogLevel(level) { logFile ->
             io.append(
                 path = logFile,
-                contents = "${datetimeStampPrefix()} ${PrinterLoggerFacility.format(level, message).trim()}$LF"
+                contents = "${datetimeStampPrefix()} ${PrinterLoggerFacility.format(level, message).trim()}$LF",
             )
         }
     }
@@ -164,7 +164,7 @@ class FileLoggerFacility(
         withLogLevel(level) { logFile ->
             io.append(
                 path = logFile,
-                contents = "${datetimeStampPrefix()} ${PrinterLoggerFacility.format(level, error).trim()}$LF"
+                contents = "${datetimeStampPrefix()} ${PrinterLoggerFacility.format(level, error).trim()}$LF",
             )
         }
     }
@@ -183,7 +183,7 @@ class FileLoggerFacility(
 
     private fun withLogLevel(
         level: LogLevel,
-        action: suspend (String) -> Unit
+        action: suspend (String) -> Unit,
     ) {
         if (level.value < minimumLogLevel.value) {
             return
@@ -209,7 +209,7 @@ class FileLoggerFacility(
     companion object {
         private const val LF: Char = '\n'
 
-        private inline fun loggerCoroutineScope(): CoroutineScope =
+        private fun loggerCoroutineScope(): CoroutineScope =
             CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         /**

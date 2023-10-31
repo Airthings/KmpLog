@@ -1,8 +1,10 @@
 October 31, 2023
-    Reformat the code to fit into 120 characters per line.
+    • Reformat the code to fit into 120 characters per line.
+    • Fix ktlint and Detekt linting errors.
+    • Fix a build error (https://rdr.to/DkdMx1MXyeB)
 
 October 25, 2023
-    Fix behaviour while scanning files in a directory.
+    • Fix behaviour while scanning files in a directory.
 
 August 11, 2023
-    Initial release.
+    • Initial release.

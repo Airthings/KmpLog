@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 class Logger(
     val source: String,
     val decoration: LogDecoration?,
-    val coroutineScope: CoroutineScope
+    val coroutineScope: CoroutineScope,
 ) {
     /**
      * Instantiates a new [Logger] with the default [coroutineScope].
@@ -50,7 +50,7 @@ class Logger(
     constructor(source: String, decoration: LogDecoration?) : this(
         source = source,
         decoration = decoration,
-        coroutineScope = LoggerFacility.defaultCoroutineScope
+        coroutineScope = LoggerFacility.defaultCoroutineScope,
     )
 
     /**
@@ -60,7 +60,7 @@ class Logger(
      */
     constructor(source: String) : this(
         source = source,
-        decoration = null
+        decoration = null,
     )
 
     /**
@@ -69,7 +69,9 @@ class Logger(
      * @param message The message.
      */
     fun info(message: String) {
-        info(message = LogMessage(message))
+        info(
+            message = LogMessage(message),
+        )
     }
 
     /**
@@ -83,7 +85,9 @@ class Logger(
      * @see info(message: String, vararg arguments: Pair<String, Any?>)
      */
     fun info(message: String, arguments: Map<String, Any?>) {
-        info(message = LogMessage(message, arguments))
+        info(
+            message = LogMessage(message, arguments),
+        )
     }
 
     /**
@@ -93,7 +97,12 @@ class Logger(
      * @param arguments The arguments in a vararg.
      */
     fun info(message: String, vararg arguments: Pair<String, Any?>) {
-        info(message = LogMessage.from(message, arguments))
+        info(
+            message = LogMessage.from(
+                message = message,
+                arguments = arguments,
+            ),
+        )
     }
 
     /**
@@ -102,7 +111,11 @@ class Logger(
      * @param message The message's details.
      */
     fun info(message: LogMessage) {
-        log(source, LogLevel.INFO, message)
+        log(
+            source = source,
+            level = LogLevel.INFO,
+            message = message,
+        )
     }
 
     /**
@@ -112,7 +125,10 @@ class Logger(
      * @param error An error to accompany the message.
      */
     fun info(message: String, error: Throwable) {
-        info(message = LogMessage(message), error = error)
+        info(
+            message = LogMessage(message),
+            error = error,
+        )
     }
 
     /**
@@ -127,7 +143,13 @@ class Logger(
      * @see info(message: String, vararg arguments: Pair<String, Any?>, error: Throwable)
      */
     fun info(message: String, arguments: Map<String, Any?>, error: Throwable) {
-        info(message = LogMessage(message, arguments), error = error)
+        info(
+            message = LogMessage(
+                message = message,
+                args = arguments,
+            ),
+            error = error,
+        )
     }
 
     /**
@@ -138,7 +160,13 @@ class Logger(
      * @param error An error to accompany the message.
      */
     fun info(message: String, vararg arguments: Pair<String, Any?>, error: Throwable) {
-        info(message = LogMessage.from(message, arguments), error = error)
+        info(
+            message = LogMessage.from(
+                message = message,
+                arguments = arguments,
+            ),
+            error = error,
+        )
     }
 
     /**
@@ -148,7 +176,12 @@ class Logger(
      * @param error An error to accompany the message.
      */
     fun info(message: LogMessage, error: Throwable) {
-        log(source, LogLevel.INFO, message, error)
+        log(
+            source = source,
+            level = LogLevel.INFO,
+            message = message,
+            error = error,
+        )
     }
 
     /**
@@ -158,7 +191,10 @@ class Logger(
      * @param message The message.
      */
     fun info(source: String, message: String) {
-        info(source = source, message = LogMessage(message))
+        info(
+            source = source,
+            message = LogMessage(message),
+        )
     }
 
     /**
@@ -168,7 +204,11 @@ class Logger(
      * @param message The message's details.
      */
     fun info(source: String, message: LogMessage) {
-        log(source, LogLevel.INFO, message)
+        log(
+            source = source,
+            level = LogLevel.INFO,
+            message = message,
+        )
     }
 
     /**
@@ -179,7 +219,12 @@ class Logger(
      * @param error An error to accompany the message.
      */
     fun info(source: String, message: LogMessage, error: Throwable) {
-        log(source, LogLevel.INFO, message, error)
+        log(
+            source = source,
+            level = LogLevel.INFO,
+            message = message,
+            error = error,
+        )
     }
 
     /**
@@ -188,7 +233,9 @@ class Logger(
      * @param message The message.
      */
     fun warning(message: String) {
-        warning(message = LogMessage(message))
+        warning(
+            message = LogMessage(message),
+        )
     }
 
     /**
@@ -202,7 +249,12 @@ class Logger(
      * @see warning(message: String, vararg arguments: Pair<String, Any?>)
      */
     fun warning(message: String, arguments: Map<String, Any?>) {
-        warning(message = LogMessage(message, arguments))
+        warning(
+            message = LogMessage(
+                message = message,
+                args = arguments,
+            ),
+        )
     }
 
     /**
@@ -212,7 +264,12 @@ class Logger(
      * @param arguments The arguments in a vararg.
      */
     fun warning(message: String, vararg arguments: Pair<String, Any?>) {
-        warning(message = LogMessage.from(message, arguments))
+        warning(
+            message = LogMessage.from(
+                message = message,
+                arguments = arguments,
+            ),
+        )
     }
 
     /**
@@ -221,7 +278,11 @@ class Logger(
      * @param message The message's details.
      */
     fun warning(message: LogMessage) {
-        log(source, LogLevel.WARNING, message)
+        log(
+            source = source,
+            level = LogLevel.WARNING,
+            message = message,
+        )
     }
 
     /**
@@ -231,7 +292,10 @@ class Logger(
      * @param error An error to accompany the message.
      */
     fun warning(message: String, error: Throwable) {
-        warning(message = LogMessage(message), error = error)
+        warning(
+            message = LogMessage(message),
+            error = error,
+        )
     }
 
     /**
@@ -246,7 +310,13 @@ class Logger(
      * @see warning(message: String, vararg arguments: Pair<String, Any?>, error: Throwable)
      */
     fun warning(message: String, arguments: Map<String, Any?>, error: Throwable) {
-        warning(message = LogMessage(message, arguments), error = error)
+        warning(
+            message = LogMessage(
+                message = message,
+                args = arguments,
+            ),
+            error = error,
+        )
     }
 
     /**
@@ -257,7 +327,13 @@ class Logger(
      * @param error An error to accompany the message.
      */
     fun warning(message: String, vararg arguments: Pair<String, Any?>, error: Throwable) {
-        warning(message = LogMessage.from(message, arguments), error = error)
+        warning(
+            message = LogMessage.from(
+                message = message,
+                arguments = arguments,
+            ),
+            error = error,
+        )
     }
 
     /**
@@ -267,7 +343,12 @@ class Logger(
      * @param error An error to accompany the message.
      */
     fun warning(message: LogMessage, error: Throwable) {
-        log(source, LogLevel.WARNING, message, error)
+        log(
+            source = source,
+            level = LogLevel.WARNING,
+            message = message,
+            error = error,
+        )
     }
 
     /**
@@ -277,7 +358,10 @@ class Logger(
      * @param message The message.
      */
     fun warning(source: String, message: String) {
-        warning(source = source, message = LogMessage(message))
+        warning(
+            source = source,
+            message = LogMessage(message),
+        )
     }
 
     /**
@@ -287,7 +371,11 @@ class Logger(
      * @param message The message's details.
      */
     fun warning(source: String, message: LogMessage) {
-        log(source, LogLevel.WARNING, message)
+        log(
+            source = source,
+            level = LogLevel.WARNING,
+            message = message,
+        )
     }
 
     /**
@@ -298,7 +386,12 @@ class Logger(
      * @param error An error to accompany the message.
      */
     fun warning(source: String, message: LogMessage, error: Throwable) {
-        log(source, LogLevel.WARNING, message, error)
+        log(
+            source = source,
+            level = LogLevel.WARNING,
+            message = message,
+            error = error,
+        )
     }
 
     /**
@@ -307,7 +400,9 @@ class Logger(
      * @param message The message.
      */
     fun error(message: String) {
-        error(message = LogMessage(message))
+        error(
+            message = LogMessage(message),
+        )
     }
 
     /**
@@ -321,7 +416,12 @@ class Logger(
      * @see error(message: String, vararg arguments: Pair<String, Any?>)
      */
     fun error(message: String, arguments: Map<String, Any?>) {
-        error(message = LogMessage(message, arguments))
+        error(
+            message = LogMessage(
+                message = message,
+                args = arguments,
+            ),
+        )
     }
 
     /**
@@ -331,7 +431,12 @@ class Logger(
      * @param arguments The arguments in a vararg.
      */
     fun error(message: String, vararg arguments: Pair<String, Any?>) {
-        error(message = LogMessage.from(message, arguments))
+        error(
+            message = LogMessage.from(
+                message = message,
+                arguments = arguments,
+            ),
+        )
     }
 
     /**
@@ -340,7 +445,11 @@ class Logger(
      * @param message The message's details.
      */
     fun error(message: LogMessage) {
-        log(source, LogLevel.ERROR, message)
+        log(
+            source = source,
+            level = LogLevel.ERROR,
+            message = message,
+        )
     }
 
     /**
@@ -350,7 +459,10 @@ class Logger(
      * @param error An error to accompany the message.
      */
     fun error(message: String, error: Throwable) {
-        error(message = LogMessage(message), error = error)
+        error(
+            message = LogMessage(message),
+            error = error,
+        )
     }
 
     /**
@@ -365,7 +477,13 @@ class Logger(
      * @see error(message: String, vararg arguments: Pair<String, Any?>, error: Throwable)
      */
     fun error(message: String, arguments: Map<String, Any?>, error: Throwable) {
-        error(message = LogMessage(message, arguments), error = error)
+        error(
+            message = LogMessage(
+                message = message,
+                args = arguments,
+            ),
+            error = error,
+        )
     }
 
     /**
@@ -376,7 +494,13 @@ class Logger(
      * @param error An error to accompany the message.
      */
     fun error(message: String, vararg arguments: Pair<String, Any?>, error: Throwable) {
-        error(message = LogMessage.from(message, arguments), error = error)
+        error(
+            message = LogMessage.from(
+                message = message,
+                arguments = arguments,
+            ),
+            error = error,
+        )
     }
 
     /**
@@ -386,7 +510,12 @@ class Logger(
      * @param error An error to accompany the message.
      */
     fun error(message: LogMessage, error: Throwable) {
-        log(source, LogLevel.ERROR, message, error)
+        log(
+            source = source,
+            level = LogLevel.ERROR,
+            message = message,
+            error = error,
+        )
     }
 
     /**
@@ -396,7 +525,10 @@ class Logger(
      * @param message The message.
      */
     fun error(source: String, message: String) {
-        error(source = source, message = LogMessage(message))
+        error(
+            source = source,
+            message = LogMessage(message),
+        )
     }
 
     /**
@@ -406,7 +538,11 @@ class Logger(
      * @param message The message's details.
      */
     fun error(source: String, message: LogMessage) {
-        log(source, LogLevel.ERROR, message)
+        log(
+            source = source,
+            level = LogLevel.ERROR,
+            message = message,
+        )
     }
 
     /**
@@ -417,7 +553,12 @@ class Logger(
      * @param error An error to accompany the message.
      */
     fun error(source: String, message: LogMessage, error: Throwable) {
-        log(source, LogLevel.ERROR, message, error)
+        log(
+            source = source,
+            level = LogLevel.ERROR,
+            message = message,
+            error = error,
+        )
     }
 
     /**
@@ -426,7 +567,9 @@ class Logger(
      * @param message The message.
      */
     fun crash(message: String) {
-        crash(message = LogMessage(message))
+        crash(
+            message = LogMessage(message),
+        )
     }
 
     /**
@@ -440,7 +583,12 @@ class Logger(
      * @see crash(message: String, vararg arguments: Pair<String, Any?>)
      */
     fun crash(message: String, arguments: Map<String, Any?>) {
-        crash(message = LogMessage(message, arguments))
+        crash(
+            message = LogMessage(
+                message = message,
+                args = arguments,
+            ),
+        )
     }
 
     /**
@@ -450,7 +598,12 @@ class Logger(
      * @param arguments The arguments in a vararg.
      */
     fun crash(message: String, vararg arguments: Pair<String, Any?>) {
-        crash(message = LogMessage.from(message, arguments))
+        crash(
+            message = LogMessage.from(
+                message,
+                arguments,
+            ),
+        )
     }
 
     /**
@@ -459,7 +612,11 @@ class Logger(
      * @param message The message's details.
      */
     fun crash(message: LogMessage) {
-        log(source, LogLevel.CRASH, message)
+        log(
+            source = source,
+            level = LogLevel.CRASH,
+            message = message,
+        )
     }
 
     /**
@@ -469,7 +626,10 @@ class Logger(
      * @param error An error to accompany the message.
      */
     fun crash(message: String, error: Throwable) {
-        crash(message = LogMessage(message), error = error)
+        crash(
+            message = LogMessage(message),
+            error = error,
+        )
     }
 
     /**
@@ -484,7 +644,13 @@ class Logger(
      * @see crash(message: String, vararg arguments: Pair<String, Any?>, error: Throwable)
      */
     fun crash(message: String, arguments: Map<String, Any?>, error: Throwable) {
-        crash(message = LogMessage(message, arguments), error = error)
+        crash(
+            message = LogMessage(
+                message = message,
+                args = arguments,
+            ),
+            error = error,
+        )
     }
 
     /**
@@ -495,7 +661,13 @@ class Logger(
      * @param error An error to accompany the message.
      */
     fun crash(message: String, vararg arguments: Pair<String, Any?>, error: Throwable) {
-        crash(message = LogMessage.from(message, arguments), error = error)
+        crash(
+            message = LogMessage.from(
+                message = message,
+                arguments = arguments,
+            ),
+            error = error,
+        )
     }
 
     /**
@@ -505,7 +677,12 @@ class Logger(
      * @param error An error to accompany the message.
      */
     fun crash(message: LogMessage, error: Throwable) {
-        log(source, LogLevel.CRASH, message, error)
+        log(
+            source = source,
+            level = LogLevel.CRASH,
+            message = message,
+            error = error,
+        )
     }
 
     /**
@@ -515,7 +692,10 @@ class Logger(
      * @param message The message.
      */
     fun crash(source: String, message: String) {
-        crash(source = source, message = LogMessage(message))
+        crash(
+            source = source,
+            message = LogMessage(message),
+        )
     }
 
     /**
@@ -525,7 +705,11 @@ class Logger(
      * @param message The message's details.
      */
     fun crash(source: String, message: LogMessage) {
-        log(source, LogLevel.CRASH, message)
+        log(
+            source = source,
+            level = LogLevel.CRASH,
+            message = message,
+        )
     }
 
     /**
@@ -536,7 +720,12 @@ class Logger(
      * @param error An error to accompany the message.
      */
     fun crash(source: String, message: LogMessage, error: Throwable) {
-        log(source, LogLevel.CRASH, message, error)
+        log(
+            source = source,
+            level = LogLevel.CRASH,
+            message = message,
+            error = error,
+        )
     }
 
     /**
@@ -545,7 +734,12 @@ class Logger(
      * @param lifecycle The lifecycle change to log.
      */
     fun log(lifecycle: LogLifecycle) {
-        info(LogLifecycle.format(lifecycle, decoration))
+        info(
+            message = LogLifecycle.format(
+                event = lifecycle,
+                decoration = decoration,
+            ),
+        )
     }
 
     /**
@@ -555,7 +749,13 @@ class Logger(
      * @param lifecycle The lifecycle change to log.
      */
     fun log(source: String, lifecycle: LogLifecycle) {
-        info(source, LogLifecycle.format(lifecycle, decoration))
+        info(
+            source = source,
+            message = LogLifecycle.format(
+                event = lifecycle,
+                decoration = decoration,
+            ),
+        )
     }
 
     /**
@@ -566,7 +766,11 @@ class Logger(
      */
     fun log(level: LogLevel, message: LogMessage) {
         logAsync {
-            log(source, level, message)
+            log(
+                source = source,
+                level = level,
+                message = message,
+            )
         }
     }
 
@@ -579,8 +783,16 @@ class Logger(
      */
     fun log(level: LogLevel, message: LogMessage, error: Throwable) {
         logAsync {
-            log(source, level, message)
-            log(source, level, error)
+            log(
+                source = source,
+                level = level,
+                message = message,
+            )
+            log(
+                source = source,
+                level = level,
+                error = error,
+            )
         }
     }
 
@@ -593,7 +805,11 @@ class Logger(
      */
     fun log(source: String, level: LogLevel, message: LogMessage) {
         logAsync {
-            log(source, level, message)
+            log(
+                source = source,
+                level = level,
+                message = message,
+            )
         }
     }
 
@@ -607,8 +823,16 @@ class Logger(
      */
     fun log(source: String, level: LogLevel, message: LogMessage, error: Throwable) {
         logAsync {
-            log(source, level, message)
-            log(source, level, error)
+            log(
+                source = source,
+                level = level,
+                message = message,
+            )
+            log(
+                source = source,
+                level = level,
+                error = error,
+            )
         }
     }
 

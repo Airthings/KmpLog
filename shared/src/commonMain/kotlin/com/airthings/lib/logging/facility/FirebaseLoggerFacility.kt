@@ -39,7 +39,7 @@ import com.airthings.lib.logging.LoggerFacility
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class FirebaseLoggerFacility(
     private val facility: PlatformFirebaseLoggerFacility,
-    private val minimumLogLevel: LogLevel
+    private val minimumLogLevel: LogLevel,
 ) : LoggerFacility {
     /**
      * Returns a [FirebaseLoggerFacility] instance that sends [WARNING][LogLevel.WARNING],
@@ -117,7 +117,7 @@ class FirebaseLoggerFacility(
 
     private fun withLogLevel(
         level: LogLevel,
-        action: (DefaultLoggerProperties) -> Unit
+        action: (DefaultLoggerProperties) -> Unit,
     ) {
         if (level.value >= minimumLogLevel.value) {
             LinkedHashMap<String, Any?>(properties.size + 1).apply {
@@ -150,7 +150,7 @@ interface PlatformFirebaseLoggerFacility {
         source: String,
         level: LogLevel,
         message: String,
-        properties: DefaultLoggerProperties
+        properties: DefaultLoggerProperties,
     )
 
     /**
@@ -165,7 +165,7 @@ interface PlatformFirebaseLoggerFacility {
         source: String,
         level: LogLevel,
         error: Throwable,
-        properties: DefaultLoggerProperties
+        properties: DefaultLoggerProperties,
     )
 
     /**

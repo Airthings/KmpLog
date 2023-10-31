@@ -47,7 +47,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         cValue.value = true
         NSFileManager.defaultManager.fileExistsAtPath(
             path = path,
-            isDirectory = cValue.ptr
+            isDirectory = cValue.ptr,
         )
     }
 
@@ -56,7 +56,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
             path = path,
             withIntermediateDirectories = true,
             attributes = null,
-            error = it
+            error = it,
         )
     }
 
@@ -81,7 +81,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
             cValue.value = false
             NSFileManager.defaultManager.fileExistsAtPath(
                 path = path,
-                isDirectory = cValue.ptr
+                isDirectory = cValue.ptr,
             )
         }
         if (!exists) {
@@ -95,19 +95,19 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
 
     override suspend fun of(path: String): Collection<String> = filesImpl(
         path = path,
-        date = null
+        date = null,
     )
 
     override suspend fun of(path: String, date: LogDate): Collection<String> = filesImpl(
         path = path,
-        date = date
+        date = date,
     )
 
     override fun toString(): String = PLATFORM_IOS
 
     private fun filesImpl(
         path: String,
-        date: LogDate?
+        date: LogDate?,
     ): Collection<String> = ArrayList<String>(INITIAL_ARRAY_SIZE).apply {
         val fm = NSFileManager.defaultManager
         val enumerator = fm.enumeratorAtPath(path)
@@ -142,7 +142,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
  */
 private fun <T> nsErrorWrapper(
     fallback: T,
-    block: (errorPointer: CPointer<ObjCObjectVar<NSError?>>) -> T
+    block: (errorPointer: CPointer<ObjCObjectVar<NSError?>>) -> T,
 ): T {
     memScoped {
         val errorPointer: CPointer<ObjCObjectVar<NSError?>> = alloc<ObjCObjectVar<NSError?>>().ptr

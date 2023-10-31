@@ -36,13 +36,19 @@ class NetworkLogMessage(
     method: String,
     path: String,
     message: String,
-    args: List<LogArgument>
+    args: List<LogArgument>,
 ) : LogMessage(
     message = message,
     args = listOf(
-        LogArg("method", method.uppercase()),
-        LogArg("path", path)
-    ) + args
+        LogArg(
+            label = "method",
+            value = method.uppercase(),
+        ),
+        LogArg(
+            label = "path",
+            value = path,
+        ),
+    ) + args,
 ) {
     /**
      * A [LogMessage] suitable for network operations.
@@ -54,11 +60,11 @@ class NetworkLogMessage(
     constructor(
         method: String,
         path: String,
-        message: String
+        message: String,
     ) : this(
         method = method,
         path = path,
         message = message,
-        args = emptyList()
+        args = emptyList(),
     )
 }

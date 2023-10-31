@@ -35,7 +35,10 @@ class PrinterLoggerFacility : LoggerFacility {
         facility.print(
             source = source,
             level = level,
-            message = format(level, message)
+            message = format(
+                level = level,
+                message = message,
+            ),
         )
     }
 
@@ -43,7 +46,10 @@ class PrinterLoggerFacility : LoggerFacility {
         facility.print(
             source = source,
             level = level,
-            message = format(level, error)
+            message = format(
+                level = level,
+                error = error,
+            ),
         )
     }
 
@@ -58,7 +64,7 @@ class PrinterLoggerFacility : LoggerFacility {
          */
         fun format(
             level: LogLevel,
-            message: LogMessage
+            message: LogMessage,
         ): String = "${level.emoticon} $level: $message"
 
         /**
@@ -69,7 +75,7 @@ class PrinterLoggerFacility : LoggerFacility {
          */
         fun format(
             level: LogLevel,
-            error: Throwable
+            error: Throwable,
         ): String = "${level.emoticon} $level: ${error.stackTraceToString()}"
     }
 }

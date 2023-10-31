@@ -27,14 +27,14 @@ import kotlinx.datetime.toLocalDateTime
 /**
  * Returns the current time in UTC.
  */
-internal inline fun utc(): LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.UTC)
+internal fun utc(): LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.UTC)
 
 /**
  * Returns this [Int] padded with initial zeros up to the maximum [length].
  *
  * @param length Maximum length of resulted string.
  */
-internal inline fun Int.padded(length: Int = 2): String = "$this".padStart(length, '0')
+internal fun Int.padded(length: Int = 2): String = "$this".padStart(length, '0')
 
 /**
  * Returns a string containing the specified [date][value] formatted as "YYYY-MM-DD".

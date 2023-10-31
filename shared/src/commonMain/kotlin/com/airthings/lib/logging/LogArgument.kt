@@ -104,7 +104,7 @@ interface LogArgument {
          */
         fun formatArray(array: Array<*>): String = formatIterator(
             type = "Array",
-            iterator = array.iterator()
+            iterator = array.iterator(),
         )
 
         /**
@@ -114,7 +114,7 @@ interface LogArgument {
          */
         fun formatList(list: List<*>): String = formatIterator(
             type = "List",
-            iterator = list.iterator()
+            iterator = list.iterator(),
         )
 
         /**
@@ -124,7 +124,7 @@ interface LogArgument {
          */
         fun formatCollection(collection: Collection<*>): String = formatIterator(
             type = "Collection",
-            iterator = collection.iterator()
+            iterator = collection.iterator(),
         )
 
         /**
@@ -134,12 +134,12 @@ interface LogArgument {
          */
         fun formatIterable(iterable: Iterable<*>): String = formatIterator(
             type = "Iterable",
-            iterator = iterable.iterator()
+            iterator = iterable.iterator(),
         )
 
         private fun formatIterator(
             type: String,
-            iterator: Iterator<*>
+            iterator: Iterator<*>,
         ): String = StringBuilder(BUFFER_SIZE)
             .apply {
                 append("$type(")

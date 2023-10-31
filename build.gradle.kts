@@ -18,7 +18,7 @@
  */
 
 group = "com.airthings.lib"
-version = "0.1.0"
+version = "0.1.1"
 
 buildscript {
     repositories {
@@ -30,6 +30,7 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle:${properties["version.plugin.androidGradle"]}")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${properties["version.kotlin"]}")
+        classpath("com.github.ben-manes:gradle-versions-plugin:${properties["version.plugin.outdated"]}")
     }
 }
 

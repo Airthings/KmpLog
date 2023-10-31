@@ -50,19 +50,19 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
 
     override suspend fun of(path: String): Collection<String> = filesImpl(
         path = path,
-        date = null
+        date = null,
     )
 
     override suspend fun of(path: String, date: LogDate): Collection<String> = filesImpl(
         path = path,
-        date = date
+        date = date,
     )
 
     override fun toString(): String = PLATFORM_ANDROID
 
     private fun filesImpl(
         path: String,
-        date: LogDate?
+        date: LogDate?,
     ): Collection<String> = ArrayList<String>(INITIAL_ARRAY_SIZE).apply {
         val iterator = File(path).walk().iterator()
 

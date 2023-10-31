@@ -35,7 +35,7 @@ import kotlinx.datetime.LocalDateTime
 data class LogDate(
     val year: Int,
     val month: Int,
-    val day: Int
+    val day: Int,
 ) {
     /**
      * Returns a [LogDate] instance from a [LocalDateTime] component.

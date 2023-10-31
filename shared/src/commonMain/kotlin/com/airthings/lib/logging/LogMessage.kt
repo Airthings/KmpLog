@@ -38,7 +38,7 @@ import com.airthings.lib.logging.message.NetworkLogMessage
 @Suppress("MemberVisibilityCanBePrivate")
 open class LogMessage(
     val message: String,
-    val args: List<LogArgument>
+    val args: List<LogArgument>,
 ) {
     /**
      * A [LogMessage] with no arguments.
@@ -47,7 +47,7 @@ open class LogMessage(
      */
     constructor(message: String) : this(
         message = message,
-        args = emptyList()
+        args = emptyList(),
     )
 
     /**
@@ -62,10 +62,10 @@ open class LogMessage(
      */
     constructor(
         message: String,
-        args: Map<String, Any?>
+        args: Map<String, Any?>,
     ) : this(
         message = message,
-        args = args.asLogArgs()
+        args = args.asLogArgs(),
     )
 
     /**
@@ -76,10 +76,10 @@ open class LogMessage(
      */
     constructor(
         message: String,
-        vararg arguments: Pair<String, Any?>
+        vararg arguments: Pair<String, Any?>,
     ) : this(
         message = message,
-        args = arguments.asLogArgs()
+        args = arguments.asLogArgs(),
     )
 
     override fun toString(): String = format(message, args)
@@ -93,7 +93,7 @@ open class LogMessage(
          */
         fun format(
             message: String,
-            args: List<LogArgument>
+            args: List<LogArgument>,
         ): String = ArrayList<Any>(args.size + 1)
             .let {
                 it.add(message.trim())
@@ -107,7 +107,7 @@ open class LogMessage(
         @Suppress("SpreadOperator")
         internal fun from(
             message: String,
-            arguments: Array<out Pair<String, Any?>>
+            arguments: Array<out Pair<String, Any?>>,
         ): LogMessage = LogMessage(message, *arguments)
     }
 }

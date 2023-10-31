@@ -29,5 +29,5 @@ package com.airthings.lib.logging
 data class LogDecoration(
     val prefix: String? = "-- Lifecycle changed to: ",
     val suffix: String? = null,
-    val uppercase: Boolean = true
+    val uppercase: Boolean = true,
 )

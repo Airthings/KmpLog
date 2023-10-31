@@ -30,17 +30,25 @@ package com.airthings.lib.logging
 enum class LogLevel(
     @Suppress("MemberVisibilityCanBePrivate") val label: String,
     val value: Int,
-    val emoticon: String
+    val emoticon: String,
 ) {
     /**
      * An informative event, used mainly to record information about the app's normal operation.
      */
-    INFO("info", 0, "🔍️"),
+    INFO(
+        label = "info",
+        value = 0,
+        emoticon = "🔍️",
+    ),
 
     /**
      * An unforeseen and unplanned event that's obstructing the app, but isn't causing it to malfunction.
      */
-    WARNING("warning", 10, "😱"),
+    WARNING(
+        label = "warning",
+        value = 10,
+        emoticon = "😱",
+    ),
 
     /**
      * An unforeseen and unplanned event that's obstructing the app and is causing it to malfunction, but not
@@ -48,12 +56,21 @@ enum class LogLevel(
      *
      * Usually the user is able to remedy the situation by simply repeating the operation that caused the error.
      */
-    ERROR("error", 90, "🐞"),
+    ERROR(
+        label = "error",
+        value = 90,
+        emoticon = "🐞",
+    ),
 
     /**
      * An event that caused the app to crash unexpectedly.
      */
-    CRASH("crash", 99, "💥");
+    CRASH(
+        label = "crash",
+        value = 99,
+        emoticon = "💥",
+    ),
+    ;
 
     override fun toString(): String = label.uppercase()
 }
