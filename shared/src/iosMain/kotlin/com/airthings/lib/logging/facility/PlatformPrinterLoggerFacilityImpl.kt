@@ -19,8 +19,8 @@
 
 package com.airthings.lib.logging.facility
 
-import com.airthings.lib.logging.PLATFORM_IOS
 import com.airthings.lib.logging.LogLevel
+import com.airthings.lib.logging.PLATFORM_IOS
 import platform.Foundation.NSLog
 
 /**

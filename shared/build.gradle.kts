@@ -66,12 +66,12 @@ kotlin {
 android {
     namespace = "${rootProject.group}.logging"
 
-    compileSdk = "${properties["android.build.compileSdk"]}".toInt()
+    compileSdk = "${properties["build.android.compileSdk"]}".toInt()
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 
     defaultConfig {
-        minSdk = "${properties["android.build.minimumSdk"]}".toInt()
-        targetSdk = "${properties["android.build.targetSdk"]}".toInt()
+        minSdk = "${properties["build.android.minimumSdk"]}".toInt()
+        targetSdk = "${properties["build.android.targetSdk"]}".toInt()
     }
 
     compileOptions {

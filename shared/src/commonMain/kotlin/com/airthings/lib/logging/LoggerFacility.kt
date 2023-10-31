@@ -79,8 +79,9 @@ interface LoggerFacility {
         /**
          * The default coroutine scope for logging operations.
          *
-         * The default (Dispatchers.Default + SupervisorJob()) uses a sane value to support most use cases.
-         * If your use case is different, pass your own scope when instantiating the `Logger` instance in question.
+         * The default (Dispatchers.Default + SupervisorJob()) uses a sane value to
+         * support most use cases. If your use case is different, pass your own scope when instantiating
+         * the `Logger` instance in question.
          */
         val defaultCoroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
@@ -91,14 +92,15 @@ interface LoggerFacility {
             get() = facilitiesMap.values
 
         /**
-         * Retrieves the map of [previously-registered][register] facilities in [Logger] which are [still enabled][isEnabled].
+         * Retrieves the map of [previously-registered][register] facilities in [Logger] which
+         * are [still enabled][isEnabled].
          */
         val enabledFacilities: Collection<LoggerFacility>
             get() = facilitiesMap.filter { it.value.isEnabled() }.values
 
         /**
-         * Retrieves a [previously-registered][register] [LoggerFacility] instance having the provided [name] on success,
-         * null otherwise.
+         * Retrieves a [previously-registered][register] [LoggerFacility] instance having
+         * the provided [name] on success, null otherwise.
          *
          * @param name The unique name of the [LoggerFacility] instance to get.
          */

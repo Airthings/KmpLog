@@ -35,8 +35,8 @@ import kotlinx.coroutines.launch
  * @param decoration An optional decoration for the lifecycle log messages.
  * @param coroutineScope The coroutine scope used to call the log functions on the facilities.
  */
-@Suppress( "MemberVisibilityCanBePrivate", "unused")
-class Logger constructor(
+@Suppress("MemberVisibilityCanBePrivate", "unused")
+class Logger(
     val source: String,
     val decoration: LogDecoration?,
     val coroutineScope: CoroutineScope
@@ -47,14 +47,21 @@ class Logger constructor(
      * @param source A source tag that identifies this logger's instance.
      * @param decoration An optional decoration for the lifecycle log messages.
      */
-    constructor(source: String, decoration: LogDecoration?) : this(source, decoration, LoggerFacility.defaultCoroutineScope)
+    constructor(source: String, decoration: LogDecoration?) : this(
+        source = source,
+        decoration = decoration,
+        coroutineScope = LoggerFacility.defaultCoroutineScope
+    )
 
     /**
      * Instantiates a new [Logger] without a [LogDecoration] and a [CoroutineScope].
      *
      * @param source A source tag that identifies this logger's instance.
      */
-    constructor(source: String) : this(source, null)
+    constructor(source: String) : this(
+        source = source,
+        decoration = null
+    )
 
     /**
      * Logs a message with a [LogLevel.INFO] level.

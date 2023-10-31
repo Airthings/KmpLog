@@ -20,8 +20,8 @@
 package com.airthings.lib.logging.facility
 
 import android.util.Log
-import com.airthings.lib.logging.PLATFORM_ANDROID
 import com.airthings.lib.logging.LogLevel
+import com.airthings.lib.logging.PLATFORM_ANDROID
 
 /**
  * Implements logging in Android via the [android.util.Log] object.

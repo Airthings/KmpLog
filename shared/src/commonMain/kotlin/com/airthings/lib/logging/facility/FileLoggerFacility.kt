@@ -45,7 +45,7 @@ internal const val LOG_FILE_SEPARATOR: Char = '-'
  * @param notifier An optional implementation of [PlatformFileInputOutputNotifier].
  */
 @Suppress("unused")
-class FileLoggerFacility constructor(
+class FileLoggerFacility(
     private val minimumLogLevel: LogLevel,
     private val baseFolder: String,
     private val scope: CoroutineScope,
@@ -147,11 +147,15 @@ class FileLoggerFacility constructor(
 
     override fun isEnabled(): Boolean = true
 
-    override fun log(source: String, level: LogLevel, message: LogMessage) {
+    override fun log(
+        source: String,
+        level: LogLevel,
+        message: LogMessage
+    ) {
         withLogLevel(level) { logFile ->
             io.append(
-                logFile,
-                "${datetimeStampPrefix()} ${PrinterLoggerFacility.format(level, message).trim()}$LF"
+                path = logFile,
+                contents = "${datetimeStampPrefix()} ${PrinterLoggerFacility.format(level, message).trim()}$LF"
             )
         }
     }
@@ -159,8 +163,8 @@ class FileLoggerFacility constructor(
     override fun log(source: String, level: LogLevel, error: Throwable) {
         withLogLevel(level) { logFile ->
             io.append(
-                logFile,
-                "${datetimeStampPrefix()} ${PrinterLoggerFacility.format(level, error).trim()}$LF"
+                path = logFile,
+                contents = "${datetimeStampPrefix()} ${PrinterLoggerFacility.format(level, error).trim()}$LF"
             )
         }
     }
@@ -177,7 +181,10 @@ class FileLoggerFacility constructor(
      */
     suspend fun files(date: LogDate): Collection<String> = io.of(baseFolder, date)
 
-    private fun withLogLevel(level: LogLevel, action: suspend (String) -> Unit) {
+    private fun withLogLevel(
+        level: LogLevel,
+        action: suspend (String) -> Unit
+    ) {
         if (level.value < minimumLogLevel.value) {
             return
         }
@@ -188,9 +195,9 @@ class FileLoggerFacility constructor(
 
             if (currentLogFileLocked != logFile) {
                 if (currentLogFileLocked != null) {
-                    io.close(currentLogFileLocked)
                     notifier?.onLogFileClosed(currentLogFileLocked)
                 }
+                io.ensure(logFile)
                 currentLogFile.set(logFile)
                 notifier?.onLogFileOpened(logFile)
             }
@@ -267,11 +274,11 @@ internal interface PlatformFileInputOutput : PlatformDirectoryListing {
     suspend fun append(path: String, contents: String)
 
     /**
-     * Flushes any output waiting to be written to a log file and closes it.
+     * Ensures that a log file exists at a specific location, creating it if necessary.
      *
      * @param path The location of the log file.
      */
-    suspend fun close(path: String)
+    suspend fun ensure(path: String)
 }
 
 /**
@@ -296,4 +303,4 @@ interface PlatformFileInputOutputNotifier {
 /**
  * Expect declaration for a [PlatformFileInputOutput].
  */
-internal expect class PlatformFileInputOutputImpl constructor() : PlatformFileInputOutput
+internal expect class PlatformFileInputOutputImpl() : PlatformFileInputOutput

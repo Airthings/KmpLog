@@ -19,8 +19,8 @@
 
 package com.airthings.lib.logging.facility
 
-import com.airthings.lib.logging.PLATFORM_ANDROID
 import com.airthings.lib.logging.LogDate
+import com.airthings.lib.logging.PLATFORM_ANDROID
 import com.airthings.lib.logging.ifAfter
 import java.io.File
 import java.io.FileOutputStream
@@ -42,24 +42,36 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         }
     }
 
-    override suspend fun close(path: String) {
-        // NO-OP.
+    override suspend fun ensure(path: String) {
+        synchronized(writeLock) {
+            File(path).createNewFile()
+        }
     }
 
-    override suspend fun of(path: String): Collection<String> = filesImpl(path, null)
+    override suspend fun of(path: String): Collection<String> = filesImpl(
+        path = path,
+        date = null
+    )
 
-    override suspend fun of(path: String, date: LogDate): Collection<String> = filesImpl(path, date)
+    override suspend fun of(path: String, date: LogDate): Collection<String> = filesImpl(
+        path = path,
+        date = date
+    )
 
     override fun toString(): String = PLATFORM_ANDROID
 
-    private fun filesImpl(path: String, date: LogDate?): Collection<String> = ArrayList<String>(INITIAL_ARRAY_SIZE).apply {
+    private fun filesImpl(
+        path: String,
+        date: LogDate?
+    ): Collection<String> = ArrayList<String>(INITIAL_ARRAY_SIZE).apply {
         val iterator = File(path).walk().iterator()
 
         while (iterator.hasNext()) {
             val file = iterator.next()
+            val canonicalPath = file.canonicalPath
 
-            if (!file.isDirectory && file.name.ifAfter(date)) {
-                add(file.canonicalPath)
+            if (!file.isDirectory && canonicalPath.isNotBlank() && file.name.ifAfter(date)) {
+                add(canonicalPath)
             }
         }
     }

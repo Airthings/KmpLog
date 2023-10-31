@@ -32,11 +32,19 @@ class PrinterLoggerFacility : LoggerFacility {
     override fun isEnabled(): Boolean = true
 
     override fun log(source: String, level: LogLevel, message: LogMessage) {
-        facility.print(source, level, format(level, message))
+        facility.print(
+            source = source,
+            level = level,
+            message = format(level, message)
+        )
     }
 
     override fun log(source: String, level: LogLevel, error: Throwable) {
-        facility.print(source, level, format(level, error))
+        facility.print(
+            source = source,
+            level = level,
+            message = format(level, error)
+        )
     }
 
     override fun toString(): String = "PrinterLoggerFacility($facility)"
@@ -48,7 +56,10 @@ class PrinterLoggerFacility : LoggerFacility {
          * @param level The level at which to log the error.
          * @param message The message's details.
          */
-        fun format(level: LogLevel, message: LogMessage): String = "${level.emoticon} $level: $message"
+        fun format(
+            level: LogLevel,
+            message: LogMessage
+        ): String = "${level.emoticon} $level: $message"
 
         /**
          * Returns the default formatted log error for [PrinterLoggerFacility].
@@ -56,7 +67,10 @@ class PrinterLoggerFacility : LoggerFacility {
          * @param level The level at which to log the error.
          * @param error The error's details.
          */
-        fun format(level: LogLevel, error: Throwable): String = "${level.emoticon} $level: ${error.stackTraceToString()}"
+        fun format(
+            level: LogLevel,
+            error: Throwable
+        ): String = "${level.emoticon} $level: ${error.stackTraceToString()}"
     }
 }
 
@@ -77,4 +91,4 @@ interface PlatformPrinterLoggerFacility {
 /**
  * Expect declaration for a [PlatformPrinterLoggerFacility].
  */
-expect class PlatformPrinterLoggerFacilityImpl constructor() : PlatformPrinterLoggerFacility
+expect class PlatformPrinterLoggerFacilityImpl() : PlatformPrinterLoggerFacility

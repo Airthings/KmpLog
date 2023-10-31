@@ -37,7 +37,7 @@ import com.airthings.lib.logging.LoggerFacility
  * @param minimumLogLevel Only log messages and errors that are equal or greater than this level.
  */
 @Suppress("MemberVisibilityCanBePrivate", "unused")
-class FirebaseLoggerFacility constructor(
+class FirebaseLoggerFacility(
     private val facility: PlatformFirebaseLoggerFacility,
     private val minimumLogLevel: LogLevel
 ) : LoggerFacility {
@@ -87,8 +87,9 @@ class FirebaseLoggerFacility constructor(
      * Adds one or more [logger properties][DefaultLoggerProperties] that will be appended to the logs.
      * If a logger property with the same key already exists, it'll be overridden.
      *
-     * Note: properties are logged globally and not only for a specific log message. So once a property is added,
-     * it'll be appended to each log message occurring afterwards until the property is [removed][removeProperties].
+     * Note: properties are logged globally and not only for a specific log message.
+     * So once a property is added, it'll be appended to each log message occurring afterwards
+     * until the property is [removed][removeProperties].
      *
      * @param map The default properties to add.
      */
@@ -114,7 +115,10 @@ class FirebaseLoggerFacility constructor(
         properties.clear()
     }
 
-    private fun withLogLevel(level: LogLevel, action: (DefaultLoggerProperties) -> Unit) {
+    private fun withLogLevel(
+        level: LogLevel,
+        action: (DefaultLoggerProperties) -> Unit
+    ) {
         if (level.value >= minimumLogLevel.value) {
             LinkedHashMap<String, Any?>(properties.size + 1).apply {
                 putAll(properties)

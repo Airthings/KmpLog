@@ -32,14 +32,14 @@ import com.airthings.lib.logging.LogMessage
  * @param args List of arguments associated with the message.
  */
 @Suppress("unused")
-class NetworkLogMessage constructor(
+class NetworkLogMessage(
     method: String,
     path: String,
     message: String,
     args: List<LogArgument>
 ) : LogMessage(
-    message,
-    listOf(
+    message = message,
+    args = listOf(
         LogArg("method", method.uppercase()),
         LogArg("path", path)
     ) + args
@@ -55,5 +55,10 @@ class NetworkLogMessage constructor(
         method: String,
         path: String,
         message: String
-    ) : this(method, path, message, emptyList())
+    ) : this(
+        method = method,
+        path = path,
+        message = message,
+        args = emptyList()
+    )
 }

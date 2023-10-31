@@ -26,7 +26,7 @@ package com.airthings.lib.logging
  * @param suffix An optional suffix that appears after the event.
  * @param uppercase Whether to make the log message in uppercase.
  */
-data class LogDecoration constructor(
+data class LogDecoration(
     val prefix: String? = "-- Lifecycle changed to: ",
     val suffix: String? = null,
     val uppercase: Boolean = true

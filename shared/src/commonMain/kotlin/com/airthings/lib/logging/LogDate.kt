@@ -32,7 +32,7 @@ import kotlinx.datetime.LocalDateTime
  * @param month The month part of the date, within the range of 1..12.
  * @param day The day part of the date, within the range of 1..31.
  */
-data class LogDate constructor(
+data class LogDate(
     val year: Int,
     val month: Int,
     val day: Int
@@ -42,6 +42,7 @@ data class LogDate constructor(
      *
      * @param date The local date time component.
      */
+    @Suppress("unused")
     constructor(date: LocalDateTime) : this(date.year, date.monthNumber, date.dayOfMonth)
 
     init {
@@ -49,7 +50,8 @@ data class LogDate constructor(
         require(day in 1..31) { "The value of `day` must be within the range 1..31" }
     }
 
-    override fun equals(other: Any?): Boolean = other is LogDate && other.year == year && other.month == month && other.day == day
+    override fun equals(other: Any?): Boolean =
+        other is LogDate && other.year == year && other.month == month && other.day == day
 
     override fun toString(): String = toString(LOG_FILE_SEPARATOR)
 

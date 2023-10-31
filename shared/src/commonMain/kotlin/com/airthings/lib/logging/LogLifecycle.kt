@@ -23,7 +23,7 @@ package com.airthings.lib.logging
  * A simplification of the commonly-used lifecycle events that both Android and iOS share.
  */
 @Suppress("unused")
-enum class LogLifecycle constructor(private val value: String) {
+enum class LogLifecycle(private val value: String) {
     /**
      * The lifecycle state for when the app is just created, mostly for the first time.
      */
@@ -62,21 +62,23 @@ enum class LogLifecycle constructor(private val value: String) {
          * @param event The lifecycle event to format.
          * @param decoration An optional decoration for the final formatting.
          */
-        fun format(event: LogLifecycle, decoration: LogDecoration? = null): String =
-            @Suppress("MagicNumber")
-            StringBuilder(128)
-                .apply {
-                    if (decoration != null && !decoration.prefix.isNullOrEmpty()) {
-                        append(decoration.prefix)
-                    }
-                    append("$event")
-                    if (decoration != null && !decoration.suffix.isNullOrEmpty()) {
-                        append(decoration.suffix)
-                    }
+        @Suppress("MagicNumber")
+        fun format(
+            event: LogLifecycle,
+            decoration: LogDecoration? = null
+        ): String = StringBuilder(128)
+            .apply {
+                if (decoration != null && !decoration.prefix.isNullOrEmpty()) {
+                    append(decoration.prefix)
                 }
-                .toString()
-                .let {
-                    if (decoration == null || decoration.uppercase) it.uppercase() else it
+                append("$event")
+                if (decoration != null && !decoration.suffix.isNullOrEmpty()) {
+                    append(decoration.suffix)
                 }
+            }
+            .toString()
+            .let {
+                if (decoration == null || decoration.uppercase) it.uppercase() else it
+            }
     }
 }

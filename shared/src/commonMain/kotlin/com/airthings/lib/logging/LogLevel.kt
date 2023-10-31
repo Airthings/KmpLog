@@ -27,7 +27,7 @@ package com.airthings.lib.logging
  * @param emoticon An human-friendly emoticon to identify the [LogLevel] in standard output.
  */
 @Suppress("MagicNumber")
-enum class LogLevel constructor(
+enum class LogLevel(
     @Suppress("MemberVisibilityCanBePrivate") val label: String,
     val value: Int,
     val emoticon: String

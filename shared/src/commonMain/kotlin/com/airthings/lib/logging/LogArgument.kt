@@ -82,64 +82,77 @@ interface LogArgument {
          *
          * @param map The map to process.
          */
-        fun formatMap(map: Map<*, *>): String =
-            StringBuilder(BUFFER_SIZE)
-                .apply {
-                    append("{")
-                    val iterator = map.iterator()
-                    while (iterator.hasNext()) {
-                        val entry = iterator.next()
-                        append("${entry.key}: ${formatValue(entry.value)}")
-                        if (iterator.hasNext()) {
-                            append(", ")
-                        }
+        fun formatMap(map: Map<*, *>): String = StringBuilder(BUFFER_SIZE)
+            .apply {
+                append("{")
+                val iterator = map.iterator()
+                while (iterator.hasNext()) {
+                    val entry = iterator.next()
+                    append("${entry.key}: ${formatValue(entry.value)}")
+                    if (iterator.hasNext()) {
+                        append(", ")
                     }
-                    append("}")
                 }
-                .toString()
+                append("}")
+            }
+            .toString()
 
         /**
          * Returns a textual representation of the provided [array].
          *
          * @param array The array to process.
          */
-        fun formatArray(array: Array<*>): String = formatIterator("Array", array.iterator())
+        fun formatArray(array: Array<*>): String = formatIterator(
+            type = "Array",
+            iterator = array.iterator()
+        )
 
         /**
          * Returns a textual representation of the provided [list].
          *
          * @param list The list to process.
          */
-        fun formatList(list: List<*>): String = formatIterator("List", list.iterator())
+        fun formatList(list: List<*>): String = formatIterator(
+            type = "List",
+            iterator = list.iterator()
+        )
 
         /**
          * Returns a textual representation of the provided [collection].
          *
          * @param collection The Collection to process.
          */
-        fun formatCollection(collection: Collection<*>): String = formatIterator("Collection", collection.iterator())
+        fun formatCollection(collection: Collection<*>): String = formatIterator(
+            type = "Collection",
+            iterator = collection.iterator()
+        )
 
         /**
          * Returns a textual representation of the provided [iterable].
          *
          * @param iterable The Iterable to process.
          */
-        fun formatIterable(iterable: Iterable<*>): String = formatIterator("Iterable", iterable.iterator())
+        fun formatIterable(iterable: Iterable<*>): String = formatIterator(
+            type = "Iterable",
+            iterator = iterable.iterator()
+        )
 
-        private fun formatIterator(type: String, iterator: Iterator<*>): String =
-            StringBuilder(BUFFER_SIZE)
-                .apply {
-                    append("$type(")
-                    while (iterator.hasNext()) {
-                        val value = iterator.next()
-                        append(formatValue(value))
-                        if (iterator.hasNext()) {
-                            append(", ")
-                        }
+        private fun formatIterator(
+            type: String,
+            iterator: Iterator<*>
+        ): String = StringBuilder(BUFFER_SIZE)
+            .apply {
+                append("$type(")
+                while (iterator.hasNext()) {
+                    val value = iterator.next()
+                    append(formatValue(value))
+                    if (iterator.hasNext()) {
+                        append(", ")
                     }
-                    append(")")
                 }
-                .toString()
+                append(")")
+            }
+            .toString()
     }
 }
 

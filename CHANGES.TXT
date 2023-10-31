@@ -1,0 +1,8 @@
+October 31, 2023
+    Reformat the code to fit into 120 characters per line.
+
+October 25, 2023
+    Fix behaviour while scanning files in a directory.
+
+August 11, 2023
+    Initial release.

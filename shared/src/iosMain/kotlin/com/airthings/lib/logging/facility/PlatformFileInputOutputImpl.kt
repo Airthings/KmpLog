@@ -19,8 +19,8 @@
 
 package com.airthings.lib.logging.facility
 
-import com.airthings.lib.logging.PLATFORM_IOS
 import com.airthings.lib.logging.LogDate
+import com.airthings.lib.logging.PLATFORM_IOS
 import com.airthings.lib.logging.ifAfter
 import kotlinx.cinterop.BooleanVar
 import kotlinx.cinterop.CPointer
@@ -45,16 +45,24 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
     override suspend fun isDirectory(path: String): Boolean = memScoped {
         val cValue = alloc<BooleanVar>()
         cValue.value = true
-        NSFileManager.defaultManager.fileExistsAtPath(path, cValue.ptr)
+        NSFileManager.defaultManager.fileExistsAtPath(
+            path = path,
+            isDirectory = cValue.ptr
+        )
     }
 
     override suspend fun mkdirs(path: String): Boolean = nsErrorWrapper(false) {
-        NSFileManager.defaultManager.createDirectoryAtPath(path, true, null, it)
+        NSFileManager.defaultManager.createDirectoryAtPath(
+            path = path,
+            withIntermediateDirectories = true,
+            attributes = null,
+            error = it
+        )
     }
 
     override suspend fun append(path: String, contents: String) {
         nsErrorWrapper(Unit) {
-            val file = fopen(path, "a")
+            val file = fopen(__filename = path, __mode = "a")
                 ?: throw IllegalArgumentException("Cannot open log file for appending: $path")
 
             try {
@@ -67,17 +75,40 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         }
     }
 
-    override suspend fun close(path: String) {
-        // NO-OP.
+    override suspend fun ensure(path: String) {
+        val exists = memScoped {
+            val cValue = alloc<BooleanVar>()
+            cValue.value = false
+            NSFileManager.defaultManager.fileExistsAtPath(
+                path = path,
+                isDirectory = cValue.ptr
+            )
+        }
+        if (!exists) {
+            nsErrorWrapper(Unit) {
+                val file = fopen(path, "w")
+                    ?: throw IllegalArgumentException("Cannot open log file for writing: $path")
+                fclose(file)
+            }
+        }
     }
 
-    override suspend fun of(path: String): Collection<String> = filesImpl(path, null)
+    override suspend fun of(path: String): Collection<String> = filesImpl(
+        path = path,
+        date = null
+    )
 
-    override suspend fun of(path: String, date: LogDate): Collection<String> = filesImpl(path, date)
+    override suspend fun of(path: String, date: LogDate): Collection<String> = filesImpl(
+        path = path,
+        date = date
+    )
 
     override fun toString(): String = PLATFORM_IOS
 
-    private fun filesImpl(path: String, date: LogDate?): Collection<String> = ArrayList<String>(INITIAL_ARRAY_SIZE).apply {
+    private fun filesImpl(
+        path: String,
+        date: LogDate?
+    ): Collection<String> = ArrayList<String>(INITIAL_ARRAY_SIZE).apply {
         val fm = NSFileManager.defaultManager
         val enumerator = fm.enumeratorAtPath(path)
 
@@ -87,11 +118,16 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
             do {
                 val filename = enumerator.nextObject()
 
-                if (filename is String && filename.ifAfter(date)) {
-                    NSURL(string = path)
-                        .URLByAppendingPathComponent(filename)
-                        ?.absoluteString
-                        ?.apply(::add)
+                if (filename is String && filename.isNotBlank() && filename.ifAfter(date)) {
+                    try {
+                        NSURL(string = path)
+                            .URLByAppendingPathComponent(filename)
+                            ?.absoluteString
+                            ?.apply(::add)
+                    } catch (ignored: Throwable) {
+                        // This file caused some kind of error; we'll ignore it, and let
+                        // the loop process the next entry.
+                    }
                 }
             } while (filename != null)
         }
@@ -101,9 +137,13 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
 /**
  * Allows running a [block] that requires a [NSError] for storing any possible errors.
  *
- * If after running [block] there is an error, then [fallback] is returned. Otherwise, the actual result of [block] is returned.
+ * If after running [block] there is an error, then [fallback] is returned.
+ * Otherwise, the actual result of [block] is returned.
  */
-private fun <T> nsErrorWrapper(fallback: T, block: (errorPointer: CPointer<ObjCObjectVar<NSError?>>) -> T): T {
+private fun <T> nsErrorWrapper(
+    fallback: T,
+    block: (errorPointer: CPointer<ObjCObjectVar<NSError?>>) -> T
+): T {
     memScoped {
         val errorPointer: CPointer<ObjCObjectVar<NSError?>> = alloc<ObjCObjectVar<NSError?>>().ptr
         val result: T = block(errorPointer)

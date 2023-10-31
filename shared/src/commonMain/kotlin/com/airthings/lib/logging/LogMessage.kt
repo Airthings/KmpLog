@@ -36,13 +36,19 @@ import com.airthings.lib.logging.message.NetworkLogMessage
  * @see [NetworkLogMessage] shows how to concatenate the arguments from derivative implementations.
  */
 @Suppress("MemberVisibilityCanBePrivate")
-open class LogMessage constructor(val message: String, val args: List<LogArgument>) {
+open class LogMessage(
+    val message: String,
+    val args: List<LogArgument>
+) {
     /**
      * A [LogMessage] with no arguments.
      *
      * @param message The message to log.
      */
-    constructor(message: String) : this(message, emptyList())
+    constructor(message: String) : this(
+        message = message,
+        args = emptyList()
+    )
 
     /**
      * A [LogMessage] suitable for general use.
@@ -54,7 +60,13 @@ open class LogMessage constructor(val message: String, val args: List<LogArgumen
      *
      * @see LogMessage(message: String, vararg arguments: Pair<String, Any?>)
      */
-    constructor(message: String, args: Map<String, Any?>) : this(message, args.asLogArgs())
+    constructor(
+        message: String,
+        args: Map<String, Any?>
+    ) : this(
+        message = message,
+        args = args.asLogArgs()
+    )
 
     /**
      * A [LogMessage] suitable for general use.
@@ -62,7 +74,13 @@ open class LogMessage constructor(val message: String, val args: List<LogArgumen
      * @param message The message to log.
      * @param arguments The arguments in a vararg.
      */
-    constructor(message: String, vararg arguments: Pair<String, Any?>) : this(message, arguments.asLogArgs())
+    constructor(
+        message: String,
+        vararg arguments: Pair<String, Any?>
+    ) : this(
+        message = message,
+        args = arguments.asLogArgs()
+    )
 
     override fun toString(): String = format(message, args)
 
@@ -73,18 +91,23 @@ open class LogMessage constructor(val message: String, val args: List<LogArgumen
          * @param message The message to log.
          * @param args The list of [LogArgument]s to log.
          */
-        fun format(message: String, args: List<LogArgument>): String =
-            ArrayList<Any>(args.size + 1)
-                .let {
-                    it.add(message.trim())
-                    args.forEach { arg ->
-                        it.add(" $arg")
-                    }
-                    it.joinToString(separator = "")
+        fun format(
+            message: String,
+            args: List<LogArgument>
+        ): String = ArrayList<Any>(args.size + 1)
+            .let {
+                it.add(message.trim())
+                args.forEach { arg ->
+                    it.add(" $arg")
                 }
-                .trim()
+                it.joinToString(separator = "")
+            }
+            .trim()
 
         @Suppress("SpreadOperator")
-        internal fun from(message: String, arguments: Array<out Pair<String, Any?>>): LogMessage = LogMessage(message, *arguments)
+        internal fun from(
+            message: String,
+            arguments: Array<out Pair<String, Any?>>
+        ): LogMessage = LogMessage(message, *arguments)
     }
 }
