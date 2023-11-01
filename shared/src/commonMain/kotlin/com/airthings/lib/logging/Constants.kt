@@ -25,8 +25,14 @@ internal const val PLATFORM_IOS: String = "iOS"
 
 internal const val INITIAL_ARRAY_SIZE: Int = 50
 
+internal const val INITIAL_BLOCK_SIZE: Int = 256
+
 internal const val LOG_FILE_EXTENSION: String = ".log"
 
 internal const val JSON_LOG_FILE_EXTENSION: String = ".json"
 
 internal const val LOG_FILE_SEPARATOR: Char = '-'
+
+internal const val COMMA: Char = ','
+
+internal const val LF: Char = '\n'

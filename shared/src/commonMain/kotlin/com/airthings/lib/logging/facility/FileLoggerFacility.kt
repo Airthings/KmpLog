@@ -21,6 +21,7 @@ package com.airthings.lib.logging.facility
 
 import co.touchlab.stately.concurrency.AtomicReference
 import co.touchlab.stately.concurrency.value
+import com.airthings.lib.logging.LF
 import com.airthings.lib.logging.LogDate
 import com.airthings.lib.logging.LogLevel
 import com.airthings.lib.logging.LogMessage
@@ -41,14 +42,14 @@ import kotlinx.coroutines.launch
  *
  * @param minimumLogLevel Only log messages and errors that are equal or greater than this level.
  * @param baseFolder The base folder where log files will be written, excluding the trailing `/`.
- * @param scope A coroutine scope to run blocking i/o on.
+ * @param coroutineScope A coroutine scope to run blocking i/o on.
  * @param notifier An optional implementation of [PlatformFileInputOutputNotifier].
  */
 @Suppress("unused")
 class FileLoggerFacility(
     private val minimumLogLevel: LogLevel,
     private val baseFolder: String,
-    private val scope: CoroutineScope,
+    private val coroutineScope: CoroutineScope,
     private val notifier: PlatformFileInputOutputNotifier?,
 ) : LoggerFacility {
     /**
@@ -68,7 +69,7 @@ class FileLoggerFacility(
     ) : this(
         minimumLogLevel = LogLevel.WARNING,
         baseFolder = baseFolder,
-        scope = scope,
+        coroutineScope = scope,
         notifier = notifier,
     )
 
@@ -86,7 +87,7 @@ class FileLoggerFacility(
     ) : this(
         minimumLogLevel = minimumLogLevel,
         baseFolder = baseFolder,
-        scope = scope,
+        coroutineScope = scope,
         notifier = null,
     )
 
@@ -104,7 +105,7 @@ class FileLoggerFacility(
     ) : this(
         minimumLogLevel = minimumLogLevel,
         baseFolder = baseFolder,
-        scope = loggerCoroutineScope(),
+        coroutineScope = loggerCoroutineScope(),
         notifier = notifier,
     )
 
@@ -122,7 +123,7 @@ class FileLoggerFacility(
     ) : this(
         minimumLogLevel = minimumLogLevel,
         baseFolder = baseFolder,
-        scope = loggerCoroutineScope(),
+        coroutineScope = loggerCoroutineScope(),
         notifier = null,
     )
 
@@ -130,7 +131,7 @@ class FileLoggerFacility(
     private val currentLogFile = AtomicReference<String?>(null)
 
     init {
-        scope.launch {
+        coroutineScope.launch {
             if (!io.isDirectory(baseFolder) && !io.mkdirs(baseFolder)) {
                 throw IllegalArgumentException("Base log folder is invalid: $baseFolder")
             }
@@ -160,7 +161,11 @@ class FileLoggerFacility(
         }
     }
 
-    override fun log(source: String, level: LogLevel, error: Throwable) {
+    override fun log(
+        source: String,
+        level: LogLevel,
+        error: Throwable,
+    ) {
         withLogLevel(level) { logFile ->
             io.append(
                 path = logFile,
@@ -189,7 +194,7 @@ class FileLoggerFacility(
             return
         }
 
-        scope.launch {
+        coroutineScope.launch {
             val logFile = "$baseFolder${io.pathSeparator}${dateStamp(null)}.log"
             val currentLogFileLocked = currentLogFile.value
 
@@ -207,14 +212,9 @@ class FileLoggerFacility(
     }
 
     companion object {
-        private const val LF: Char = '\n'
+        private const val LOG_TAG: String = "FileLoggerFacility"
 
-        private fun loggerCoroutineScope(): CoroutineScope =
+        internal fun loggerCoroutineScope(): CoroutineScope =
             CoroutineScope(Dispatchers.Main + SupervisorJob())
-
-        /**
-         * The log source tag for this class.
-         */
-        const val LOG_TAG: String = "FileLoggerFacility"
     }
 }
