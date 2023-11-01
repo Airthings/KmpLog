@@ -20,11 +20,21 @@
 group = "com.airthings.lib"
 version = "0.1.1"
 
+repositories {
+    google()
+    gradlePluginPortal()
+    mavenCentral()
+    maven(url = "https://jitpack.io")
+    maven(url = "https://plugins.gradle.org/m2/")
+}
+
 buildscript {
     repositories {
         google()
         gradlePluginPortal()
         mavenCentral()
+        maven(url = "https://jitpack.io")
+        maven(url = "https://plugins.gradle.org/m2/")
     }
 
     dependencies {
@@ -43,6 +53,7 @@ plugins {
 }
 
 subprojects {
+    apply(plugin = "maven-publish")
     apply(plugin = "io.gitlab.arturbosch.detekt")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
@@ -75,6 +86,7 @@ subprojects {
         outputToConsole.set(true)
         filter {
             exclude("**/shared/build/**")
+            exclude("**/gen/**")
         }
     }
 }
