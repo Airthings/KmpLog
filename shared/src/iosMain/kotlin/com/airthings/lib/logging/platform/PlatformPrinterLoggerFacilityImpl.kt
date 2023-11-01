@@ -17,10 +17,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.airthings.lib.logging.facility
+package com.airthings.lib.logging.platform
 
 import com.airthings.lib.logging.LogLevel
 import com.airthings.lib.logging.PLATFORM_IOS
+import com.airthings.lib.logging.facility.PlatformPrinterLoggerFacility
 import platform.Foundation.NSLog
 
 /**

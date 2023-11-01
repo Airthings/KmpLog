@@ -27,14 +27,14 @@ import com.airthings.lib.logging.LogMessage
 import com.airthings.lib.logging.LoggerFacility
 import com.airthings.lib.logging.dateStamp
 import com.airthings.lib.logging.datetimeStampPrefix
+import com.airthings.lib.logging.platform.PlatformDirectoryListing
+import com.airthings.lib.logging.platform.PlatformFileInputOutput
+import com.airthings.lib.logging.platform.PlatformFileInputOutputImpl
+import com.airthings.lib.logging.platform.PlatformFileInputOutputNotifier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-
-internal const val INITIAL_ARRAY_SIZE: Int = 50
-internal const val LOG_FILE_EXTENSION: String = ".log"
-internal const val LOG_FILE_SEPARATOR: Char = '-'
 
 /**
  * A [LoggerFacility] that persists log messages to the file system.
@@ -218,89 +218,3 @@ class FileLoggerFacility(
         const val LOG_TAG: String = "FileLoggerFacility"
     }
 }
-
-/**
- * Defines a contract to retrieve the listing of files residing inside a directory.
- */
-interface PlatformDirectoryListing {
-    /**
-     * Scans a [directory][path] and returns the list of log files residing in it.
-     *
-     * @param path The location of the directory to scan.
-     */
-    suspend fun of(path: String): Collection<String>
-
-    /**
-     * Scans a [directory][path] and returns the list of log files residing in it that were created after a certain date.
-     *
-     * @param path The location of the directory to scan.
-     * @param date The date from which log files should be considered.
-     */
-    suspend fun of(path: String, date: LogDate): Collection<String>
-}
-
-/**
- * Defines a contract to perform common input/output on files.
- *
- * The implementation of this interface is platform-specific and isn't in the shared module.
- */
-internal interface PlatformFileInputOutput : PlatformDirectoryListing {
-    /**
-     * The character used to separate components of a path (`/`, or `\`, etc.)
-     */
-    val pathSeparator: Char
-
-    /**
-     * Returns true if the provided path points to a directory, false otherwise.
-     *
-     * @param path The location of the directory.
-     */
-    suspend fun isDirectory(path: String): Boolean
-
-    /**
-     * Creates the provided [directory path][path], including any intermediary ones, and returns true on success,
-     * false otherwise.
-     *
-     * @param path The location of the directory.
-     */
-    suspend fun mkdirs(path: String): Boolean
-
-    /**
-     * Appends arbitrary bytes to a log file.
-     *
-     * @param path The location of the log file.
-     * @param contents The contents to append to the file.
-     */
-    suspend fun append(path: String, contents: String)
-
-    /**
-     * Ensures that a log file exists at a specific location, creating it if necessary.
-     *
-     * @param path The location of the log file.
-     */
-    suspend fun ensure(path: String)
-}
-
-/**
- * Defines a contract that notifies about opening and closing log files.
- */
-interface PlatformFileInputOutputNotifier {
-    /**
-     * Invoked when a new log file has been created.
-     *
-     * @param path The location of the log file.
-     */
-    fun onLogFileOpened(path: String)
-
-    /**
-     * Invoked when a log file has been closed.
-     *
-     * @param path The location of the log file.
-     */
-    fun onLogFileClosed(path: String)
-}
-
-/**
- * Expect declaration for a [PlatformFileInputOutput].
- */
-internal expect class PlatformFileInputOutputImpl() : PlatformFileInputOutput

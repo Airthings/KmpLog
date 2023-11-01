@@ -17,16 +17,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.airthings.lib.logging
+package com.airthings.lib.logging.platform
 
-internal const val PLATFORM_ANDROID: String = "Android"
+import com.airthings.lib.logging.facility.PlatformPrinterLoggerFacility
 
-internal const val PLATFORM_IOS: String = "iOS"
-
-internal const val INITIAL_ARRAY_SIZE: Int = 50
-
-internal const val LOG_FILE_EXTENSION: String = ".log"
-
-internal const val JSON_LOG_FILE_EXTENSION: String = ".json"
-
-internal const val LOG_FILE_SEPARATOR: Char = '-'
+/**
+ * Expect declaration for a [PlatformPrinterLoggerFacility].
+ */
+expect class PlatformPrinterLoggerFacilityImpl() : PlatformPrinterLoggerFacility

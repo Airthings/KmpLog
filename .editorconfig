@@ -12,6 +12,13 @@ indent_style = space
 # Keep it the same as value of "formatting.ImportOrdering.layout" in detekt.yml.
 ij_kotlin_imports_layout = *
 
+# Kotlin-specific.
+[{*.kt,*.kts}]
+ktlint_code_style = intellij_idea
+ktlint_standard_filename = disabled
+ij_kotlin_allow_trailing_comma_on_call_site = true
+ij_kotlin_allow_trailing_comma = true
+
 [{*.yaml,*.yml}]
 indent_size = 2
 

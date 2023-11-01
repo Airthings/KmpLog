@@ -17,8 +17,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.airthings.lib.logging.facility
+package com.airthings.lib.logging.platform
 
+import com.airthings.lib.logging.INITIAL_ARRAY_SIZE
 import com.airthings.lib.logging.LogDate
 import com.airthings.lib.logging.PLATFORM_IOS
 import com.airthings.lib.logging.ifAfter
@@ -32,12 +33,15 @@ import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 import platform.Foundation.NSError
 import platform.Foundation.NSFileManager
+import platform.Foundation.NSFileSize
 import platform.Foundation.NSURL
 import platform.Foundation.URLByAppendingPathComponent
 import platform.posix.EOF
+import platform.posix.SEEK_SET
 import platform.posix.fclose
 import platform.posix.fopen
 import platform.posix.fputs
+import platform.posix.fseek
 
 internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
     override val pathSeparator: Char = '/'
@@ -60,14 +64,41 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         )
     }
 
+    override suspend fun write(path: String, position: Long, contents: String) {
+        nsErrorWrapper(Unit) {
+            val file = fopen(__filename = path, __mode = "a")
+                ?: throw IllegalArgumentException("Cannot open file for writing: $path")
+
+            val size = NSFileManager.defaultManager
+                .attributesOfFileSystemForPath(path, it)
+                ?.get(NSFileSize)
+                ?.toString()
+                ?.toLongOrNull()
+                ?: throw IllegalArgumentException("Cannot get size of file: $path")
+
+            val relativePosition = position.relativeToSize(size)
+
+            try {
+                if (fseek(file, relativePosition, SEEK_SET) != 0) {
+                    throw Exception("Unable to set the write position to $position in file: $path")
+                }
+                if (fputs(contents, file) == EOF) {
+                    throw Exception("Unable to write contents to file: $path")
+                }
+            } finally {
+                fclose(file)
+            }
+        }
+    }
+
     override suspend fun append(path: String, contents: String) {
         nsErrorWrapper(Unit) {
             val file = fopen(__filename = path, __mode = "a")
-                ?: throw IllegalArgumentException("Cannot open log file for appending: $path")
+                ?: throw IllegalArgumentException("Cannot open file for appending: $path")
 
             try {
                 if (fputs(contents, file) == EOF) {
-                    throw Exception("Unable to write contents to log file: $path")
+                    throw Exception("Unable to write contents to file: $path")
                 }
             } finally {
                 fclose(file)
@@ -87,7 +118,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         if (!exists) {
             nsErrorWrapper(Unit) {
                 val file = fopen(path, "w")
-                    ?: throw IllegalArgumentException("Cannot open log file for writing: $path")
+                    ?: throw IllegalArgumentException("Cannot open file for writing: $path")
                 fclose(file)
             }
         }

@@ -21,8 +21,6 @@
 
 package com.airthings.lib.logging
 
-import com.airthings.lib.logging.facility.LOG_FILE_EXTENSION
-import com.airthings.lib.logging.facility.LOG_FILE_SEPARATOR
 import kotlinx.datetime.LocalDateTime
 
 /**

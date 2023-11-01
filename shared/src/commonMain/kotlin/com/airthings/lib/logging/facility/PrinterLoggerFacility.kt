@@ -22,6 +22,7 @@ package com.airthings.lib.logging.facility
 import com.airthings.lib.logging.LogLevel
 import com.airthings.lib.logging.LogMessage
 import com.airthings.lib.logging.LoggerFacility
+import com.airthings.lib.logging.platform.PlatformPrinterLoggerFacilityImpl
 
 /**
  * A [LoggerFacility] that prints log messages to standard output using a platform-specific method.
@@ -93,8 +94,3 @@ interface PlatformPrinterLoggerFacility {
      */
     fun print(source: String, level: LogLevel, message: String)
 }
-
-/**
- * Expect declaration for a [PlatformPrinterLoggerFacility].
- */
-expect class PlatformPrinterLoggerFacilityImpl() : PlatformPrinterLoggerFacility
