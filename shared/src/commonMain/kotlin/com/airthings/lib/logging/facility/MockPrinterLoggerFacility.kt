@@ -30,11 +30,28 @@ import com.airthings.lib.logging.LoggerFacility
 open class MockPrinterLoggerFacility : LoggerFacility {
     override fun isEnabled(): Boolean = true
 
-    override fun log(source: String, level: LogLevel, message: LogMessage) {
+    override fun log(
+        source: String,
+        level: LogLevel,
+        message: LogMessage,
+    ) {
         // NO-OP.
     }
 
-    override fun log(source: String, level: LogLevel, error: Throwable) {
+    override fun log(
+        source: String,
+        level: LogLevel,
+        error: Throwable,
+    ) {
+        // NO-OP.
+    }
+
+    override fun log(
+        source: String,
+        level: LogLevel,
+        message: LogMessage,
+        error: Throwable,
+    ) {
         // NO-OP.
     }
 

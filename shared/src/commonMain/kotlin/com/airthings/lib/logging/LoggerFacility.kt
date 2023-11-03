@@ -46,7 +46,11 @@ interface LoggerFacility {
      * @param level The level at which to log the message.
      * @param message The message's details.
      */
-    fun log(source: String, level: LogLevel, message: LogMessage)
+    fun log(
+        source: String,
+        level: LogLevel,
+        message: LogMessage,
+    )
 
     /**
      * Logs an error with this facility.
@@ -55,7 +59,26 @@ interface LoggerFacility {
      * @param level The level at which to log the error.
      * @param error The error's details.
      */
-    fun log(source: String, level: LogLevel, error: Throwable)
+    fun log(
+        source: String,
+        level: LogLevel,
+        error: Throwable,
+    )
+
+    /**
+     * Logs a message and an error with this facility.
+     *
+     * @param source A source tag that identifies the message.
+     * @param level The level at which to log the message.
+     * @param message The message's details.
+     * @param error The error's details.
+     */
+    fun log(
+        source: String,
+        level: LogLevel,
+        message: LogMessage,
+        error: Throwable,
+    )
 
     /**
      * Contains controller functions to define logging facilities.

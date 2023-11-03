@@ -787,10 +787,6 @@ class Logger(
                 source = source,
                 level = level,
                 message = message,
-            )
-            log(
-                source = source,
-                level = level,
                 error = error,
             )
         }
@@ -827,10 +823,6 @@ class Logger(
                 source = source,
                 level = level,
                 message = message,
-            )
-            log(
-                source = source,
-                level = level,
                 error = error,
             )
         }

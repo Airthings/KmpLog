@@ -193,6 +193,29 @@ class JsonLoggerFacility(
         }
     }
 
+    override fun log(
+        source: String,
+        level: LogLevel,
+        message: LogMessage,
+        error: Throwable,
+    ) {
+        withLogLevel(level) { logFile, prefix ->
+            val jsonOutput = jsonOutput(
+                source = source,
+                time = utc(),
+                level = level,
+                message = message.message,
+                error = error,
+                args = message.args,
+            )
+            io.write(
+                path = logFile,
+                position = -1L,
+                contents = "$prefix$jsonOutput$ARRAY_CLOSE",
+            )
+        }
+    }
+
     /**
      * Scans the [baseFolder] and returns the list of log files residing in it.
      */
