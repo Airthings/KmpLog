@@ -21,7 +21,6 @@ package com.airthings.lib.logging.facility
 
 import co.touchlab.stately.concurrency.AtomicReference
 import co.touchlab.stately.concurrency.value
-import com.airthings.lib.logging.COMMA
 import com.airthings.lib.logging.INITIAL_BLOCK_SIZE
 import com.airthings.lib.logging.LogArgument
 import com.airthings.lib.logging.LogDate
@@ -245,6 +244,7 @@ class JsonLoggerFacility(
         private const val MESSAGE_KEY: String = "message"
         private const val ERROR_KEY: String = "error"
         private const val ARGS_KEY: String = "args"
+        private const val COMMA: Char = ','
         private const val ARRAY_OPEN: Char = '['
         private const val ARRAY_CLOSE: Char = ']'
         private const val CURLY_OPEN: Char = '{'
