@@ -35,6 +35,8 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
 
     override suspend fun mkdirs(path: String): Boolean = File(path).mkdirs()
 
+    override suspend fun size(path: String): Long = File(path).length()
+
     override suspend fun write(path: String, position: Long, contents: String) {
         synchronized(writeLock) {
             FileOutputStream(File(path), true).use {
