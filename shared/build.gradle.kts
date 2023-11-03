@@ -27,7 +27,6 @@ plugins {
 }
 
 kotlin {
-    explicitApi()
     jvm()
     jvmToolchain(jvmTargetVersion.ordinal)
     androidTarget()
