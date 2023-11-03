@@ -51,7 +51,22 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                implementation(
+                    "co.touchlab:stately-concurrency:" +
+                        "${properties["version.stately.concurrency"]}",
+                )
+                implementation(
+                    "org.jetbrains.kotlinx:kotlinx-coroutines-core:" +
+                        "${properties["version.kotlin.coroutines"]}",
+                )
+                implementation(
+                    "org.jetbrains.kotlinx:kotlinx-datetime:" +
+                        "${properties["version.kotlin.datetime"]}",
+                )
+            }
+        }
         val jvmMain by getting
         val iosX64Main by getting
         val iosArm64Main by getting
