@@ -46,6 +46,9 @@ import platform.posix.fputs
 import platform.posix.fseek
 
 @OptIn(ExperimentalForeignApi::class)
+private typealias NSERROR_CPOINTER = CPointer<ObjCObjectVar<NSError?>>
+
+@OptIn(ExperimentalForeignApi::class)
 internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
     override val pathSeparator: Char = '/'
 
@@ -58,12 +61,16 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         )
     }
 
+    override suspend fun size(path: String): Long = nsErrorWrapper(0L) {
+        sizeImpl(path)
+    }
+
     override suspend fun mkdirs(path: String): Boolean = nsErrorWrapper(false) {
         NSFileManager.defaultManager.createDirectoryAtPath(
             path = path,
             withIntermediateDirectories = true,
             attributes = null,
-            error = it,
+            error = this,
         )
     }
 
@@ -72,12 +79,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
             val file = fopen(__filename = path, __mode = "a")
                 ?: throw IllegalArgumentException("Cannot open file for appending: $path")
 
-            val size = NSFileManager.defaultManager
-                .attributesOfFileSystemForPath(path, it)
-                ?.get(NSFileSize)
-                ?.toString()
-                ?.toLongOrNull()
-                ?: throw IllegalArgumentException("Cannot get size of file: $path")
+            val size = sizeImpl(path)
 
             val relativePosition = position.relativeToSize(size)
 
@@ -139,6 +141,14 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
 
     override fun toString(): String = PLATFORM_IOS
 
+    private fun NSERROR_CPOINTER.sizeImpl(path: String): Long = NSFileManager.defaultManager
+        .attributesOfFileSystemForPath(path, this)
+        ?.get(NSFileSize)
+        ?.toString()
+        ?.toLongOrNull()
+        ?.coerceAtLeast(0L)
+        ?: throw IllegalArgumentException("Cannot get size of file: $path")
+
     private fun filesImpl(
         path: String,
         date: LogDate?,
@@ -177,10 +187,10 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 private fun <T> nsErrorWrapper(
     fallback: T,
-    block: (errorPointer: CPointer<ObjCObjectVar<NSError?>>) -> T,
+    block: NSERROR_CPOINTER.() -> T,
 ): T {
     memScoped {
-        val errorPointer: CPointer<ObjCObjectVar<NSError?>> = alloc<ObjCObjectVar<NSError?>>().ptr
+        val errorPointer: NSERROR_CPOINTER = alloc<ObjCObjectVar<NSError?>>().ptr
         val result: T = block(errorPointer)
         val error: NSError? = errorPointer.pointed.value
 

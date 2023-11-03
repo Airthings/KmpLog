@@ -46,6 +46,13 @@ internal interface PlatformFileInputOutput : PlatformDirectoryListing {
     suspend fun mkdirs(path: String): Boolean
 
     /**
+     * Returns the size, in bytes, of a file.
+     *
+     * @param path The location of the file.
+     */
+    suspend fun size(path: String): Long
+
+    /**
      * Writes arbitrary bytes to a file starting at a specific position.
      *
      * For ease of use, [position] accepts negative values too. The difference between positive and negative
