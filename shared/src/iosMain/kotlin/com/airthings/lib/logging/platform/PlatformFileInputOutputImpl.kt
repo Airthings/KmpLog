@@ -70,7 +70,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
     override suspend fun write(path: String, position: Long, contents: String) {
         nsErrorWrapper(Unit) {
             val file = fopen(__filename = path, __mode = "a")
-                ?: throw IllegalArgumentException("Cannot open file for writing: $path")
+                ?: throw IllegalArgumentException("Cannot open file for appending: $path")
 
             val size = NSFileManager.defaultManager
                 .attributesOfFileSystemForPath(path, it)
