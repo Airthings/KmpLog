@@ -29,7 +29,6 @@ import com.airthings.lib.logging.LogMessage
 import com.airthings.lib.logging.LoggerFacility
 import com.airthings.lib.logging.dateStamp
 import com.airthings.lib.logging.datetimeStamp
-import com.airthings.lib.logging.datetimeStampPrefix
 import com.airthings.lib.logging.platform.PlatformDirectoryListing
 import com.airthings.lib.logging.platform.PlatformFileInputOutput
 import com.airthings.lib.logging.platform.PlatformFileInputOutputImpl
@@ -155,7 +154,7 @@ class JsonLoggerFacility(
         level: LogLevel,
         message: LogMessage,
     ) {
-        withLogLevel(level) { logFile ->
+        withLogLevel(level) { logFile, prefix ->
             val jsonOutput = jsonOutput(
                 source = source,
                 time = utc(),
@@ -167,7 +166,7 @@ class JsonLoggerFacility(
             io.write(
                 path = logFile,
                 position = -1L,
-                contents = "$jsonOutput$ARRAY_CLOSE",
+                contents = "$prefix$jsonOutput$ARRAY_CLOSE",
             )
         }
     }
@@ -177,7 +176,7 @@ class JsonLoggerFacility(
         level: LogLevel,
         error: Throwable,
     ) {
-        withLogLevel(level) { logFile ->
+        withLogLevel(level) { logFile, prefix ->
             val jsonOutput = jsonOutput(
                 source = source,
                 time = utc(),
@@ -189,12 +188,7 @@ class JsonLoggerFacility(
             io.write(
                 path = logFile,
                 position = -1L,
-                contents = "$jsonOutput$ARRAY_CLOSE",
-            )
-
-            io.append(
-                path = logFile,
-                contents = "${datetimeStampPrefix()} ${PrinterLoggerFacility.format(level, error).trim()}",
+                contents = "$prefix$jsonOutput$ARRAY_CLOSE",
             )
         }
     }
@@ -213,26 +207,33 @@ class JsonLoggerFacility(
 
     private fun withLogLevel(
         level: LogLevel,
-        action: suspend (String) -> Unit,
+        action: suspend (jsonOutput: String, prefix: String) -> Unit,
     ) {
         if (level.value < minimumLogLevel.value) {
             return
         }
 
         coroutineScope.launch {
-            val logFile = "$baseFolder${io.pathSeparator}${dateStamp(null)}.log"
+            val logFile = "$baseFolder${io.pathSeparator}${dateStamp(null)}.json"
             val currentLogFileLocked = currentLogFile.value
+
+            // New JSON log files always contain an empty array ("[]") which is 2 bytes long.
+            val isEmpty = io.size(logFile) > 2L
 
             if (currentLogFileLocked != logFile) {
                 if (currentLogFileLocked != null) {
                     notifier?.onLogFileClosed(currentLogFileLocked)
                 }
                 io.ensure(logFile)
+
+                // New JSON log files start their life as an empty array ("[]").
+                io.append(logFile, "$ARRAY_OPEN$ARRAY_CLOSE")
+
                 currentLogFile.set(logFile)
                 notifier?.onLogFileOpened(logFile)
             }
 
-            action(logFile)
+            action(logFile, if (isEmpty) "" else ",")
         }
     }
 
