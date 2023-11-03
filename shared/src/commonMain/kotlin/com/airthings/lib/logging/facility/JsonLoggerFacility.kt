@@ -21,24 +21,25 @@ package com.airthings.lib.logging.facility
 
 import co.touchlab.stately.concurrency.AtomicReference
 import co.touchlab.stately.concurrency.value
-import com.airthings.lib.logging.LF
+import com.airthings.lib.logging.INITIAL_BLOCK_SIZE
+import com.airthings.lib.logging.LogArgument
 import com.airthings.lib.logging.LogDate
 import com.airthings.lib.logging.LogLevel
 import com.airthings.lib.logging.LogMessage
 import com.airthings.lib.logging.LoggerFacility
 import com.airthings.lib.logging.dateStamp
-import com.airthings.lib.logging.datetimeStampPrefix
+import com.airthings.lib.logging.datetimeStamp
 import com.airthings.lib.logging.platform.PlatformDirectoryListing
 import com.airthings.lib.logging.platform.PlatformFileInputOutput
 import com.airthings.lib.logging.platform.PlatformFileInputOutputImpl
 import com.airthings.lib.logging.platform.PlatformFileInputOutputNotifier
+import com.airthings.lib.logging.utc
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDateTime
 
 /**
- * A [LoggerFacility] that persists log messages to the file system.
+ * A [LoggerFacility] that persists log messages in a JSON file.
  *
  * @param minimumLogLevel Only log messages and errors that are equal or greater than this level.
  * @param baseFolder The base folder where log files will be written, excluding the trailing `/`.
@@ -46,14 +47,14 @@ import kotlinx.coroutines.launch
  * @param notifier An optional implementation of [PlatformFileInputOutputNotifier].
  */
 @Suppress("unused")
-class FileLoggerFacility(
+class JsonLoggerFacility(
     private val minimumLogLevel: LogLevel,
     private val baseFolder: String,
     private val coroutineScope: CoroutineScope,
     private val notifier: PlatformFileInputOutputNotifier?,
 ) : LoggerFacility {
     /**
-     * Returns a [FileLoggerFacility] instance that handles only [WARNING][LogLevel.WARNING],
+     * Returns a [JsonLoggerFacility] instance that handles only [WARNING][LogLevel.WARNING],
      * [ERROR][LogLevel.ERROR] and [CRASH][LogLevel.CRASH] logs.
      *
      * If you'd like to log [INFO][LogLevel.INFO] also, then use the main constructor.
@@ -74,7 +75,7 @@ class FileLoggerFacility(
     )
 
     /**
-     * Returns a [FileLoggerFacility] instance.
+     * Returns a [JsonLoggerFacility] instance without a notifier.
      *
      * @param minimumLogLevel Only log messages and errors that are equal or greater than this level.
      * @param baseFolder The base folder where log files will be written, excluding the trailing `/`.
@@ -92,7 +93,7 @@ class FileLoggerFacility(
     )
 
     /**
-     * Returns a [FileLoggerFacility] instance.
+     * Returns a [JsonLoggerFacility] instance using a default [CoroutineScope].
      *
      * @param minimumLogLevel Only log messages and errors that are equal or greater than this level.
      * @param baseFolder The base folder where log files will be written, excluding the trailing `/`.
@@ -105,12 +106,12 @@ class FileLoggerFacility(
     ) : this(
         minimumLogLevel = minimumLogLevel,
         baseFolder = baseFolder,
-        coroutineScope = loggerCoroutineScope(),
+        coroutineScope = FileLoggerFacility.loggerCoroutineScope(),
         notifier = notifier,
     )
 
     /**
-     * Returns a [FileLoggerFacility] instance that handles only [WARNING][LogLevel.WARNING],
+     * Returns a [JsonLoggerFacility] instance that handles only [WARNING][LogLevel.WARNING],
      * [ERROR][LogLevel.ERROR] and [CRASH][LogLevel.CRASH] logs.
      *
      * If you'd like to log [INFO][LogLevel.INFO] also, then use the main constructor.
@@ -123,7 +124,7 @@ class FileLoggerFacility(
     ) : this(
         minimumLogLevel = minimumLogLevel,
         baseFolder = baseFolder,
-        coroutineScope = loggerCoroutineScope(),
+        coroutineScope = FileLoggerFacility.loggerCoroutineScope(),
         notifier = null,
     )
 
@@ -144,7 +145,7 @@ class FileLoggerFacility(
     val listing: PlatformDirectoryListing
         get() = io
 
-    override fun toString(): String = "FileLoggerFacility($io)"
+    override fun toString(): String = "JsonLoggerFacility($io)"
 
     override fun isEnabled(): Boolean = true
 
@@ -153,10 +154,19 @@ class FileLoggerFacility(
         level: LogLevel,
         message: LogMessage,
     ) {
-        withLogLevel(level) { logFile ->
-            io.append(
+        withLogLevel(level) { logFile, prefix ->
+            val jsonOutput = jsonOutput(
+                source = source,
+                time = utc(),
+                level = level,
+                message = message.message,
+                error = null,
+                args = message.args,
+            )
+            io.write(
                 path = logFile,
-                contents = "${datetimeStampPrefix()} ${PrinterLoggerFacility.format(level, message).trim()}$LF",
+                position = -1L,
+                contents = "$prefix$jsonOutput$ARRAY_CLOSE",
             )
         }
     }
@@ -166,10 +176,19 @@ class FileLoggerFacility(
         level: LogLevel,
         error: Throwable,
     ) {
-        withLogLevel(level) { logFile ->
-            io.append(
+        withLogLevel(level) { logFile, prefix ->
+            val jsonOutput = jsonOutput(
+                source = source,
+                time = utc(),
+                level = level,
+                message = null,
+                error = error,
+                args = null,
+            )
+            io.write(
                 path = logFile,
-                contents = "${datetimeStampPrefix()} ${PrinterLoggerFacility.format(level, error).trim()}$LF",
+                position = -1L,
+                contents = "$prefix$jsonOutput$ARRAY_CLOSE",
             )
         }
     }
@@ -180,16 +199,21 @@ class FileLoggerFacility(
         message: LogMessage,
         error: Throwable,
     ) {
-        log(
-            source = source,
-            level = level,
-            message = message,
-        )
-        log(
-            source = source,
-            level = level,
-            error = error,
-        )
+        withLogLevel(level) { logFile, prefix ->
+            val jsonOutput = jsonOutput(
+                source = source,
+                time = utc(),
+                level = level,
+                message = message.message,
+                error = error,
+                args = message.args,
+            )
+            io.write(
+                path = logFile,
+                position = -1L,
+                contents = "$prefix$jsonOutput$ARRAY_CLOSE",
+            )
+        }
     }
 
     /**
@@ -206,33 +230,117 @@ class FileLoggerFacility(
 
     private fun withLogLevel(
         level: LogLevel,
-        action: suspend (String) -> Unit,
+        action: suspend (jsonOutput: String, prefix: String) -> Unit,
     ) {
         if (level.value < minimumLogLevel.value) {
             return
         }
 
         coroutineScope.launch {
-            val logFile = "$baseFolder${io.pathSeparator}${dateStamp(null)}.log"
+            val logFile = "$baseFolder${io.pathSeparator}${dateStamp(null)}.json"
             val currentLogFileLocked = currentLogFile.value
+
+            // New JSON log files always contain an empty array ("[]") which is 2 bytes long.
+            val isEmpty = io.size(logFile) > 2L
 
             if (currentLogFileLocked != logFile) {
                 if (currentLogFileLocked != null) {
                     notifier?.onLogFileClosed(currentLogFileLocked)
                 }
                 io.ensure(logFile)
+
+                // New JSON log files start their life as an empty array ("[]").
+                io.append(logFile, "$ARRAY_OPEN$ARRAY_CLOSE")
+
                 currentLogFile.set(logFile)
                 notifier?.onLogFileOpened(logFile)
             }
 
-            action(logFile)
+            action(logFile, if (isEmpty) "" else ",")
         }
     }
 
     companion object {
-        private const val LOG_TAG: String = "FileLoggerFacility"
+        private const val LOG_TAG: String = "JsonLoggerFacility"
+        private const val SOURCE_KEY: String = "source"
+        private const val TIME_KEY: String = "time"
+        private const val LEVEL_KEY: String = "level"
+        private const val MESSAGE_KEY: String = "message"
+        private const val ERROR_KEY: String = "error"
+        private const val ARGS_KEY: String = "args"
+        private const val COMMA: Char = ','
+        private const val ARRAY_OPEN: Char = '['
+        private const val ARRAY_CLOSE: Char = ']'
+        private const val CURLY_OPEN: Char = '{'
+        private const val CURLY_CLOSE: Char = '}'
 
-        internal fun loggerCoroutineScope(): CoroutineScope =
-            CoroutineScope(Dispatchers.Main + SupervisorJob())
+        private fun String.jsonEscape(): String = replace("\\", "\\\\")
+            .replace("/", "\\/")
+            .replace("\"", "\\\"")
+            .replace("\b", "\\b")
+            .replace("\r", "\\r")
+            .replace("\n", "\\n")
+            .replace("\t", "\\t")
+
+        private fun String.jsonQuote(): String = "\"${jsonEscape()}\""
+
+        private fun Pair<String, String>.jsonEntry(): String = "${first.jsonQuote()}:${second.jsonQuote()}"
+
+        private fun List<LogArgument>.jsonEntry(): String = StringBuilder(INITIAL_BLOCK_SIZE)
+            .apply {
+                append(CURLY_OPEN)
+
+                forEach { arg: LogArgument ->
+                    val value = arg.value?.toString()
+                    if (value != null) {
+                        append((arg.label to value).jsonEntry())
+                        append(COMMA)
+                    }
+                }
+
+                // Remove the last comma if needed.
+                if (length > 1) {
+                    setLength(length - 1)
+                }
+
+                append(CURLY_CLOSE)
+            }
+            .toString()
+
+        private fun jsonOutput(
+            source: String,
+            time: LocalDateTime,
+            level: LogLevel,
+            message: String?,
+            error: Throwable?,
+            args: List<LogArgument>?,
+        ): String = StringBuilder(INITIAL_BLOCK_SIZE)
+            .apply {
+                append(CURLY_OPEN)
+
+                append((SOURCE_KEY to source).jsonEntry())
+                append(COMMA)
+                append((TIME_KEY to datetimeStamp(time)).jsonEntry())
+                append(COMMA)
+                append((LEVEL_KEY to "$level").jsonEntry())
+
+                if (message != null) {
+                    append(COMMA)
+                    append((MESSAGE_KEY to message).jsonEntry())
+                }
+
+                if (error != null) {
+                    append(COMMA)
+                    append((ERROR_KEY to error.stackTraceToString()).jsonEntry())
+                }
+
+                if (!args.isNullOrEmpty()) {
+                    append(COMMA)
+                    append(args.jsonEntry())
+                }
+
+                append(CURLY_CLOSE)
+            }
+            .toString()
     }
 }

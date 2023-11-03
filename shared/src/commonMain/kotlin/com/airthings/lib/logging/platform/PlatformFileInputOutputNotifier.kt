@@ -17,14 +17,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.airthings.lib.logging
+package com.airthings.lib.logging.platform
 
-internal const val PLATFORM_ANDROID: String = "Android"
+/**
+ * Defines a contract that notifies about opening and closing log files.
+ */
+interface PlatformFileInputOutputNotifier {
+    /**
+     * Invoked when a new log file has been created.
+     *
+     * @param path The location of the log file.
+     */
+    fun onLogFileOpened(path: String)
 
-internal const val PLATFORM_IOS: String = "iOS"
-
-internal const val INITIAL_ARRAY_SIZE: Int = 50
-
-internal const val INITIAL_BLOCK_SIZE: Int = 256
-
-internal const val LF: Char = '\n'
+    /**
+     * Invoked when a log file has been closed.
+     *
+     * @param path The location of the log file.
+     */
+    fun onLogFileClosed(path: String)
+}

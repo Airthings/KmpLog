@@ -67,6 +67,24 @@ class FirebaseLoggerFacility(
         }
     }
 
+    override fun log(
+        source: String,
+        level: LogLevel,
+        message: LogMessage,
+        error: Throwable,
+    ) {
+        log(
+            source = source,
+            level = level,
+            message = message,
+        )
+        log(
+            source = source,
+            level = level,
+            error = error,
+        )
+    }
+
     /**
      * Sets the user identity that will be appended to the logs.
      *

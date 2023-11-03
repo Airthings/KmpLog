@@ -17,14 +17,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.airthings.lib.logging
+package com.airthings.lib.logging.platform
 
-internal const val PLATFORM_ANDROID: String = "Android"
+import android.util.Log
+import com.airthings.lib.logging.LogLevel
+import com.airthings.lib.logging.PLATFORM_ANDROID
+import com.airthings.lib.logging.facility.PlatformPrinterLoggerFacility
 
-internal const val PLATFORM_IOS: String = "iOS"
+/**
+ * Implements logging in Android via the [android.util.Log] object.
+ */
+actual class PlatformPrinterLoggerFacilityImpl : PlatformPrinterLoggerFacility {
+    override fun print(source: String, level: LogLevel, message: String) {
+        when (level) {
+            LogLevel.INFO -> Log.i(source, message)
+            LogLevel.WARNING -> Log.w(source, message)
+            LogLevel.ERROR -> Log.e(source, message)
+            LogLevel.CRASH -> Log.wtf(source, message)
+        }
+    }
 
-internal const val INITIAL_ARRAY_SIZE: Int = 50
-
-internal const val INITIAL_BLOCK_SIZE: Int = 256
-
-internal const val LF: Char = '\n'
+    override fun toString(): String = PLATFORM_ANDROID
+}

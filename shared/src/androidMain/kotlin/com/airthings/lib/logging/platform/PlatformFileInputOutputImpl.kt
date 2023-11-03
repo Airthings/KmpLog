@@ -17,8 +17,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.airthings.lib.logging.facility
+package com.airthings.lib.logging.platform
 
+import com.airthings.lib.logging.INITIAL_ARRAY_SIZE
 import com.airthings.lib.logging.LogDate
 import com.airthings.lib.logging.PLATFORM_ANDROID
 import com.airthings.lib.logging.ifAfter
@@ -33,6 +34,19 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
     override suspend fun isDirectory(path: String): Boolean = File(path).isDirectory
 
     override suspend fun mkdirs(path: String): Boolean = File(path).mkdirs()
+
+    override suspend fun write(path: String, position: Long, contents: String) {
+        synchronized(writeLock) {
+            FileOutputStream(File(path), true).use {
+                val channel = it.channel
+                val size = channel.size()
+                val relativePosition = position.relativeToSize(size)
+
+                channel.position(relativePosition)
+                it.write(contents.toByteArray())
+            }
+        }
+    }
 
     override suspend fun append(path: String, contents: String) {
         synchronized(writeLock) {

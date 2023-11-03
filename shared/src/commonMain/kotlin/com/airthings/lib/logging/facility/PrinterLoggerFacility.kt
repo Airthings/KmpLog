@@ -22,6 +22,7 @@ package com.airthings.lib.logging.facility
 import com.airthings.lib.logging.LogLevel
 import com.airthings.lib.logging.LogMessage
 import com.airthings.lib.logging.LoggerFacility
+import com.airthings.lib.logging.platform.PlatformPrinterLoggerFacilityImpl
 
 /**
  * A [LoggerFacility] that prints log messages to standard output using a platform-specific method.
@@ -31,7 +32,11 @@ class PrinterLoggerFacility : LoggerFacility {
 
     override fun isEnabled(): Boolean = true
 
-    override fun log(source: String, level: LogLevel, message: LogMessage) {
+    override fun log(
+        source: String,
+        level: LogLevel,
+        message: LogMessage,
+    ) {
         facility.print(
             source = source,
             level = level,
@@ -42,7 +47,11 @@ class PrinterLoggerFacility : LoggerFacility {
         )
     }
 
-    override fun log(source: String, level: LogLevel, error: Throwable) {
+    override fun log(
+        source: String,
+        level: LogLevel,
+        error: Throwable,
+    ) {
         facility.print(
             source = source,
             level = level,
@@ -50,6 +59,24 @@ class PrinterLoggerFacility : LoggerFacility {
                 level = level,
                 error = error,
             ),
+        )
+    }
+
+    override fun log(
+        source: String,
+        level: LogLevel,
+        message: LogMessage,
+        error: Throwable,
+    ) {
+        log(
+            source = source,
+            level = level,
+            message = message,
+        )
+        log(
+            source = source,
+            level = level,
+            error = error,
         )
     }
 
@@ -93,8 +120,3 @@ interface PlatformPrinterLoggerFacility {
      */
     fun print(source: String, level: LogLevel, message: String)
 }
-
-/**
- * Expect declaration for a [PlatformPrinterLoggerFacility].
- */
-expect class PlatformPrinterLoggerFacilityImpl() : PlatformPrinterLoggerFacility

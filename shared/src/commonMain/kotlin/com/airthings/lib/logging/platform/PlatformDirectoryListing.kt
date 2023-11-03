@@ -17,24 +17,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.airthings.lib.logging.facility
+package com.airthings.lib.logging.platform
 
-import android.util.Log
-import com.airthings.lib.logging.LogLevel
-import com.airthings.lib.logging.PLATFORM_ANDROID
+import com.airthings.lib.logging.LogDate
 
 /**
- * Implements logging in Android via the [android.util.Log] object.
+ * Defines a contract to retrieve the listing of files residing inside a directory.
  */
-actual class PlatformPrinterLoggerFacilityImpl : PlatformPrinterLoggerFacility {
-    override fun print(source: String, level: LogLevel, message: String) {
-        when (level) {
-            LogLevel.INFO -> Log.i(source, message)
-            LogLevel.WARNING -> Log.w(source, message)
-            LogLevel.ERROR -> Log.e(source, message)
-            LogLevel.CRASH -> Log.wtf(source, message)
-        }
-    }
+interface PlatformDirectoryListing {
+    /**
+     * Scans a [directory][path] and returns the list of log files residing in it.
+     *
+     * @param path The location of the directory to scan.
+     */
+    suspend fun of(path: String): Collection<String>
 
-    override fun toString(): String = PLATFORM_ANDROID
+    /**
+     * Scans a [directory][path] and returns the list of log files residing in it that were created after a certain date.
+     *
+     * @param path The location of the directory to scan.
+     * @param date The date from which log files should be considered.
+     */
+    suspend fun of(path: String, date: LogDate): Collection<String>
 }

@@ -17,13 +17,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.airthings.lib.logging.facility
+package com.airthings.lib.logging.platform
 
+import com.airthings.lib.logging.INITIAL_ARRAY_SIZE
 import com.airthings.lib.logging.LogDate
 import com.airthings.lib.logging.PLATFORM_IOS
 import com.airthings.lib.logging.ifAfter
+import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.BooleanVar
 import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.ObjCObjectVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
@@ -32,13 +35,20 @@ import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 import platform.Foundation.NSError
 import platform.Foundation.NSFileManager
+import platform.Foundation.NSFileSize
 import platform.Foundation.NSURL
 import platform.Foundation.URLByAppendingPathComponent
 import platform.posix.EOF
+import platform.posix.SEEK_SET
 import platform.posix.fclose
 import platform.posix.fopen
 import platform.posix.fputs
+import platform.posix.fseek
 
+@OptIn(ExperimentalForeignApi::class)
+private typealias NSERROR_CPOINTER = CPointer<ObjCObjectVar<NSError?>>
+
+@OptIn(ExperimentalForeignApi::class)
 internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
     override val pathSeparator: Char = '/'
 
@@ -51,23 +61,49 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         )
     }
 
+    override suspend fun size(path: String): Long = nsErrorWrapper(0L) {
+        sizeImpl(path)
+    }
+
     override suspend fun mkdirs(path: String): Boolean = nsErrorWrapper(false) {
         NSFileManager.defaultManager.createDirectoryAtPath(
             path = path,
             withIntermediateDirectories = true,
             attributes = null,
-            error = it,
+            error = this,
         )
+    }
+
+    override suspend fun write(path: String, position: Long, contents: String) {
+        nsErrorWrapper(Unit) {
+            val file = fopen(__filename = path, __mode = "a")
+                ?: throw IllegalArgumentException("Cannot open file for appending: $path")
+
+            val size = sizeImpl(path)
+
+            val relativePosition = position.relativeToSize(size)
+
+            try {
+                if (fseek(file, relativePosition, SEEK_SET) != 0) {
+                    throw Exception("Unable to set the write position to $position in file: $path")
+                }
+                if (fputs(contents, file) == EOF) {
+                    throw Exception("Unable to write contents to file: $path")
+                }
+            } finally {
+                fclose(file)
+            }
+        }
     }
 
     override suspend fun append(path: String, contents: String) {
         nsErrorWrapper(Unit) {
             val file = fopen(__filename = path, __mode = "a")
-                ?: throw IllegalArgumentException("Cannot open log file for appending: $path")
+                ?: throw IllegalArgumentException("Cannot open file for appending: $path")
 
             try {
                 if (fputs(contents, file) == EOF) {
-                    throw Exception("Unable to write contents to log file: $path")
+                    throw Exception("Unable to write contents to file: $path")
                 }
             } finally {
                 fclose(file)
@@ -87,7 +123,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         if (!exists) {
             nsErrorWrapper(Unit) {
                 val file = fopen(path, "w")
-                    ?: throw IllegalArgumentException("Cannot open log file for writing: $path")
+                    ?: throw IllegalArgumentException("Cannot open file for writing: $path")
                 fclose(file)
             }
         }
@@ -104,6 +140,14 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
     )
 
     override fun toString(): String = PLATFORM_IOS
+
+    private fun NSERROR_CPOINTER.sizeImpl(path: String): Long = NSFileManager.defaultManager
+        .attributesOfFileSystemForPath(path, this)
+        ?.get(NSFileSize)
+        ?.toString()
+        ?.toLongOrNull()
+        ?.coerceAtLeast(0L)
+        ?: throw IllegalArgumentException("Cannot get size of file: $path")
 
     private fun filesImpl(
         path: String,
@@ -140,12 +184,13 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
  * If after running [block] there is an error, then [fallback] is returned.
  * Otherwise, the actual result of [block] is returned.
  */
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 private fun <T> nsErrorWrapper(
     fallback: T,
-    block: (errorPointer: CPointer<ObjCObjectVar<NSError?>>) -> T,
+    block: NSERROR_CPOINTER.() -> T,
 ): T {
     memScoped {
-        val errorPointer: CPointer<ObjCObjectVar<NSError?>> = alloc<ObjCObjectVar<NSError?>>().ptr
+        val errorPointer: NSERROR_CPOINTER = alloc<ObjCObjectVar<NSError?>>().ptr
         val result: T = block(errorPointer)
         val error: NSError? = errorPointer.pointed.value
 
