@@ -27,8 +27,6 @@ plugins {
 }
 
 kotlin {
-    jvm()
-    jvmToolchain(jvmTargetVersion.ordinal)
     androidTarget()
 
     listOf(
@@ -67,7 +65,6 @@ kotlin {
                 )
             }
         }
-        val jvmMain by getting
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
