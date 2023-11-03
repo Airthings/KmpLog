@@ -86,4 +86,4 @@ internal expect class PlatformFileInputOutputImpl() : PlatformFileInputOutput
 /**
  * Returns the absolute position within a file based on a relative position.
  */
-internal fun Long.relativeToSize(size: Long): Long = (coerceAtMost(0L) + size).coerceIn(0L..size)
+internal fun Long.relativeToSize(size: Long): Long = (this + (if (this < 0L) size else 0L)).coerceIn(0L..size)
