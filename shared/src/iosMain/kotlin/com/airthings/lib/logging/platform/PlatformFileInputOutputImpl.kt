@@ -23,8 +23,10 @@ import com.airthings.lib.logging.INITIAL_ARRAY_SIZE
 import com.airthings.lib.logging.LogDate
 import com.airthings.lib.logging.PLATFORM_IOS
 import com.airthings.lib.logging.ifAfter
+import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.BooleanVar
 import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.ObjCObjectVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
@@ -43,6 +45,7 @@ import platform.posix.fopen
 import platform.posix.fputs
 import platform.posix.fseek
 
+@OptIn(ExperimentalForeignApi::class)
 internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
     override val pathSeparator: Char = '/'
 
@@ -171,6 +174,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
  * If after running [block] there is an error, then [fallback] is returned.
  * Otherwise, the actual result of [block] is returned.
  */
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 private fun <T> nsErrorWrapper(
     fallback: T,
     block: (errorPointer: CPointer<ObjCObjectVar<NSError?>>) -> T,
