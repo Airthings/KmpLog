@@ -101,7 +101,7 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             groupId = "${rootProject.group}"
-            artifactId = rootProject.name
+            artifactId = rootProject.name.toLowerCase()
 
             println("Maven publication details:")
             println("- groupId: $groupId")
@@ -112,7 +112,7 @@ publishing {
     repositories {
         mavenLocal()
         maven {
-            name = rootProject.name
+            name = rootProject.name.toLowerCase()
             version = rootProject.version
 
             url = uri("https://maven.pkg.github.com/airthings/kmplog")
