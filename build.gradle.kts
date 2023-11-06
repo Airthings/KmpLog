@@ -53,6 +53,8 @@ plugins {
 }
 
 subprojects {
+    version = rootProject.version
+
     apply(plugin = "maven-publish")
     apply(plugin = "io.gitlab.arturbosch.detekt")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
