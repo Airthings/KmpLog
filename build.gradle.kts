@@ -100,7 +100,7 @@ tasks.register("clean", Delete::class) {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "${rootProject.group}.${rootProject.name.toLowerCase()}"
+            groupId = "${rootProject.group}"
             artifactId = rootProject.name
 
             println("Maven publication details:")
