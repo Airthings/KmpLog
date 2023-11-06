@@ -17,8 +17,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-group = "com.airthings.lib"
-version = "0.0.1"
+rootProject.group = "com.airthings.lib"
+rootProject.version = "0.0.1"
 
 repositories {
     google()
@@ -98,14 +98,17 @@ tasks.register("clean", Delete::class) {
 }
 
 publishing {
-/*
     publications {
         create<MavenPublication>("maven") {
-            groupId = "${rootProject.group}.$artifactId"
+            groupId = "${rootProject.group}.${rootProject.name.toLowerCase()}"
             artifactId = rootProject.name
+
+            println("Maven publication details:")
+            println("- groupId: $groupId")
+            println("- artifactId: $artifactId")
+            println("- version: $version")
         }
     }
-*/
     repositories {
         mavenLocal()
         maven {
