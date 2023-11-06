@@ -96,10 +96,15 @@ android {
 }
 
 publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            artifactId = rootProject.name
+            groupId = "${rootProject.group}.$artifactId"
+        }
+    }
     repositories {
         mavenLocal()
         maven {
-            group = rootProject.group
             name = rootProject.name
             version = rootProject.version
 
