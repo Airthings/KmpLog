@@ -112,10 +112,8 @@ publishing {
     repositories {
         mavenLocal()
         maven {
-/*
             name = rootProject.name
             version = rootProject.version
-*/
 
             url = uri("https://maven.pkg.github.com/airthings/kmplog")
 
