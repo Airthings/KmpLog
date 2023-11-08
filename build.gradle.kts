@@ -19,7 +19,7 @@
 
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
-internal val jvmTargetVersion: JavaVersion = JavaVersion.VERSION_11
+internal val jvmTargetVersion: JavaVersion = JavaVersion.VERSION_17
 
 rootProject.group = "com.airthings.lib"
 rootProject.version = "0.1.3"
