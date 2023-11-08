@@ -24,4 +24,4 @@ jobs:
           GITHUB_ACCESS_TOKEN_READ_PACKAGES: ${{ secrets.ACCESS_TOKEN_READ_PACKAGES }}
 
         run: |
-          sh gradlew publishAllPublicationsToKmplogRepository
+          sh gradlew publishAllPublicationsToAirthingsGitHubPackagesRepository
