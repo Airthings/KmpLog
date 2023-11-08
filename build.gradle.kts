@@ -66,6 +66,31 @@ dependencies {
 apply(plugin = "io.gitlab.arturbosch.detekt")
 apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
+detekt {
+    val rootDir = project.rootDir.canonicalFile
+    var configDir = project.projectDir.canonicalFile
+    var configFile: File
+    do {
+        configFile = file("$configDir/detekt.yml")
+        if (configFile.exists()) {
+            break
+        }
+        configDir = configDir.parentFile.canonicalFile
+    } while (configDir.startsWith(rootDir))
+
+    config.setFrom(files(configFile))
+    parallel = true
+}
+
+ktlint {
+    verbose.set(true)
+    outputToConsole.set(true)
+    filter {
+        exclude("**/build/**")
+        exclude("**/gen/**")
+    }
+}
+
 kotlin {
     jvm()
     androidTarget {
