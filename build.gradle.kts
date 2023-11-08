@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 internal val jvmTargetVersion: JavaVersion = JavaVersion.VERSION_11
 
 rootProject.group = "com.airthings.lib"
-rootProject.version = "0.1.2"
+rootProject.version = "0.1.3"
 
 buildscript {
     repositories {
@@ -69,7 +69,7 @@ apply(plugin = "org.jlleitschuh.gradle.ktlint")
 kotlin {
     jvm()
     androidTarget {
-        publishLibraryVariants("release", "debug")
+        publishLibraryVariants("release")
     }
 
     listOf(
