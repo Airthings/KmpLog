@@ -17,21 +17,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-rootProject.group = properties["maven.project-id"].toString()
-rootProject.version = properties["maven.version"].toString()
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
-repositories {
-    google()
-    gradlePluginPortal()
-    mavenCentral()
-    maven(url = "https://jitpack.io")
-    maven(url = "https://plugins.gradle.org/m2/")
-}
+internal val jvmTargetVersion: JavaVersion = JavaVersion.VERSION_11
+
+rootProject.group = "com.airthings.lib"
+rootProject.version = "0.1.2"
 
 buildscript {
     repositories {
-        google()
         gradlePluginPortal()
+        google()
         mavenCentral()
         maven(url = "https://jitpack.io")
         maven(url = "https://plugins.gradle.org/m2/")
@@ -44,54 +40,113 @@ buildscript {
     }
 }
 
+repositories {
+    gradlePluginPortal()
+    google()
+    mavenCentral()
+    maven(url = "https://jitpack.io")
+    maven(url = "https://plugins.gradle.org/m2/")
+}
+
 // Versions of plugins are now configured once in pluginManagement block in settings.gradle.kts.
 plugins {
+    kotlin("multiplatform")
     id("io.gitlab.arturbosch.detekt")
     id("org.jlleitschuh.gradle.ktlint")
     id("com.github.ben-manes.versions")
+    id("com.android.library")
+    id("maven-publish")
 }
 
-subprojects {
-    version = rootProject.version
+dependencies {
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-cli:${properties["version.plugin.detekt"]}")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${properties["version.plugin.detekt"]}")
+}
 
-    apply(plugin = "maven-publish")
-    apply(plugin = "io.gitlab.arturbosch.detekt")
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+apply(plugin = "io.gitlab.arturbosch.detekt")
+apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
-    dependencies {
-        detektPlugins("io.gitlab.arturbosch.detekt:detekt-cli:${properties["version.plugin.detekt"]}")
-        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${properties["version.plugin.detekt"]}")
+kotlin {
+    androidTarget()
+
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64(),
+    ).forEach {
+        // Fixes this: https://rdr.to/DkdMx1MXyeB
+        it.binaries.all {
+            linkerOpts += "-ld64"
+        }
+        it.binaries.framework {
+            baseName = rootProject.name
+        }
     }
 
-    detekt {
-        val rootDir = project.rootDir.canonicalFile
-        var configDir = project.projectDir.canonicalFile
-        var configFile: File
-        do {
-            configFile = file("$configDir/detekt.yml")
-            if (configFile.exists()) {
-                break
+    // Export KDoc comments to generated Objective-C header (https://rdr.to/8KKpSbCUBdY).
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+        compilations["main"].kotlinOptions.freeCompilerArgs += "-Xexport-kdoc"
+    }
+
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(
+                    "co.touchlab:stately-concurrency:" +
+                        "${properties["version.stately.concurrency"]}",
+                )
+                implementation(
+                    "org.jetbrains.kotlinx:kotlinx-coroutines-core:" +
+                        "${properties["version.kotlin.coroutines"]}",
+                )
+                implementation(
+                    "org.jetbrains.kotlinx:kotlinx-datetime:" +
+                        "${properties["version.kotlin.datetime"]}",
+                )
             }
-            configDir = configDir.parentFile.canonicalFile
-        } while (configDir.startsWith(rootDir))
-
-        toolVersion = "${properties["version.plugin.detekt"]}"
-        config.setFrom(configFile)
-        parallel = true
-    }
-
-    ktlint {
-        // Latest: https://rdr.to/EI9Yvj1YywO
-        version.set("${properties["version.ktlint"]}")
-        verbose.set(true)
-        outputToConsole.set(true)
-        filter {
-            exclude("**/shared/build/**")
-            exclude("**/gen/**")
+        }
+        val iosX64Main by getting
+        val iosArm64Main by getting
+        val iosSimulatorArm64Main by getting
+        val iosMain by creating {
+            dependsOn(commonMain)
+            iosX64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
         }
     }
 }
 
-tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
+android {
+    namespace = "${rootProject.group}.logging"
+
+    compileSdk = "${properties["build.android.compileSdk"]}".toInt()
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+
+    defaultConfig {
+        minSdk = "${properties["build.android.minimumSdk"]}".toInt()
+        @Suppress("UnstableApiUsage")
+        targetSdk = "${properties["build.android.targetSdk"]}".toInt()
+    }
+
+    compileOptions {
+        sourceCompatibility = jvmTargetVersion
+        targetCompatibility = jvmTargetVersion
+    }
+}
+
+publishing {
+    repositories {
+        mavenLocal()
+        maven {
+            name = "AirthingsGitHubPackages"
+            url = uri("https://maven.pkg.github.com/airthings/airthings/kmplog")
+
+            credentials {
+                // The following are automatically generated by GitHub.
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
 }

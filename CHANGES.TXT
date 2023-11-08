@@ -1,4 +1,4 @@
-0.1.2 - November 1, 2023
+0.1.2 - November 8, 2023
     • Reformat the code to fit into 120 characters per line.
     • Fix ktlint and Detekt linting errors.
     • Fix a build error (https://rdr.to/DkdMx1MXyeB)

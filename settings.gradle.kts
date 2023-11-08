@@ -19,8 +19,6 @@
 
 rootProject.name = "kmplog"
 
-include(":shared")
-
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -28,15 +26,18 @@ pluginManagement {
         mavenCentral()
     }
 
-    // Gradle cannot access project properties in the plugins block, this is a known limitation.
-    // Hence, we cannot rely on defining the versions in gradle.properties file and must therefore write them
-    // directly here.
-    //
-    // See: https://rdr.to/4TaMU4eoec0
-    plugins {
-        id("com.github.ben-manes.versions") version "0.47.0"
-        id("io.gitlab.arturbosch.detekt") version "1.23.1"
-        id("org.jlleitschuh.gradle.ktlint") version "11.5.1"
+    resolutionStrategy {
+        val props = extra.properties
+
+        eachPlugin {
+            when ("${requested.id}") {
+                "org.jetbrains.kotlin.multiplatform" -> useVersion("${props["version.kotlin"]}")
+                "io.gitlab.arturbosch.detekt" -> useVersion("${props["version.plugin.detekt"]}")
+                "org.jlleitschuh.gradle.ktlint" -> useVersion("${props["version.plugin.ktlintGradle"]}")
+                "com.github.ben-manes.versions" -> useVersion("${props["version.plugin.outdated"]}")
+                "com.android.library" -> useVersion("${props["version.plugin.androidGradle"]}")
+            }
+        }
     }
 }
 
