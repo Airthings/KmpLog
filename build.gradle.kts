@@ -67,7 +67,10 @@ apply(plugin = "io.gitlab.arturbosch.detekt")
 apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
 kotlin {
-    androidTarget()
+    jvm()
+    androidTarget {
+        publishLibraryVariants("release", "debug")
+    }
 
     listOf(
         iosX64(),
@@ -105,6 +108,8 @@ kotlin {
                 )
             }
         }
+        val jvmMain by getting
+        val androidMain by getting
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
