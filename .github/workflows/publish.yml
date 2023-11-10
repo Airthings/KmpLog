@@ -10,24 +10,26 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Set up JDK 17
-        uses: actions/setup-java@v2
+      - name: Set up Adopt OpenJDK 17
+        uses: actions/setup-java@v3
         with:
-          java-version: '17'
-          distribution: 'adopt'
+          distribution: adopt
+          java-version: 17
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
       - name: Run Detekt
+        shell: sh
         run: |
-          sh gradlew detekt
+          sh gradlew --no-daemon detekt
       - name: Run KtLint
+        shell: sh
         run: |
-          sh gradlew ktlintCheck
+          sh gradlew --no-daemon ktlintCheck
       - name: Publish to GitHub Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
           GITHUB_ACCESS_TOKEN_READ_PACKAGES: ${{ secrets.ACCESS_TOKEN_READ_PACKAGES }}
-
+        shell: sh
         run: |
           sh gradlew publishAllPublicationsToAirthingsGitHubPackagesRepository

@@ -17,10 +17,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-
-internal val jvmTargetVersion: JavaVersion = JavaVersion.VERSION_17
-
 rootProject.group = "com.airthings.lib"
 rootProject.version = "0.1.3"
 
@@ -92,6 +88,8 @@ ktlint {
 }
 
 kotlin {
+    val jvmVersion = "${properties["jvm.version"]}"
+
     jvm()
     androidTarget {
         publishLibraryVariants("release")
@@ -114,6 +112,12 @@ kotlin {
     // Export KDoc comments to generated Objective-C header (https://rdr.to/8KKpSbCUBdY).
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
         compilations["main"].kotlinOptions.freeCompilerArgs += "-Xexport-kdoc"
+    }
+
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        kotlinOptions {
+            jvmTarget = jvmVersion
+        }
     }
 
     sourceSets {
@@ -155,13 +159,14 @@ android {
 
     defaultConfig {
         minSdk = "${properties["build.android.minimumSdk"]}".toInt()
-        @Suppress("UnstableApiUsage")
         targetSdk = "${properties["build.android.targetSdk"]}".toInt()
     }
 
     compileOptions {
-        sourceCompatibility = jvmTargetVersion
-        targetCompatibility = jvmTargetVersion
+        val jvmVersion = JavaVersion.toVersion("${properties["jvm.version"]}".toInt())
+
+        sourceCompatibility = jvmVersion
+        targetCompatibility = jvmVersion
     }
 }
 
