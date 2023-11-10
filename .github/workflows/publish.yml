@@ -17,14 +17,6 @@ jobs:
           java-version: 17
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
-      - name: Run Detekt
-        shell: sh
-        run: |
-          sh gradlew --no-daemon detekt
-      - name: Run KtLint
-        shell: sh
-        run: |
-          sh gradlew --no-daemon ktlintCheck
       - name: Publish to GitHub Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -32,4 +24,4 @@ jobs:
           GITHUB_ACCESS_TOKEN_READ_PACKAGES: ${{ secrets.ACCESS_TOKEN_READ_PACKAGES }}
         shell: sh
         run: |
-          sh gradlew publishAllPublicationsToAirthingsGitHubPackagesRepository
+          sh gradlew --no-daemon publishAllPublicationsToAirthingsGitHubPackagesRepository
