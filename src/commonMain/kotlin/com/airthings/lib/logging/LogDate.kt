@@ -21,6 +21,7 @@
 
 package com.airthings.lib.logging
 
+import com.airthings.lib.logging.LogDate.Companion.SEPARATOR
 import kotlinx.datetime.LocalDateTime
 
 /**
@@ -29,11 +30,13 @@ import kotlinx.datetime.LocalDateTime
  * @param year The year part of the date.
  * @param month The month part of the date, within the range of 1..12.
  * @param day The day part of the date, within the range of 1..31.
+ * @param separator The character used to separate the date parts, defaults to [SEPARATOR].
  */
 data class LogDate(
     val year: Int,
     val month: Int,
     val day: Int,
+    val separator: Char = '-',
 ) {
     /**
      * Returns a [LogDate] instance from a [LocalDateTime] component.
@@ -51,11 +54,14 @@ data class LogDate(
     override fun equals(other: Any?): Boolean =
         other is LogDate && other.year == year && other.month == month && other.day == day
 
-    override fun toString(): String = toString(SEPARATOR)
+    override fun toString(): String = toString(separator)
 
     override fun hashCode(): Int = toString(null).toIntOrNull() ?: toString().hashCode()
 
     companion object {
+        /**
+         * The character used to separate date parts, f.ex: `2023-08-23`.
+         */
         const val SEPARATOR = '-'
     }
 }
@@ -104,7 +110,7 @@ internal fun LogDate.after(another: LogDate): Boolean = year > another.year ||
  */
 internal fun String.ifAfter(date: LogDate?): Boolean {
     val fileNameWithoutExtension = substringBeforeLast('.')
-    val logDate = fileNameWithoutExtension.asLogDate(LogDate.SEPARATOR)
+    val logDate = fileNameWithoutExtension.asLogDate(date?.separator ?: SEPARATOR)
 
     return logDate != null && (date == null || logDate.after(date))
 }
