@@ -34,7 +34,6 @@ data class LogDate(
     val year: Int,
     val month: Int,
     val day: Int,
-    val separator: Char = '-',
 ) {
     /**
      * Returns a [LogDate] instance from a [LocalDateTime] component.
@@ -52,9 +51,13 @@ data class LogDate(
     override fun equals(other: Any?): Boolean =
         other is LogDate && other.year == year && other.month == month && other.day == day
 
-    override fun toString(): String = toString(separator)
+    override fun toString(): String = toString(SEPARATOR)
 
     override fun hashCode(): Int = toString(null).toIntOrNull() ?: toString().hashCode()
+
+    companion object {
+        const val SEPARATOR = '-'
+    }
 }
 
 internal fun LogDate.toString(separator: Char?): String = StringBuilder(10)
@@ -101,7 +104,7 @@ internal fun LogDate.after(another: LogDate): Boolean = year > another.year ||
  */
 internal fun String.ifAfter(date: LogDate?): Boolean {
     val fileNameWithoutExtension = substringBeforeLast('.')
-    val logDate = fileNameWithoutExtension.asLogDate(date?.separator)
+    val logDate = fileNameWithoutExtension.asLogDate(LogDate.SEPARATOR)
 
     return logDate != null && (date == null || logDate.after(date))
 }
