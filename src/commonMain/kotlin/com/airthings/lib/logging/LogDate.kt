@@ -29,6 +29,7 @@ import kotlinx.datetime.LocalDateTime
  * @param year The year part of the date.
  * @param month The month part of the date, within the range of 1..12.
  * @param day The day part of the date, within the range of 1..31.
+ * @param separator The character used to separate the date parts, defaults to [SEPARATOR].
  */
 data class LogDate(
     val year: Int,
@@ -55,6 +56,13 @@ data class LogDate(
     override fun toString(): String = toString(separator)
 
     override fun hashCode(): Int = toString(null).toIntOrNull() ?: toString().hashCode()
+
+    companion object {
+        /**
+         * The character used to separate date parts, f.ex: `2023-08-23`.
+         */
+        const val SEPARATOR = '-'
+    }
 }
 
 internal fun LogDate.toString(separator: Char?): String = StringBuilder(10)
@@ -101,7 +109,7 @@ internal fun LogDate.after(another: LogDate): Boolean = year > another.year ||
  */
 internal fun String.ifAfter(date: LogDate?): Boolean {
     val fileNameWithoutExtension = substringBeforeLast('.')
-    val logDate = fileNameWithoutExtension.asLogDate(date?.separator)
+    val logDate = fileNameWithoutExtension.asLogDate(date?.separator ?: LogDate.SEPARATOR)
 
     return logDate != null && (date == null || logDate.after(date))
 }
