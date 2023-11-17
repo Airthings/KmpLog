@@ -21,7 +21,6 @@
 
 package com.airthings.lib.logging
 
-import com.airthings.lib.logging.LogDate.Companion.SEPARATOR
 import kotlinx.datetime.LocalDateTime
 
 /**
@@ -110,7 +109,7 @@ internal fun LogDate.after(another: LogDate): Boolean = year > another.year ||
  */
 internal fun String.ifAfter(date: LogDate?): Boolean {
     val fileNameWithoutExtension = substringBeforeLast('.')
-    val logDate = fileNameWithoutExtension.asLogDate(date?.separator ?: SEPARATOR)
+    val logDate = fileNameWithoutExtension.asLogDate(date?.separator ?: LogDate.SEPARATOR)
 
     return logDate != null && (date == null || logDate.after(date))
 }
