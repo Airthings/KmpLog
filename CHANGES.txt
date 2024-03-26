@@ -1,3 +1,7 @@
+0.2.0 - March 26, 2024
+• Fix a bug where the log folder wasn't created.
+• Simplify the platform's file i/o public interface.
+
 0.1.5 - November 17, 2023
 • Fix log files not being uploaded because of a `LogDate` being `null`.
 
