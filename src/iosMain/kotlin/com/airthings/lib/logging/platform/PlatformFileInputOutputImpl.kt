@@ -52,26 +52,21 @@ private typealias NSERROR_CPOINTER = CPointer<ObjCObjectVar<NSError?>>
 internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
     override val pathSeparator: Char = '/'
 
-    override suspend fun isDirectory(path: String): Boolean = memScoped {
-        val cValue = alloc<BooleanVar>()
-        cValue.value = true
-        NSFileManager.defaultManager.fileExistsAtPath(
-            path = path,
-            isDirectory = cValue.ptr,
-        )
-    }
-
     override suspend fun size(path: String): Long = nsErrorWrapper(0L) {
         sizeImpl(path)
     }
 
-    override suspend fun mkdirs(path: String): Boolean = nsErrorWrapper(false) {
-        NSFileManager.defaultManager.createDirectoryAtPath(
-            path = path,
-            withIntermediateDirectories = true,
-            attributes = null,
-            error = this,
-        )
+    override suspend fun mkdirs(path: String): Boolean {
+        nsErrorWrapper(false) {
+            NSFileManager.defaultManager.createDirectoryAtPath(
+                path = path,
+                withIntermediateDirectories = true,
+                attributes = null,
+                error = this,
+            )
+        }
+
+        return isDirectory(path)
     }
 
     override suspend fun write(path: String, position: Long, contents: String) {
@@ -140,6 +135,15 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
     )
 
     override fun toString(): String = PLATFORM_IOS
+
+    private fun isDirectory(path: String): Boolean = memScoped {
+        val cValue = alloc<BooleanVar>()
+        cValue.value = true
+        NSFileManager.defaultManager.fileExistsAtPath(
+            path = path,
+            isDirectory = cValue.ptr,
+        )
+    }
 
     private fun NSERROR_CPOINTER.sizeImpl(path: String): Long = NSFileManager.defaultManager
         .attributesOfFileSystemForPath(path, this)

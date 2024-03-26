@@ -133,7 +133,7 @@ class JsonLoggerFacility(
 
     init {
         coroutineScope.launch {
-            if (!io.isDirectory(baseFolder) && !io.mkdirs(baseFolder)) {
+            if (!io.mkdirs(baseFolder)) {
                 throw IllegalArgumentException("Base log folder is invalid: $baseFolder")
             }
         }

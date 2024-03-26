@@ -31,9 +31,13 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
 
     override val pathSeparator: Char = File.separatorChar
 
-    override suspend fun isDirectory(path: String): Boolean = File(path).isDirectory
+    override suspend fun mkdirs(path: String): Boolean {
+        val pathFile = File(path)
 
-    override suspend fun mkdirs(path: String): Boolean = File(path).mkdirs()
+        pathFile.mkdirs()
+
+        return pathFile.isDirectory
+    }
 
     override suspend fun size(path: String): Long = File(path).length()
 
