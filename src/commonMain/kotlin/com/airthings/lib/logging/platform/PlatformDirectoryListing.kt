@@ -28,6 +28,8 @@ interface PlatformDirectoryListing {
     /**
      * Scans a [directory][path] and returns the list of log files residing in it.
      *
+     * Note: The returned list contains absolute (canonical) paths to the files.
+     *
      * @param path The location of the directory to scan.
      */
     suspend fun of(path: String): Collection<String>
@@ -35,6 +37,8 @@ interface PlatformDirectoryListing {
     /**
      * Scans a [directory][path] and returns the list of log files residing in it that
      * were created after a certain date.
+     *
+     * Note: The returned list contains absolute (canonical) paths to the files.
      *
      * @param path The location of the directory to scan.
      * @param date The date from which log files should be considered.

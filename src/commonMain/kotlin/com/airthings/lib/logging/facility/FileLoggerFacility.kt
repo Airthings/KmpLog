@@ -194,6 +194,8 @@ class FileLoggerFacility(
 
     /**
      * Scans the [baseFolder] and returns the list of log files residing in it.
+     *
+     * Note: The returned list contains absolute (canonical) paths to the files.
      */
     suspend fun files(): Collection<String> = io.of(baseFolder)
 
@@ -201,9 +203,29 @@ class FileLoggerFacility(
      * Scans the [baseFolder] and returns the list of log files residing in it that
      * were created after a certain date.
      *
+     * Note: The returned list contains absolute (canonical) paths to the files.
+     *
      * @param date The date from which log files should be considered.
      */
     suspend fun files(date: LogDate): Collection<String> = io.of(baseFolder, date)
+
+    /**
+     * Deletes a file residing in [baseFolder].
+     *
+     * @param name The file name to delete.
+     */
+    suspend fun delete(name: String) {
+        io.delete("$baseFolder${io.pathSeparator}$name")
+    }
+
+    /**
+     * Deletes a file at an absolute (canonical) location.
+     *
+     * @param path The file path to delete.
+     */
+    suspend fun deleteAbsolute(path: String) {
+        io.delete(path)
+    }
 
     private fun withLogLevel(
         level: LogLevel,
