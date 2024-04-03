@@ -68,6 +68,12 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         }
     }
 
+    override suspend fun delete(path: String) {
+        synchronized(writeLock) {
+            File(path).delete()
+        }
+    }
+
     override suspend fun of(path: String): Collection<String> = filesImpl(
         path = path,
         date = null,

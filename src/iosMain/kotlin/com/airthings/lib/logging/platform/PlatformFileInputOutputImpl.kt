@@ -124,6 +124,15 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         }
     }
 
+    override suspend fun delete(path: String) {
+        nsErrorWrapper(Unit) {
+            NSFileManager.defaultManager.removeItemAtPath(
+                path = path,
+                error = this,
+            )
+        }
+    }
+
     override suspend fun of(path: String): Collection<String> = filesImpl(
         path = path,
         date = null,
