@@ -31,15 +31,10 @@ internal interface PlatformFileInputOutput : PlatformDirectoryListing {
     val pathSeparator: Char
 
     /**
-     * Returns true if the provided path points to a directory, false otherwise.
-     *
-     * @param path The location of the directory.
-     */
-    suspend fun isDirectory(path: String): Boolean
-
-    /**
      * Creates the provided [directory path][path], including any intermediary ones, and returns true on success,
      * false otherwise.
+     *
+     * If the directory already exists, then this method does nothing and returns true immediately.
      *
      * @param path The location of the directory.
      */
