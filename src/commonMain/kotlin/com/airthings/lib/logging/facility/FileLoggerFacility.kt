@@ -198,7 +198,8 @@ class FileLoggerFacility(
     suspend fun files(): Collection<String> = io.of(baseFolder)
 
     /**
-     * Scans the [baseFolder] and returns the list of log files residing in it that were created after a certain date.
+     * Scans the [baseFolder] and returns the list of log files residing in it that
+     * were created after a certain date.
      *
      * @param date The date from which log files should be considered.
      */
