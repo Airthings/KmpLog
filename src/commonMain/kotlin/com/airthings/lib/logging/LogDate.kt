@@ -85,8 +85,11 @@ internal fun String.asLogDate(separator: Char?): LogDate? {
         return null
     }
 
-    val intValue = (if (separator == null) toIntOrNull() else replace("$separator", "").toIntOrNull())
-        ?: return null
+    val intValue = (if (separator == null) {
+        toIntOrNull()
+    } else {
+        replace("$separator", "").toIntOrNull()
+    }) ?: return null
 
     val dateValue = "$intValue"
     if (dateValue.length != 8) {
@@ -105,7 +108,7 @@ internal fun LogDate.after(another: LogDate): Boolean = year > another.year ||
     month == another.month && day > another.day
 
 /**
- * Returns true if this string denotes a log file created after [date], of if [date] is null, false otherwise.
+ * Returns true if this string denotes a log file created after [date], or if [date] is null, false otherwise.
  */
 internal fun String.ifAfter(date: LogDate?): Boolean {
     val fileNameWithoutExtension = substringBeforeLast('.')

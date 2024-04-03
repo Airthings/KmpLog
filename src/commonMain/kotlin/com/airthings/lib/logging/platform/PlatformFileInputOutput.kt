@@ -78,6 +78,13 @@ internal interface PlatformFileInputOutput : PlatformDirectoryListing {
      * @param path The location of the file.
      */
     suspend fun ensure(path: String)
+
+    /**
+     * Deletes a file at a specific location.
+     *
+     * @param path The location of the file.
+     */
+    suspend fun delete(path: String)
 }
 
 /**

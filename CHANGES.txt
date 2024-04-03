@@ -1,3 +1,6 @@
+0.2.1 - April 3, 2024
+• Add a method to delete a log file.
+
 0.2.0 - March 26, 2024
 • Fix a bug where the log folder wasn't created.
 • Simplify the platform's file i/o public interface.
