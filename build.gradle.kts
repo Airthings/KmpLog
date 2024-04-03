@@ -18,7 +18,7 @@
  */
 
 rootProject.group = "com.airthings.lib"
-rootProject.version = "0.2.0"
+rootProject.version = "0.2.1"
 
 buildscript {
     repositories {
