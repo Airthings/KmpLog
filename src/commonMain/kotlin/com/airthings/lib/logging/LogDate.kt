@@ -17,7 +17,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-@file:Suppress("MagicNumber")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
 package com.airthings.lib.logging
 
@@ -35,7 +35,7 @@ data class LogDate(
     val year: Int,
     val month: Int,
     val day: Int,
-    val separator: Char = '-',
+    val separator: Char = SEPARATOR,
 ) {
     /**
      * Returns a [LogDate] instance from a [LocalDateTime] component.
@@ -59,13 +59,21 @@ data class LogDate(
 
     companion object {
         /**
-         * The character used to separate date parts, f.ex: `2023-08-23`.
+         * The default character used to separate date parts, f.ex: `2023-08-23`.
          */
         const val SEPARATOR = '-'
+
+        internal const val LOG_FILE_LENGTH_WITHOUT_SEPARATOR = 8
+        internal const val LOG_FILE_LENGTH_WITH_SEPARATOR = 10
     }
 }
 
-internal fun LogDate.toString(separator: Char?): String = StringBuilder(10)
+/**
+ * Returns the string representation of this instance, optionally separated by a character.
+ *
+ * @param separator Optional separator between the file name's components.
+ */
+fun LogDate.toString(separator: Char?): String = StringBuilder(LogDate.LOG_FILE_LENGTH_WITH_SEPARATOR)
     .apply {
         append(year)
         if (separator != null) {
@@ -79,38 +87,56 @@ internal fun LogDate.toString(separator: Char?): String = StringBuilder(10)
     }
     .toString()
 
-internal fun String.asLogDate(separator: Char?): LogDate? {
-    val expectedLength = if (separator == null) 8 else 10
+/**
+ * Converts this compatible string to a [LogDate] on success, null otherwise.
+ *
+ * @param separator Optional separator between the file name's components.
+ */
+@Suppress("MagicNumber")
+fun String.asLogDate(separator: Char?): LogDate? {
+    val expectedLength = if (separator == null) {
+        LogDate.LOG_FILE_LENGTH_WITHOUT_SEPARATOR
+    } else {
+        LogDate.LOG_FILE_LENGTH_WITH_SEPARATOR
+    }
     if (expectedLength != length) {
         return null
     }
 
-    val intValue = (if (separator == null) {
+    val intValue = if (separator == null) {
         toIntOrNull()
     } else {
         replace("$separator", "").toIntOrNull()
-    }) ?: return null
+    }
+
+    intValue ?: return null
 
     val dateValue = "$intValue"
-    if (dateValue.length != 8) {
+    if (dateValue.length != LogDate.LOG_FILE_LENGTH_WITHOUT_SEPARATOR) {
         return null
     }
 
     val year = dateValue.substring(0, 4).toIntOrNull() ?: return null
     val month = dateValue.substring(4, 6).toIntOrNull() ?: return null
-    val day = dateValue.substring(6, 8).toIntOrNull() ?: return null
+    val day = dateValue.substring(6, LogDate.LOG_FILE_LENGTH_WITHOUT_SEPARATOR).toIntOrNull() ?: return null
 
     return LogDate(year, month, day)
 }
 
-internal fun LogDate.after(another: LogDate): Boolean = year > another.year ||
+/**
+ * Returns true if this [LogDate] is newer than [another], false otherwise.
+ *
+ * @param another The other [LogDate] instance to compare against.
+ */
+fun LogDate.after(another: LogDate): Boolean = year > another.year ||
     year == another.year && month > another.month ||
     month == another.month && day > another.day
 
 /**
- * Returns true if this string denotes a log file created after [date], or if [date] is null, false otherwise.
+ * Returns true if this string denotes a log file created after [date], or if [date] is null,
+ * false otherwise.
  */
-internal fun String.ifAfter(date: LogDate?): Boolean {
+fun String.ifAfter(date: LogDate?): Boolean {
     val fileNameWithoutExtension = substringBeforeLast('.')
     val logDate = fileNameWithoutExtension.asLogDate(date?.separator ?: LogDate.SEPARATOR)
 
