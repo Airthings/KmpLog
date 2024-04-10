@@ -3,6 +3,10 @@ on:
   create:
     tags:
       - '^[0-9]+\.[0-9]+\.[0-9]+$'
+  push:
+    branches:
+      - publish-spm
+
 jobs:
   build:
     runs-on: macos-latest
@@ -17,11 +21,16 @@ jobs:
           java-version: 17
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
-      - name: Publish to GitHub Packages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
-          GITHUB_ACCESS_TOKEN_READ_PACKAGES: ${{ secrets.ACCESS_TOKEN_READ_PACKAGES }}
-        shell: sh
-        run: |
-          sh gradlew --no-daemon publishAllPublicationsToAirthingsGitHubPackagesRepository
+  publish:
+    needs: build
+    permissions:
+      contents: write
+      packages: write
+    uses: touchlab/KMMBridgeGithubWorkflow/.github/workflows/faktorybuildautoversion.yml@v1.1
+    with:
+      runsOn: "macOS-14"
+      jvmVersion: 17
+      versionBaseProperty: LIBRARY_VERSION
+      publishTask: kmmBridgePublish publishKotlinMultiplatformPublicationToGitHubPackagesRepository publishAndroidReleasePublicationToGitHubPackagesRepository
+    secrets:
+      gradle_params: -PGITHUB_PUBLISH_USER=${{ secrets.GITHUB_ACTOR }} -PGITHUB_PUBLISH_TOKEN=${{ secrets.GITHUB_TOKEN }} -PGITHUB_REPO=https://github.com/Airthings/KmpLog.git
