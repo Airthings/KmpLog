@@ -99,26 +99,27 @@ fun String.asLogDate(separator: Char?): LogDate? {
     } else {
         LogDate.LOG_FILE_LENGTH_WITH_SEPARATOR
     }
-    if (expectedLength != length) {
+
+    val fileNameWithoutExtension = substringBeforeLast('.')
+    if (fileNameWithoutExtension.length != expectedLength) {
         return null
     }
 
-    val intValue = if (separator == null) {
+    val dateAsIntValue = if (separator == null) {
         toIntOrNull()
     } else {
         replace("$separator", "").toIntOrNull()
     }
 
-    intValue ?: return null
-
-    val dateValue = "$intValue"
-    if (dateValue.length != LogDate.LOG_FILE_LENGTH_WITHOUT_SEPARATOR) {
+    if (dateAsIntValue == null) {
         return null
     }
 
-    val year = dateValue.substring(0, 4).toIntOrNull() ?: return null
-    val month = dateValue.substring(4, 6).toIntOrNull() ?: return null
-    val day = dateValue.substring(6, LogDate.LOG_FILE_LENGTH_WITHOUT_SEPARATOR).toIntOrNull() ?: return null
+    val dateAsStringValue = "$dateAsIntValue".padStart(expectedLength, '0')
+
+    val year = dateAsStringValue.substring(0, 4).toIntOrNull() ?: return null
+    val month = dateAsStringValue.substring(4, 6).toIntOrNull() ?: return null
+    val day = dateAsStringValue.substring(6, 8).toIntOrNull() ?: return null
 
     return LogDate(year, month, day)
 }
@@ -137,8 +138,7 @@ fun LogDate.after(another: LogDate): Boolean = year > another.year ||
  * false otherwise.
  */
 fun String.ifAfter(date: LogDate?): Boolean {
-    val fileNameWithoutExtension = substringBeforeLast('.')
-    val logDate = fileNameWithoutExtension.asLogDate(date?.separator ?: LogDate.SEPARATOR)
+    val logDate = asLogDate(date?.separator ?: LogDate.SEPARATOR)
 
     return logDate != null && (date == null || logDate.after(date))
 }
