@@ -115,7 +115,7 @@ fun String.asLogDate(separator: Char?): LogDate? {
         return null
     }
 
-    val dateAsStringValue = dateAsIntValue.padded(expectedLength)
+    val dateAsStringValue = dateAsIntValue.padded(LogDate.LOG_FILE_LENGTH_WITHOUT_SEPARATOR)
 
     val year = dateAsStringValue.substring(0, 4).toIntOrNull() ?: return null
     val month = dateAsStringValue.substring(4, 6).toIntOrNull() ?: return null

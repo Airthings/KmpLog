@@ -1,3 +1,6 @@
+0.2.6 - April 11, 2024
+• Fix a bug when extracting the date from a log file name.
+
 0.2.5 - April 11, 2024
 • Fix a bug when computing the log date from a file name.
 • Expose `FileLoggerFacility.baseFolder` property to public use.
