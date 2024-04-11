@@ -23,6 +23,8 @@ internal const val PLATFORM_ANDROID: String = "Android"
 
 internal const val PLATFORM_IOS: String = "iOS"
 
+internal const val PLATFORM_JVM: String = "jvm"
+
 internal const val INITIAL_ARRAY_SIZE: Int = 50
 
 internal const val INITIAL_BLOCK_SIZE: Int = 256

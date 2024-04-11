@@ -21,7 +21,7 @@ package com.airthings.lib.logging.platform
 
 import com.airthings.lib.logging.INITIAL_ARRAY_SIZE
 import com.airthings.lib.logging.LogDate
-import com.airthings.lib.logging.PLATFORM_ANDROID
+import com.airthings.lib.logging.PLATFORM_JVM
 import com.airthings.lib.logging.ifAfter
 import java.io.File
 import java.io.FileOutputStream
@@ -84,13 +84,15 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         date = date,
     )
 
-    override fun toString(): String = PLATFORM_ANDROID
+    override fun toString(): String = PLATFORM_JVM
 
     private fun filesImpl(
         path: String,
         date: LogDate?,
     ): Collection<String> = ArrayList<String>(INITIAL_ARRAY_SIZE).apply {
-        val iterator = File(path).walk().iterator()
+        val filePath = File(path)
+        val fileWalker = filePath.walkTopDown()
+        val iterator = fileWalker.iterator()
 
         while (iterator.hasNext()) {
             val file = iterator.next()

@@ -1,3 +1,7 @@
+0.2.4 - April 11, 2024
+• Fix a bug where the wrong platform was reported.
+• Make it easier to debug the Android/JVM folder scanning.
+
 0.2.3 - April 10, 2024
 • Fix a bug when extracting date from a file name.
 

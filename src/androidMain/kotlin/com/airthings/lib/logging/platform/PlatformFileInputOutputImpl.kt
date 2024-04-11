@@ -90,7 +90,9 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         path: String,
         date: LogDate?,
     ): Collection<String> = ArrayList<String>(INITIAL_ARRAY_SIZE).apply {
-        val iterator = File(path).walk().iterator()
+        val filePath = File(path)
+        val fileWalker = filePath.walkTopDown()
+        val iterator = fileWalker.iterator()
 
         while (iterator.hasNext()) {
             val file = iterator.next()
