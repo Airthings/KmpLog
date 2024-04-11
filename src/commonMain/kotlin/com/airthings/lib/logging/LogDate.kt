@@ -106,22 +106,26 @@ fun String.asLogDate(separator: Char?): LogDate? {
     }
 
     val dateAsIntValue = if (separator == null) {
-        toIntOrNull()
+        fileNameWithoutExtension.toIntOrNull()
     } else {
-        replace("$separator", "").toIntOrNull()
+        fileNameWithoutExtension.replace("$separator", "").toIntOrNull()
     }
 
     if (dateAsIntValue == null) {
         return null
     }
 
-    val dateAsStringValue = "$dateAsIntValue".padStart(expectedLength, '0')
+    val dateAsStringValue = dateAsIntValue.padded(expectedLength)
 
     val year = dateAsStringValue.substring(0, 4).toIntOrNull() ?: return null
     val month = dateAsStringValue.substring(4, 6).toIntOrNull() ?: return null
     val day = dateAsStringValue.substring(6, 8).toIntOrNull() ?: return null
 
-    return LogDate(year, month, day)
+    return LogDate(
+        year = year,
+        month = month,
+        day = day,
+    )
 }
 
 /**

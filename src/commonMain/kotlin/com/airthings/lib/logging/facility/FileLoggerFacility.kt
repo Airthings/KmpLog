@@ -17,6 +17,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+
 package com.airthings.lib.logging.facility
 
 import co.touchlab.stately.concurrency.AtomicReference
@@ -45,10 +47,9 @@ import kotlinx.coroutines.launch
  * @param coroutineScope A coroutine scope to run blocking i/o on.
  * @param notifier An optional implementation of [PlatformFileInputOutputNotifier].
  */
-@Suppress("unused")
 class FileLoggerFacility(
     private val minimumLogLevel: LogLevel,
-    private val baseFolder: String,
+    val baseFolder: String,
     private val coroutineScope: CoroutineScope,
     private val notifier: PlatformFileInputOutputNotifier?,
 ) : LoggerFacility {

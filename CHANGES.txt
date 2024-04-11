@@ -1,3 +1,7 @@
+0.2.5 - April 11, 2024
+• Fix a bug when computing the log date from a file name.
+• Expose `FileLoggerFacility.baseFolder` property to public use.
+
 0.2.4 - April 11, 2024
 • Fix a bug where the wrong platform was reported.
 • Make it easier to debug the Android/JVM folder scanning.
