@@ -1,0 +1,21 @@
+name: "Lint and build code"
+
+on:
+  push:
+    branches:
+      - "**"
+      - "!main"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Lint code"
+        uses: ./.github/actions/lint
+
+  build:
+    needs: lint
+    runs-on: macos-latest
+    steps:
+      - name: "Validate Gradle wrapper"
+        uses: gradle/wrapper-validation-action@v1

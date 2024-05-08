@@ -1,0 +1,11 @@
+name: "Lint code"
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Clone code and set up Java"
+      uses: ./.github/actions/clone
+    - name: "Detekt"
+      run: sh gradlew detekt
+    - name: "KtLint"
+      run: sh gradlew ktlintCheck
