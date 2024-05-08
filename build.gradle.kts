@@ -126,6 +126,15 @@ kotlin {
         }
     }
 
+    // See for details: https://youtrack.jetbrains.com/issue/KT-61573
+    targets.all {
+        compilations.all {
+            compilerOptions.configure {
+                freeCompilerArgs.add("-Xexpect-actual-classes")
+            }
+        }
+    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
