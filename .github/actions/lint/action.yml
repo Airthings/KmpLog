@@ -3,9 +3,9 @@ name: "Lint code"
 runs:
   using: "composite"
   steps:
-    - name: "Clone code and set up Java"
-      uses: ./.github/actions/clone
-    - name: "Detekt"
+    - name: "Set up Adopt OpenJDK 17"
+      uses: ./.github/actions/java
+    - name: "Run Detekt"
       run: sh gradlew detekt
-    - name: "KtLint"
+    - name: "Run KtLint"
       run: sh gradlew ktlintCheck

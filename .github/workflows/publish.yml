@@ -9,6 +9,10 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
+      - name: "Clone code"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: "Lint code"
         uses: ./.github/actions/lint
 
@@ -16,6 +20,12 @@ jobs:
     needs: lint
     runs-on: macos-latest
     steps:
+      - name: "Clone code"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: "Set up Adopt OpenJDK 17"
+        uses: ./.github/actions/java
       - name: "Validate Gradle wrapper"
         uses: gradle/wrapper-validation-action@v1
 
