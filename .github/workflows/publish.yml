@@ -9,7 +9,6 @@ on:
 
 jobs:
   lint:
-    name: "Lint Android"
     runs-on: ubuntu-latest
     steps:
       - name: "Clone repo"
