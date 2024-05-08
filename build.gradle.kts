@@ -17,18 +17,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-val autoVersion = project.property(
-    if (project.hasProperty("AUTO_VERSION")) {
-        "AUTO_VERSION"
-    } else {
-        "LIBRARY_VERSION"
-    },
-) as String
+private val version = (properties["AUTO_VERSION"] ?: properties["LIBRARY_VERSION"])?.toString()
+    ?: error("Fatal error: unable to determine the library version.")
+
+private val iosFrameworkName = "KmpLog"
 
 rootProject.group = "${properties["GROUP"]}"
-rootProject.version = autoVersion
-
-val iosFrameworkName = "${properties["IOS_FRAMEWORK_NAME"]}"
+rootProject.version = version
 
 buildscript {
     repositories {
