@@ -51,6 +51,6 @@ jobs:
       runsOn: "macOS-14"
       jvmVersion: 17
       versionBaseProperty: LIBRARY_VERSION
-      publishTask: kmmBridgePublish publishToGitHubPackagesRepository
+      publishTask: kmmBridgePublish publishAllPublicationsToGitHubPackagesRepository
     secrets:
       gradle_params: -PGITHUB_PUBLISH_USER=${{ secrets.GITHUB_ACTOR }} -PGITHUB_PUBLISH_TOKEN=${{ secrets.GITHUB_TOKEN }} -PGITHUB_REPO=https://github.com/Airthings/KmpLog.git
