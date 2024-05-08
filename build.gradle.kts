@@ -184,7 +184,7 @@ kmmbridge {
         swiftToolVersion = "5.9",
         targetPlatforms = {
             iOS { v("15") }
-        }
+        },
     )
 }
 
