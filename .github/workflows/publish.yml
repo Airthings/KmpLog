@@ -3,9 +3,6 @@ on:
   create:
     tags:
       - '^[0-9]+\.[0-9]+\.[0-9]+$'
-  push:
-    branches:
-      - publish-spm
 
 jobs:
   lint:
