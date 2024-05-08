@@ -36,6 +36,7 @@ pluginManagement {
                 "org.jlleitschuh.gradle.ktlint" -> useVersion("${props["version.plugin.ktlintGradle"]}")
                 "com.github.ben-manes.versions" -> useVersion("${props["version.plugin.outdated"]}")
                 "com.android.library" -> useVersion("${props["version.plugin.androidGradle"]}")
+                "co.touchlab.kmmbridge" -> useVersion("${props["version.plugin.kmmbridge"]}")
             }
         }
     }

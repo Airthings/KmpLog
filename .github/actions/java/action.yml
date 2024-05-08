@@ -1,0 +1,9 @@
+name: "Set up Adopt OpenJDK 17"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-java@v4
+      with:
+        distribution: adopt
+        java-version: 17
