@@ -8,14 +8,14 @@ on:
       - publish-spm
 
 jobs:
-  android-lint:
+  lint:
     name: "Lint Android"
     runs-on: ubuntu-latest
     steps:
       - name: "Clone repo"
         uses: actions/checkout@v4
         with:
-          ssh-key: ${{ secrets.GIT_SSH_KEY }}
+          fetch-depth: 0
       - name: "Set up Adopt OpenJDK 17"
         uses: actions/setup-java@v3
         with:
@@ -27,7 +27,7 @@ jobs:
         run: sh gradlew ktlintCheck
 
   build:
-    needs: "android-lint"
+    needs: lint
     runs-on: macos-latest
     steps:
       - name: "Clone repo"
@@ -43,7 +43,7 @@ jobs:
         uses: gradle/wrapper-validation-action@v1
 
   publish:
-    needs: "build"
+    needs: build
     permissions:
       contents: write
       packages: write
