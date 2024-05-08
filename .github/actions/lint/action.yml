@@ -6,6 +6,8 @@ runs:
     - name: "Set up Adopt OpenJDK 17"
       uses: ./.github/actions/java
     - name: "Run Detekt"
+      shell: sh
       run: sh gradlew detekt
     - name: "Run KtLint"
+      shell: sh
       run: sh gradlew ktlintCheck
