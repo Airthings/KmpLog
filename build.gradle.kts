@@ -192,7 +192,7 @@ kmmbridge {
         spmDirectory = "./",
         swiftToolVersion = "5.9",
         targetPlatforms = {
-            iOS { v("15") }
+            iOS { v("14") }
         },
     )
 }
