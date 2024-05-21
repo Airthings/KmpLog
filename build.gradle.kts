@@ -198,3 +198,25 @@ kmmbridge {
 }
 
 addGithubPackagesRepository()
+
+/**
+ * Apple requires 3rd party frameworks to include a privacy policy file.
+ *
+ * Based on a discussion on the Kotlin Slack, several people proposed the below solution to copy the privacy policy
+ * file to the framework output directory.
+ *
+ * Source: https://kotlinlang.slack.com/archives/C3PQML5NU/p1711715546770359
+ */
+rootProject.afterEvaluate {
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink>().forEach { linkTask ->
+        val frameworkDestinationDir = linkTask.outputFile
+        linkTask.doLast {
+            rootProject.copy {
+                val privacyFile = rootProject.file("PrivacyInfo.xcprivacy")
+
+                from(privacyFile)
+                into(frameworkDestinationDir.get())
+            }
+        }
+    }
+}
