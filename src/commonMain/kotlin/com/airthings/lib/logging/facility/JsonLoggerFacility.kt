@@ -133,11 +133,7 @@ class JsonLoggerFacility(
 
     init {
         coroutineScope.launch {
-            // Please note: The call to `io.mkdirs()` returns true if the directory exists, which may be
-            // different from the platform's implementation.
-            if (!io.mkdirs(baseFolder)) {
-                throw IllegalArgumentException("Base log folder is invalid: $baseFolder")
-            }
+            ensureBaseFolder()
         }
     }
 
@@ -221,14 +217,28 @@ class JsonLoggerFacility(
     /**
      * Scans the [baseFolder] and returns the list of log files residing in it.
      */
-    suspend fun files(): Collection<String> = io.of(baseFolder)
+    suspend fun files(): Collection<String> {
+        ensureBaseFolder()
+        return io.of(baseFolder)
+    }
 
     /**
      * Scans the [baseFolder] and returns the list of log files residing in it that were created after a certain date.
      *
      * @param date The date from which log files should be considered.
      */
-    suspend fun files(date: LogDate): Collection<String> = io.of(baseFolder, date)
+    suspend fun files(date: LogDate): Collection<String> {
+        ensureBaseFolder()
+        return io.of(baseFolder, date)
+    }
+
+    private suspend fun ensureBaseFolder() {
+        // Please note: The call to `io.mkdirs()` returns true if the directory exists, which may be
+        // different from the platform's implementation.
+        if (!io.mkdirs(baseFolder)) {
+            throw IllegalArgumentException("Base log folder is invalid: $baseFolder")
+        }
+    }
 
     private fun withLogLevel(
         level: LogLevel,
@@ -239,6 +249,8 @@ class JsonLoggerFacility(
         }
 
         coroutineScope.launch {
+            ensureBaseFolder()
+
             val logFile = "$baseFolder${io.pathSeparator}${dateStamp(null)}.json"
             val currentLogFileLocked = currentLogFile.value
 

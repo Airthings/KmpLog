@@ -133,11 +133,7 @@ class FileLoggerFacility(
 
     init {
         coroutineScope.launch {
-            // Please note: The call to `io.mkdirs()` returns true if the directory exists, which may be
-            // different from the platform's implementation.
-            if (!io.mkdirs(baseFolder)) {
-                throw IllegalArgumentException("Base log folder is invalid: $baseFolder")
-            }
+            ensureBaseFolder()
         }
     }
 
@@ -200,7 +196,10 @@ class FileLoggerFacility(
      *
      * Note: The returned list contains absolute (canonical) paths to the files.
      */
-    suspend fun files(): Collection<String> = io.of(baseFolder)
+    suspend fun files(): Collection<String> {
+        ensureBaseFolder()
+        return io.of(baseFolder)
+    }
 
     /**
      * Scans the [baseFolder] and returns the list of log files residing in it that
@@ -210,7 +209,10 @@ class FileLoggerFacility(
      *
      * @param date The date from which log files should be considered.
      */
-    suspend fun files(date: LogDate): Collection<String> = io.of(baseFolder, date)
+    suspend fun files(date: LogDate): Collection<String> {
+        ensureBaseFolder()
+        return io.of(baseFolder, date)
+    }
 
     /**
      * Deletes a file residing in [baseFolder].
@@ -218,6 +220,7 @@ class FileLoggerFacility(
      * @param name The file name to delete.
      */
     suspend fun delete(name: String) {
+        ensureBaseFolder()
         io.delete("$baseFolder${io.pathSeparator}$name")
     }
 
@@ -230,6 +233,14 @@ class FileLoggerFacility(
         io.delete(path)
     }
 
+    private suspend fun ensureBaseFolder() {
+        // Please note: The call to `io.mkdirs()` returns true if the directory exists, which may be
+        // different from the platform's implementation.
+        if (!io.mkdirs(baseFolder)) {
+            throw IllegalArgumentException("Base log folder is invalid: $baseFolder")
+        }
+    }
+
     private fun withLogLevel(
         level: LogLevel,
         action: suspend (String) -> Unit,
@@ -239,6 +250,8 @@ class FileLoggerFacility(
         }
 
         coroutineScope.launch {
+            ensureBaseFolder()
+
             val logFile = "$baseFolder${io.pathSeparator}${dateStamp(null)}.log"
             val currentLogFileLocked = currentLogFile.value
 
