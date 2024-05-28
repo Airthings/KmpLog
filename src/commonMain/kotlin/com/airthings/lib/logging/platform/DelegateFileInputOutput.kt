@@ -29,11 +29,11 @@ internal class DelegateFileInputOutput(
 ) : PlatformFileInputOutput {
     override val pathSeparator: Char = io.pathSeparator
 
-    override suspend fun mkdirs(path: String): Boolean = ensureDir {
+    override suspend fun mkdirs(path: String): Boolean = ensureFolder {
         mkdirs(path)
     }
 
-    override suspend fun size(path: String): Long = ensureDir {
+    override suspend fun size(path: String): Long = ensureFolder {
         size(path)
     }
 
@@ -41,7 +41,7 @@ internal class DelegateFileInputOutput(
         path: String,
         position: Long,
         contents: String,
-    ) = ensureDir {
+    ) = ensureFolder {
         write(
             path = path,
             position = position,
@@ -52,36 +52,36 @@ internal class DelegateFileInputOutput(
     override suspend fun append(
         path: String,
         contents: String,
-    ) = ensureDir {
+    ) = ensureFolder {
         append(
             path = path,
             contents = contents,
         )
     }
 
-    override suspend fun ensure(path: String) = ensureDir {
+    override suspend fun ensure(path: String) = ensureFolder {
         ensure(path)
     }
 
-    override suspend fun delete(path: String) = ensureDir {
+    override suspend fun delete(path: String) = ensureFolder {
         delete(path)
     }
 
-    override suspend fun of(path: String): Collection<String> = ensureDir {
+    override suspend fun of(path: String): Collection<String> = ensureFolder {
         of(path)
     }
 
     override suspend fun of(
         path: String,
         date: LogDate,
-    ): Collection<String> = ensureDir {
+    ): Collection<String> = ensureFolder {
         of(
             path = path,
             date = date,
         )
     }
 
-    private suspend fun <T> ensureDir(
+    private suspend fun <T> ensureFolder(
         action: suspend PlatformFileInputOutput.() -> T,
     ): T = with(io) {
         val isDirectoryExists = mkdirs(folder)
