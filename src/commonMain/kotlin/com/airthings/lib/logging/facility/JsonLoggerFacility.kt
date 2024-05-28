@@ -29,6 +29,7 @@ import com.airthings.lib.logging.LogMessage
 import com.airthings.lib.logging.LoggerFacility
 import com.airthings.lib.logging.dateStamp
 import com.airthings.lib.logging.datetimeStamp
+import com.airthings.lib.logging.platform.DelegateFileInputOutput
 import com.airthings.lib.logging.platform.PlatformDirectoryListing
 import com.airthings.lib.logging.platform.PlatformFileInputOutput
 import com.airthings.lib.logging.platform.PlatformFileInputOutputImpl
@@ -128,18 +129,14 @@ class JsonLoggerFacility(
         notifier = null,
     )
 
-    private val io: PlatformFileInputOutput = PlatformFileInputOutputImpl()
+    private val io: PlatformFileInputOutput = DelegateFileInputOutput(
+        folder = baseFolder,
+        io = PlatformFileInputOutputImpl(),
+        onFolderMissing = {
+            notifier?.onLogFolderInvalid(it) ?: DelegateFileInputOutput.reportMissingFolder(it)
+        },
+    )
     private val currentLogFile = AtomicReference<String?>(null)
-
-    init {
-        coroutineScope.launch {
-            // Please note: The call to `io.mkdirs()` returns true if the directory exists, which may be
-            // different from the platform's implementation.
-            if (!io.mkdirs(baseFolder)) {
-                throw IllegalArgumentException("Base log folder is invalid: $baseFolder")
-            }
-        }
-    }
 
     /**
      * Returns the platform-dependent [PlatformDirectoryListing] instance.

@@ -33,3 +33,8 @@ internal typealias LoggerFacilitiesMap = Map<String, LoggerFacility>
  * An alias for a [MutableMap] of [LoggerFacility] instances associated by their unique names.
  */
 internal typealias LoggerFacilitiesMutableMap = MutableMap<String, LoggerFacility>
+
+/**
+ * An alias for a function that handles a missing folder incident.
+ */
+internal typealias LogFolderMissingHandler = (String) -> Unit

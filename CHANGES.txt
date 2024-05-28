@@ -1,3 +1,6 @@
+0.2.11 - May 27, 2024
+• Fix a bug when a log file is stored in a non-existing folder.
+
 0.2.6 - April 11, 2024
 • Fix a bug when extracting the date from a log file name.
 
