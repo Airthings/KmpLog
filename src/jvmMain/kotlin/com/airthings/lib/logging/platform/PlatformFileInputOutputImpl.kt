@@ -26,7 +26,7 @@ import com.airthings.lib.logging.ifAfter
 import java.io.File
 import java.io.FileOutputStream
 
-internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
+internal actual class PlatformFileInputOutputImpl : DelegateFileInputOutput() {
     private val writeLock = Any()
 
     override val pathSeparator: Char = File.separatorChar

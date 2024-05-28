@@ -29,6 +29,7 @@ import com.airthings.lib.logging.LogMessage
 import com.airthings.lib.logging.LoggerFacility
 import com.airthings.lib.logging.dateStamp
 import com.airthings.lib.logging.datetimeStamp
+import com.airthings.lib.logging.platform.DelegateFileInputOutput
 import com.airthings.lib.logging.platform.PlatformDirectoryListing
 import com.airthings.lib.logging.platform.PlatformFileInputOutput
 import com.airthings.lib.logging.platform.PlatformFileInputOutputImpl
@@ -128,14 +129,14 @@ class JsonLoggerFacility(
         notifier = null,
     )
 
-    private val io: PlatformFileInputOutput = PlatformFileInputOutputImpl()
+    private val io: PlatformFileInputOutput = DelegateFileInputOutput(
+        folder = baseFolder,
+        io = PlatformFileInputOutputImpl(),
+        onFolderMissing = {
+            notifier?.onLogFolderInvalid(it) ?: DelegateFileInputOutput.reportMissingFolder(it)
+        },
+    )
     private val currentLogFile = AtomicReference<String?>(null)
-
-    init {
-        coroutineScope.launch {
-            ensureBaseFolder()
-        }
-    }
 
     /**
      * Returns the platform-dependent [PlatformDirectoryListing] instance.
@@ -217,28 +218,14 @@ class JsonLoggerFacility(
     /**
      * Scans the [baseFolder] and returns the list of log files residing in it.
      */
-    suspend fun files(): Collection<String> {
-        ensureBaseFolder()
-        return io.of(baseFolder)
-    }
+    suspend fun files(): Collection<String> = io.of(baseFolder)
 
     /**
      * Scans the [baseFolder] and returns the list of log files residing in it that were created after a certain date.
      *
      * @param date The date from which log files should be considered.
      */
-    suspend fun files(date: LogDate): Collection<String> {
-        ensureBaseFolder()
-        return io.of(baseFolder, date)
-    }
-
-    private suspend fun ensureBaseFolder() {
-        // Please note: The call to `io.mkdirs()` returns true if the directory exists, which may be
-        // different from the platform's implementation.
-        if (!io.mkdirs(baseFolder)) {
-            throw IllegalArgumentException("Base log folder is invalid: $baseFolder")
-        }
-    }
+    suspend fun files(date: LogDate): Collection<String> = io.of(baseFolder, date)
 
     private fun withLogLevel(
         level: LogLevel,
@@ -249,8 +236,6 @@ class JsonLoggerFacility(
         }
 
         coroutineScope.launch {
-            ensureBaseFolder()
-
             val logFile = "$baseFolder${io.pathSeparator}${dateStamp(null)}.json"
             val currentLogFileLocked = currentLogFile.value
 

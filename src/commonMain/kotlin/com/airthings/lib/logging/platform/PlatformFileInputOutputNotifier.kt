@@ -20,7 +20,7 @@
 package com.airthings.lib.logging.platform
 
 /**
- * Defines a contract that notifies about opening and closing log files.
+ * Defines a contract that notifies about opening and closing log files and folders.
  */
 interface PlatformFileInputOutputNotifier {
     /**
@@ -36,4 +36,11 @@ interface PlatformFileInputOutputNotifier {
      * @param path The location of the log file.
      */
     fun onLogFileClosed(path: String)
+
+    /**
+     * Invoked when the log folder cannot be prepared and is effectively invalid.
+     *
+     * @param path The location of the log folder.
+     */
+    fun onLogFolderInvalid(path: String)
 }
