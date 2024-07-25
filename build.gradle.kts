@@ -25,44 +25,20 @@ private val iosFrameworkName = "KmpLog"
 rootProject.group = "${properties["GROUP"]}"
 rootProject.version = version
 
-buildscript {
-    repositories {
-        gradlePluginPortal()
-        google()
-        mavenCentral()
-        maven(url = "https://jitpack.io")
-        maven(url = "https://plugins.gradle.org/m2/")
-    }
-
-    dependencies {
-        classpath("com.android.tools.build:gradle:${properties["version.plugin.androidGradle"]}")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${properties["version.kotlin"]}")
-        classpath("com.github.ben-manes:gradle-versions-plugin:${properties["version.plugin.outdated"]}")
-    }
-}
-
-repositories {
-    gradlePluginPortal()
-    google()
-    mavenCentral()
-    maven(url = "https://jitpack.io")
-    maven(url = "https://plugins.gradle.org/m2/")
-}
-
-// Versions of plugins are now configured once in pluginManagement block in settings.gradle.kts.
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    kotlin("multiplatform")
-    id("io.gitlab.arturbosch.detekt")
-    id("org.jlleitschuh.gradle.ktlint")
-    id("com.github.ben-manes.versions")
-    id("com.android.library")
+    alias(externalLibs.plugins.arturbosch.detekt)
+    alias(externalLibs.plugins.jlleitschuh.gradle.ktlint)
+    alias(externalLibs.plugins.ben.manes)
+    alias(externalLibs.plugins.android.library)
+    alias(externalLibs.plugins.kotlin.multiplatform)
+    alias(externalLibs.plugins.kmmbridge)
     id("maven-publish")
-    id("co.touchlab.kmmbridge")
 }
 
 dependencies {
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-cli:${properties["version.plugin.detekt"]}")
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${properties["version.plugin.detekt"]}")
+    detektPlugins(externalLibs.detekt.formatting)
+    detektPlugins(externalLibs.detekt.cli)
 }
 
 apply(plugin = "io.gitlab.arturbosch.detekt")
@@ -138,18 +114,9 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(
-                    "co.touchlab:stately-concurrency:" +
-                        "${properties["version.stately.concurrency"]}",
-                )
-                implementation(
-                    "org.jetbrains.kotlinx:kotlinx-coroutines-core:" +
-                        "${properties["version.kotlin.coroutines"]}",
-                )
-                implementation(
-                    "org.jetbrains.kotlinx:kotlinx-datetime:" +
-                        "${properties["version.kotlin.datetime"]}",
-                )
+                implementation(externalLibs.touchlab.stately.concurrency)
+                implementation(externalLibs.kotlinx.coroutines.core)
+                implementation(externalLibs.kotlinx.datetime)
             }
         }
         val jvmMain by getting
