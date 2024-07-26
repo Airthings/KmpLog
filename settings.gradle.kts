@@ -29,16 +29,38 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
+    versionCatalogs {
+        val externalLibs by creating {
+            from("com.arithings.mobile:version-catalog:1.0.5")
+        }
+    }
+
+    val props = java.util.Properties()
+    val localPropsFile = file("$rootDir/local.properties")
+    if (localPropsFile.exists()) {
+        props.load(java.io.FileInputStream(localPropsFile))
+    }
+
+    val githubUsername = System.getenv("PUBLISH_GITHUB_USERNAME") ?: props["GITHUB_USERNAME"]?.toString()
+    val githubPassword = System.getenv("PUBLISH_GITHUB_PASSWORD") ?: props["GITHUB_PASSWORD"]?.toString()
+
+    val githubPackages = listOf(
+        "https://maven.pkg.github.com/airthings/android-version-catalog",
+    )
+
     repositories {
         mavenLocal()
         gradlePluginPortal()
         google()
         mavenCentral()
-    }
 
-    versionCatalogs {
-        val externalLibs by creating {
-            from("com.arithings.mobile:version-catalog:1.0.5")
+        githubPackages.forEach { uri ->
+            maven(uri) {
+                credentials {
+                    username = githubUsername
+                    password = githubPassword
+                }
+            }
         }
     }
 }
