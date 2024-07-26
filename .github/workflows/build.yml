@@ -6,6 +6,10 @@ on:
       - "**"
       - "!main"
 
+env:
+  GITHUB_USERNAME: ${{ secrets.GITHUB_ACTOR }}
+  GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   lint:
     runs-on: ubuntu-latest
