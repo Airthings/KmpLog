@@ -6,14 +6,8 @@ runs:
     - name: "Set up Adopt OpenJDK 17"
       uses: ./.github/actions/java
     - name: "Run Detekt"
-      env:
-        PUBLISH_GITHUB_USERNAME: ${{ secrets.GITHUB_ACTOR }}
-        PUBLISH_GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       shell: sh
       run: sh gradlew detekt
     - name: "Run KtLint"
-      env:
-        PUBLISH_GITHUB_USERNAME: ${{ secrets.GITHUB_ACTOR }}
-        PUBLISH_GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       shell: sh
       run: sh gradlew ktlintCheck
