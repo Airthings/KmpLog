@@ -41,9 +41,6 @@ dependencies {
     detektPlugins(externalLibs.detekt.cli)
 }
 
-apply(plugin = "io.gitlab.arturbosch.detekt")
-apply(plugin = "org.jlleitschuh.gradle.ktlint")
-
 detekt {
     val rootDir = project.rootDir.canonicalFile
     var configDir = project.projectDir.canonicalFile
