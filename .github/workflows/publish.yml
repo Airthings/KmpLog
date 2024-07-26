@@ -6,8 +6,8 @@ on:
       - "main"
 
 env:
-  GITHUB_USERNAME: ${{ secrets.GITHUB_ACTOR }}
-  GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+  PUBLISH_GITHUB_USERNAME: ${{ secrets.GITHUB_ACTOR }}
+  PUBLISH_GITHUB_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   lint:
