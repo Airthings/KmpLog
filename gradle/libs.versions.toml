@@ -1,0 +1,219 @@
+[versions]
+kotlin = "1.9.23"
+ksp = "1.9.23-1.0.20"
+compose = "1.6.8"
+compose-material = "1.4.3"
+compose-material3 = "1.2.1"
+material-navigation = "1.7.0-alpha04"
+compose-bom = "2024.06.00"
+coroutines = "1.7.3"
+constraintlayout = "2.1.4"
+constraintlayout-compose = "1.0.1"
+ktor = "2.3.3"
+kotlinx-serialization = "1.5.1"
+material = "1.12.0"
+datetime = "0.4.1"
+places = "3.5.0"
+segment = "1.16.3"
+junit = "4.13.2"
+mockk = "1.13.5"
+appcompat = "1.7.0"
+navigation = "2.7.7"
+android-gradle = "8.2.2"
+googleservices = "4.4.2"
+crashlytics = "3.0.2"
+appdistribution = "5.0.0"
+sqldelight = "1.5.5"
+stately = "1.2.3"
+koin = "3.2.0"
+turbine = "0.7.0"
+firebase-main = "21.0.0"
+firebase-crashlytics = "19.0.3"
+firebase-messaging = "24.0.0"
+webkit = "1.11.0"
+mp-chart = "v3.1.0"
+intercom = "15.0.0"
+accompanist = "0.31.1-alpha"
+desugaring = "2.0.4"
+codingfeline-buildkonfig = "0.15.1"
+ben-manes = "0.49.0"
+jlleitschuh-gradle-ktlint = "11.6.1"
+arturbosch-detekt = "1.23.3"
+cmgapps-licenses = "4.7.0"
+detekt = "1.23.3"
+ktlint = "0.41.0"
+kotlin-compile-extension-version = "1.5.13"
+lifecycle = "2.8.3"
+mockative = "2.0.1"
+unleash = "0.5.9"
+lib-device = "v1.8.2"
+crashkios = "0.8.2"
+airthings-detekt = "1.0.5"
+airthings-secrets = "1.0.5"
+playpublisher = "3.8.4"
+googleapiclient = "2.2.0"
+kmplog = "0.2.11"
+androidblelib = "0.9.0"
+playservicelocation = "21.3.0"
+markdown="0.4.1"
+appReview = "2.0.1"
+analytics-kotlin-consent = "1.4.0"
+runner = "1.0.2"
+espressoCore = "3.0.2"
+appcompatV7 = "28.0.0"
+cbor = "0.9"
+kermit = "1.0.0"
+rxAndroidBle = "1.13.1"
+rxReplayingShare = "2.0.0"
+activityCompose = "1.3.1"
+raamcostaComposeDestinations = "1.9.54"
+firebaseBom = "31.2.3"
+kmmbridge = "0.5.5"
+
+[libraries]
+accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist" }
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "arturbosch-detekt" }
+detekt-cli = { module = "io.gitlab.arturbosch.detekt:detekt-cli", version.ref = "arturbosch-detekt" }
+
+kotlin-test-annotations-common = { module = "org.jetbrains.kotlin:kotlin-test-annotations-common", version.ref = "kotlin" }
+kotlin-test-common = { module = "org.jetbrains.kotlin:kotlin-test-common", version.ref = "kotlin" }
+
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+
+rx-android = { module = "com.polidea.rxandroidble2:rxandroidble", version.ref = "rxAndroidBle" }
+rx-replaying = { module = "com.jakewharton.rx2:replaying-share", version.ref = "rxReplayingShare" }
+
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlinx-coroutines-rx2 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-rx2", version.ref = "coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
+
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
+ktor-client-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor" }
+ktor-client-ios = { module = "io.ktor:ktor-client-ios", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-client-websocket = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
+
+androidx-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "compose" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
+androidx-compose-ui-toolingpreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
+androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
+androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "compose-material" }
+androidx-compose-material-navigation = { module = "androidx.compose.material:material-navigation", version.ref = "material-navigation" }
+androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
+androidx-compose-material3-window = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "compose-material3" }
+androidx-lifecycle-viewmodelktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "lifecycle" }
+androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+
+androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "webkit" }
+
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-crashlytics-ktx = { module = "com.google.firebase:firebase-crashlytics-ktx", version.ref = "firebase-crashlytics" }
+firebase-messaging-ktx = { module = "com.google.firebase:firebase-messaging-ktx", version.ref = "firebase-messaging" }
+firebase-common-ktx = { module = "com.google.firebase:firebase-common-ktx", version.ref = "firebase-main" }
+
+activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
+androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayout-compose" }
+
+places = { module = "com.google.android.libraries.places:places", version.ref = "places" }
+segment = { module = "com.segment.analytics.kotlin:android", version.ref = "segment" }
+
+junit = { module = "junit:junit", version.ref = "junit" }
+
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+
+mockative = { module = "io.mockative:mockative", version.ref = "mockative" }
+mockative-processor = { module = "io.mockative:mockative-processor", version.ref = "mockative" }
+
+squareup-sqldelight-runtime = { module = "com.squareup.sqldelight:runtime", version.ref = "sqldelight" }
+squareup-sqldelight-sqlitedriver = { module = "com.squareup.sqldelight:sqlite-driver", version.ref = "sqldelight" }
+squareup-sqldelight-androiddriver = { module = "com.squareup.sqldelight:android-driver", version.ref = "sqldelight" }
+squareup-sqldelight-nativedriver = { module = "com.squareup.sqldelight:native-driver", version.ref = "sqldelight" }
+squareup-sqldelight-coroutines = { module = "com.squareup.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
+
+touchlab-stately-common = { module = "co.touchlab:stately-common", version.ref = "stately" }
+touchlab-stately-concurrency = { module = "co.touchlab:stately-concurrency", version.ref = "stately" }
+touchlab-stately-isolate = { module = "co.touchlab:stately-isolate", version.ref = "stately" }
+
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
+koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4", version.ref = "koin" }
+
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+
+google-android-material = { module = "com.google.android.material:material", version.ref = "material" }
+
+mp-chart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mp-chart" }
+
+intercom-base = { module = "io.intercom.android:intercom-sdk-base", version.ref = "intercom" }
+
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
+accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "accompanist" }
+accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
+accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
+
+desugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugaring" }
+
+unleash = { module = "io.getunleash:unleash-android-proxy-sdk", version.ref = "unleash" }
+lib-device = { module = "com.airthings.device:device", version.ref = "lib-device" }
+
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "android-gradle" }
+detekt-gradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "arturbosch-detekt" }
+crashkios = { module = "co.touchlab.crashkios:crashlytics", version.ref = "crashkios" }
+
+ben-manes = { module = "com.github.ben-manes:gradle-versions-plugin", version.ref = "ben-manes" }
+raamcosta-compose-destinations = { module = "io.github.raamcosta.compose-destinations:core", version.ref = "raamcostaComposeDestinations" }
+raamcosta-compose-destinations-ksp = { module = "io.github.raamcosta.compose-destinations:ksp", version.ref = "raamcostaComposeDestinations" }
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+cbor = { module = "co.nstant.in:cbor", version.ref = "cbor" }
+google-apiclient = { module = "com.google.api-client:google-api-client", version.ref = "googleapiclient" }
+kmplog = { module = "com.airthings.lib:kmplog", version.ref = "kmplog" }
+androidblelib = { module = "com.airthings.ble:android_ble_lib", version.ref = "androidblelib" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playservicelocation" }
+markdown = { group = "com.github.jeziellago", name = "compose-markdown", version.ref = "markdown" }
+appReview = { module = "com.google.android.play:review", version.ref = "appReview" }
+appReviewKtx = { module = "com.google.android.play:review-ktx", version.ref = "appReview" }
+analytics-kotlin-consent = { module = "com.segment.analytics.kotlin.destinations:consent", version.ref = "analytics-kotlin-consent" }
+runner = { group = "com.android.support.test", name = "runner", version.ref = "runner" }
+espresso-core = { group = "com.android.support.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+appcompat-v7 = { group = "com.android.support", name = "appcompat-v7", version.ref = "appcompatV7" }
+
+[plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+android-application = { id = "com.android.application", version.ref = "android-gradle" }
+android-library = { id = "com.android.library", version.ref = "android-gradle" }
+google-service = { id = "com.google.gms.google-services", version.ref = "googleservices" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
+firebase-appdistribution = { id = "com.google.firebase.appdistribution", version.ref = "appdistribution" }
+squareup-sqldelight = { id = "com.squareup.sqldelight", version.ref = "sqldelight" }
+codingfeline-buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "codingfeline-buildkonfig" }
+ben-manes = { id = "com.github.ben-manes.versions", version.ref = "ben-manes" }
+jlleitschuh-gradle-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "jlleitschuh-gradle-ktlint" }
+arturbosch-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "arturbosch-detekt" }
+cmgapps-licenses = { id = "com.cmgapps.licenses", version.ref = "cmgapps-licenses" }
+crashkios-crashlytickslink = { id = "co.touchlab.crashkios.crashlyticslink", version.ref = "crashkios" }
+airthings-detekt = { id = "airthings.detekt", version.ref = "airthings-detekt" }
+airthings-secrets = { id = "airthings.secrets", version.ref = "airthings-secrets" }
+gradle-playpublisher = { id = "com.github.triplet.play", version.ref = "playpublisher" }
+kmmbridge = { id = "co.touchlab.kmmbridge", version.ref = "kmmbridge" }

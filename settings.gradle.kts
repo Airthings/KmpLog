@@ -31,7 +31,9 @@ pluginManagement {
 dependencyResolutionManagement {
     versionCatalogs {
         val externalLibs by creating {
-            from("com.arithings.mobile:version-catalog:1.0.5")
+            // Switch after adding secrets to repo.
+            // from("com.arithings.mobile:version-catalog:1.0.5")
+            from("gradle/libs.versions.toml")
         }
     }
 
