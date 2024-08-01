@@ -33,7 +33,7 @@ dependencyResolutionManagement {
         val externalLibs by creating {
             // Switch after adding secrets to repo.
             // from("com.arithings.mobile:version-catalog:1.0.5")
-            from("gradle/libs.versions.toml")
+            from(files("gradle/libs.versions.toml"))
         }
     }
 
