@@ -34,7 +34,7 @@ jobs:
     runs-on: "macOS-14"
     steps:
       - name: "Print KmmBridge version"
-        uses: ./.github/actions/kmmbridge-print-version"
+        uses: ./.github/actions/kmmbridge-print-version
 
       - name: "Publish"
         run: |
