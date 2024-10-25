@@ -33,9 +33,6 @@ jobs:
     needs: build
     runs-on: "macOS-14"
     steps:
-      - name: "Print KmmBridge version"
-        uses: ./.github/actions/kmmbridge-print-version
-
       - name: "Publish"
         with:
           jvmVersion: 17
