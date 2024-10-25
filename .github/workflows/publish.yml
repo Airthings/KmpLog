@@ -31,14 +31,15 @@ jobs:
 
   publish:
     needs: build
-    permissions:
-      contents: write
-      packages: write
-    uses: touchlab/KMMBridgeGithubWorkflow/.github/workflows/faktorybuildautoversion.yml@v1.1
-    with:
-      runsOn: "macOS-14"
-      jvmVersion: 17
-      versionBaseProperty: LIBRARY_VERSION
-      publishTask: kmmBridgePublish publishAllPublicationsToGitHubPackagesRepository
-    secrets:
-      gradle_params: -PGITHUB_PUBLISH_USER=${{ secrets.GITHUB_ACTOR }} -PGITHUB_PUBLISH_TOKEN=${{ secrets.GITHUB_TOKEN }} -PGITHUB_REPO=https://github.com/Airthings/KmpLog.git
+    runs-on: "macOS-14"
+    steps:
+      - name: "Print KmmBridge version"
+        uses: ./.github/actions/kmmbridge-print-version"
+
+      - name: "Publish"
+        run: |
+          ./gradlew kmmBridgePublish \
+            -PENABLE_PUBLISHING=true \
+            -PGITHUB_PUBLISH_TOKEN=${{ secrets.GITHUB_TOKEN }} \
+            -PGITHUB_REPO=${{ github.repository }} \
+            --no-daemon --info --stacktrace
