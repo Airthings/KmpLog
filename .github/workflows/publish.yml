@@ -37,9 +37,10 @@ jobs:
         uses: ./.github/actions/kmmbridge-print-version
 
       - name: "Publish"
+        with:
+          jvmVersion: 17
         run: |
-          ./gradlew kmmBridgePublish \
+          ./gradlew kmmBridgePublish publishAllPublicationsToGitHubPackagesRepository \
             -PENABLE_PUBLISHING=true \
             -PGITHUB_PUBLISH_TOKEN=${{ secrets.GITHUB_TOKEN }} \
-            -PGITHUB_REPO=${{ github.repository }} \
-            --no-daemon --info --stacktrace
+            -PGITHUB_REPO=https://github.com/Airthings/KmpLog.git
