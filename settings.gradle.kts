@@ -25,21 +25,6 @@ pluginManagement {
         google()
         mavenCentral()
     }
-
-    resolutionStrategy {
-        val props = extra.properties
-
-        eachPlugin {
-            when ("${requested.id}") {
-                "org.jetbrains.kotlin.multiplatform" -> useVersion("${props["version.kotlin"]}")
-                "io.gitlab.arturbosch.detekt" -> useVersion("${props["version.plugin.detekt"]}")
-                "org.jlleitschuh.gradle.ktlint" -> useVersion("${props["version.plugin.ktlintGradle"]}")
-                "com.github.ben-manes.versions" -> useVersion("${props["version.plugin.outdated"]}")
-                "com.android.library" -> useVersion("${props["version.plugin.androidGradle"]}")
-                "co.touchlab.kmmbridge" -> useVersion("${props["version.plugin.kmmbridge"]}")
-            }
-        }
-    }
 }
 
 dependencyResolutionManagement {

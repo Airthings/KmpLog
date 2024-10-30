@@ -51,18 +51,18 @@ repositories {
 
 // Versions of plugins are now configured once in pluginManagement block in settings.gradle.kts.
 plugins {
-    kotlin("multiplatform")
-    id("io.gitlab.arturbosch.detekt")
-    id("org.jlleitschuh.gradle.ktlint")
-    id("com.github.ben-manes.versions")
-    id("com.android.library")
-    id("maven-publish")
-    id("co.touchlab.kmmbridge")
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.detektPlugin)
+    alias(libs.plugins.ktlinPlugin)
+    alias(libs.plugins.versionsPlugin)
+    alias(libs.plugins.androidLibrary)
+    `maven-publish`
+    alias(libs.plugins.kmmbridgePlugin)
 }
 
 dependencies {
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-cli:${properties["version.plugin.detekt"]}")
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${properties["version.plugin.detekt"]}")
+    detektPlugins(libs.detektCliPlugin)
+    detektPlugins(libs.detektFormattingPlugin)
 }
 
 apply(plugin = "io.gitlab.arturbosch.detekt")
@@ -138,18 +138,9 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(
-                    "co.touchlab:stately-concurrency:" +
-                        "${properties["version.stately.concurrency"]}",
-                )
-                implementation(
-                    "org.jetbrains.kotlinx:kotlinx-coroutines-core:" +
-                        "${properties["version.kotlin.coroutines"]}",
-                )
-                implementation(
-                    "org.jetbrains.kotlinx:kotlinx-datetime:" +
-                        "${properties["version.kotlin.datetime"]}",
-                )
+                implementation(libs.stately)
+                implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.datetime)
             }
         }
         val jvmMain by getting

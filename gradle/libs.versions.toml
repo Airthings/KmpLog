@@ -1,0 +1,25 @@
+[versions]
+kotlin = "1.9.23"
+coroutines = "1.7.3"
+datetime = "0.4.1"
+stately = "1.2.3"
+androidGradle = "8.7.0"
+ktlint = "11.6.1"
+detekt = "1.23.3"
+outdated = "0.49.0"
+kmmbridge = "0.5.5"
+
+[libraries]
+stately = { module = "co.touchlab:stately-concurrency", version.ref = "stately" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "datetime" }
+detektFormattingPlugin = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+detektCliPlugin = { module = "io.gitlab.arturbosch.detekt:detekt-cli", version.ref = "detekt" }
+
+[plugins]
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+detektPlugin = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+ktlinPlugin = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "outdated" }
+androidLibrary = { id = "com.android.library", version.ref = "androidGradle" }
+kmmbridgePlugin = { id = "co.touchlab.kmmbridge", version.ref = "kmmbridge" }
