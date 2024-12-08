@@ -175,7 +175,7 @@ android {
 
 kmmbridge {
     frameworkName.set(iosFrameworkName)
-    mavenPublishArtifacts()
+    gitHubReleaseArtifacts()
     spm(
         spmDirectory = "./",
         swiftToolVersion = "5.9",
@@ -184,8 +184,6 @@ kmmbridge {
         },
     )
 }
-
-addGithubPackagesRepository()
 
 /**
  * Apple requires 3rd party frameworks to include a privacy policy file.

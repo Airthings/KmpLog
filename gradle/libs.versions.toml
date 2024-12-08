@@ -7,7 +7,7 @@ androidGradle = "8.7.0"
 ktlint = "11.6.1"
 detekt = "1.23.3"
 outdated = "0.49.0"
-kmmbridge = "1.0.1"
+kmmbridge = "1.1.1"
 
 [libraries]
 stately = { module = "co.touchlab:stately-concurrency", version.ref = "stately" }
@@ -22,4 +22,4 @@ detektPlugin = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 ktlinPlugin = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "outdated" }
 androidLibrary = { id = "com.android.library", version.ref = "androidGradle" }
-kmmbridgePlugin = { id = "co.touchlab.kmmbridge", version.ref = "kmmbridge" }
+kmmbridgePlugin = { id = "co.touchlab.kmmbridge.github", version.ref = "kmmbridge" }
