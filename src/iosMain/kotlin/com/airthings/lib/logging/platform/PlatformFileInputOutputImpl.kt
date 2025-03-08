@@ -37,7 +37,6 @@ import platform.Foundation.NSError
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSFileSize
 import platform.Foundation.NSURL
-import platform.Foundation.URLByAppendingPathComponent
 import platform.posix.EOF
 import platform.posix.SEEK_SET
 import platform.posix.fclose
