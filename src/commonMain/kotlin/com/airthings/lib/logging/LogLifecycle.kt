@@ -64,10 +64,7 @@ enum class LogLifecycle(private val value: String) {
          * @param decoration An optional decoration for the final formatting.
          */
         @Suppress("MagicNumber")
-        fun format(
-            event: LogLifecycle,
-            decoration: LogDecoration? = null,
-        ): String = StringBuilder(128)
+        fun format(event: LogLifecycle, decoration: LogDecoration? = null): String = StringBuilder(128)
             .apply {
                 if (decoration != null && !decoration.prefix.isNullOrEmpty()) {
                     append(decoration.prefix)

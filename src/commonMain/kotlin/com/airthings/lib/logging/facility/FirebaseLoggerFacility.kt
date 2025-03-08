@@ -67,12 +67,7 @@ class FirebaseLoggerFacility(
         }
     }
 
-    override fun log(
-        source: String,
-        level: LogLevel,
-        message: LogMessage,
-        error: Throwable,
-    ) {
+    override fun log(source: String, level: LogLevel, message: LogMessage, error: Throwable) {
         log(
             source = source,
             level = level,
@@ -133,10 +128,7 @@ class FirebaseLoggerFacility(
         properties.clear()
     }
 
-    private fun withLogLevel(
-        level: LogLevel,
-        action: (DefaultLoggerProperties) -> Unit,
-    ) {
+    private fun withLogLevel(level: LogLevel, action: (DefaultLoggerProperties) -> Unit) {
         if (level.value >= minimumLogLevel.value) {
             LinkedHashMap<String, Any?>(properties.size + 1).apply {
                 putAll(properties)
@@ -164,12 +156,7 @@ interface PlatformFirebaseLoggerFacility {
      * @param message The message to log.
      * @param properties Additional properties to append to the log.
      */
-    fun log(
-        source: String,
-        level: LogLevel,
-        message: String,
-        properties: DefaultLoggerProperties,
-    )
+    fun log(source: String, level: LogLevel, message: String, properties: DefaultLoggerProperties)
 
     /**
      * Logs an [error] to Firebase.
@@ -179,12 +166,7 @@ interface PlatformFirebaseLoggerFacility {
      * @param error The error details.
      * @param properties Additional properties to append to the log.
      */
-    fun log(
-        source: String,
-        level: LogLevel,
-        error: Throwable,
-        properties: DefaultLoggerProperties,
-    )
+    fun log(source: String, level: LogLevel, error: Throwable, properties: DefaultLoggerProperties)
 
     /**
      * Set the [userId] so that we can query for the userId in Firebase.

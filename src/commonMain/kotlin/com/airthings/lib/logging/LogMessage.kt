@@ -91,10 +91,7 @@ open class LogMessage(
          * @param message The message to log.
          * @param args The list of [LogArgument]s to log.
          */
-        fun format(
-            message: String,
-            args: List<LogArgument>,
-        ): String = ArrayList<Any>(args.size + 1)
+        fun format(message: String, args: List<LogArgument>): String = ArrayList<Any>(args.size + 1)
             .let {
                 it.add(message.trim())
                 args.forEach { arg ->
@@ -105,9 +102,7 @@ open class LogMessage(
             .trim()
 
         @Suppress("SpreadOperator")
-        internal fun from(
-            message: String,
-            arguments: Array<out Pair<String, Any?>>,
-        ): LogMessage = LogMessage(message, *arguments)
+        internal fun from(message: String, arguments: Array<out Pair<String, Any?>>): LogMessage =
+            LogMessage(message, *arguments)
     }
 }
