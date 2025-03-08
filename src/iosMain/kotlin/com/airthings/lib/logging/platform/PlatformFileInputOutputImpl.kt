@@ -161,33 +161,31 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         ?.coerceAtLeast(0L)
         ?: throw IllegalArgumentException("Cannot get size of file: $path")
 
-    private fun filesImpl(
-        path: String,
-        date: LogDate?,
-    ): Collection<String> = ArrayList<String>(INITIAL_ARRAY_SIZE).apply {
-        val fm = NSFileManager.defaultManager
-        val enumerator = fm.enumeratorAtPath(path)
+    private fun filesImpl(path: String, date: LogDate?): Collection<String> =
+        ArrayList<String>(INITIAL_ARRAY_SIZE).apply {
+            val fm = NSFileManager.defaultManager
+            val enumerator = fm.enumeratorAtPath(path)
 
-        if (enumerator != null) {
-            enumerator.skipDescendents()
+            if (enumerator != null) {
+                enumerator.skipDescendents()
 
-            do {
-                val filename = enumerator.nextObject()
+                do {
+                    val filename = enumerator.nextObject()
 
-                if (filename is String && filename.isNotBlank() && filename.ifAfter(date)) {
-                    try {
-                        NSURL(string = path)
-                            .URLByAppendingPathComponent(filename)
-                            ?.absoluteString
-                            ?.apply(::add)
-                    } catch (ignored: Throwable) {
-                        // This file caused some kind of error; we'll ignore it, and let
-                        // the loop process the next entry.
+                    if (filename is String && filename.isNotBlank() && filename.ifAfter(date)) {
+                        try {
+                            NSURL(string = path)
+                                .URLByAppendingPathComponent(filename)
+                                ?.absoluteString
+                                ?.apply(::add)
+                        } catch (ignored: Throwable) {
+                            // This file caused some kind of error; we'll ignore it, and let
+                            // the loop process the next entry.
+                        }
                     }
-                }
-            } while (filename != null)
+                } while (filename != null)
+            }
         }
-    }
 }
 
 /**
@@ -197,10 +195,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
  * Otherwise, the actual result of [block] is returned.
  */
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-private fun <T> nsErrorWrapper(
-    fallback: T,
-    block: NSERROR_CPOINTER.() -> T,
-): T {
+private fun <T> nsErrorWrapper(fallback: T, block: NSERROR_CPOINTER.() -> T): T {
     memScoped {
         val errorPointer: NSERROR_CPOINTER = alloc<ObjCObjectVar<NSError?>>().ptr
         val result: T = block(errorPointer)
