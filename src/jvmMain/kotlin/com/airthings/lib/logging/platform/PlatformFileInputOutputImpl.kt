@@ -90,21 +90,19 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
 
     override fun toString(): String = PLATFORM_JVM
 
-    private fun filesImpl(
-        path: String,
-        date: LogDate?,
-    ): Collection<String> = ArrayList<String>(INITIAL_ARRAY_SIZE).apply {
-        val filePath = File(path)
-        val fileWalker = filePath.walkTopDown()
-        val iterator = fileWalker.iterator()
+    private fun filesImpl(path: String, date: LogDate?): Collection<String> =
+        ArrayList<String>(INITIAL_ARRAY_SIZE).apply {
+            val filePath = File(path)
+            val fileWalker = filePath.walkTopDown()
+            val iterator = fileWalker.iterator()
 
-        while (iterator.hasNext()) {
-            val file = iterator.next()
-            val canonicalPath = file.canonicalPath
+            while (iterator.hasNext()) {
+                val file = iterator.next()
+                val canonicalPath = file.canonicalPath
 
-            if (!file.isDirectory && canonicalPath.isNotBlank() && file.name.ifAfter(date)) {
-                add(canonicalPath)
+                if (!file.isDirectory && canonicalPath.isNotBlank() && file.name.ifAfter(date)) {
+                    add(canonicalPath)
+                }
             }
         }
-    }
 }
