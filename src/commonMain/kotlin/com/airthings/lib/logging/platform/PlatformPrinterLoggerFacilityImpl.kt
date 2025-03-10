@@ -19,9 +19,16 @@
 
 package com.airthings.lib.logging.platform
 
+import com.airthings.lib.logging.LogLevel
 import com.airthings.lib.logging.facility.PlatformPrinterLoggerFacility
 
 /**
  * Expect declaration for a [PlatformPrinterLoggerFacility].
  */
-expect class PlatformPrinterLoggerFacilityImpl() : PlatformPrinterLoggerFacility
+expect class PlatformPrinterLoggerFacilityImpl() : PlatformPrinterLoggerFacility {
+    override fun print(
+        source: String,
+        level: LogLevel,
+        message: String,
+    )
+}

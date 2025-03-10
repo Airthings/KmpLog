@@ -118,5 +118,9 @@ interface PlatformPrinterLoggerFacility {
      * @param level The level at which to log the message.
      * @param message The message to log.
      */
-    fun print(source: String, level: LogLevel, message: String)
+    fun print(
+        source: String,
+        level: LogLevel,
+        message: String,
+    )
 }

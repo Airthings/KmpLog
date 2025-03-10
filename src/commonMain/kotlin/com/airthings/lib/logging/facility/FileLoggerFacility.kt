@@ -255,7 +255,6 @@ class FileLoggerFacility(
     companion object {
         private const val LOG_TAG: String = "FileLoggerFacility"
 
-        internal fun loggerCoroutineScope(): CoroutineScope =
-            CoroutineScope(Dispatchers.Main + SupervisorJob())
+        internal fun loggerCoroutineScope(): CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     }
 }

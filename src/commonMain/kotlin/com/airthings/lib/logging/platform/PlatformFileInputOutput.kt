@@ -19,6 +19,8 @@
 
 package com.airthings.lib.logging.platform
 
+import com.airthings.lib.logging.LogDate
+
 /**
  * Defines a contract to perform common input/output on files.
  *
@@ -62,7 +64,11 @@ internal interface PlatformFileInputOutput : PlatformDirectoryListing {
      * @param position Number of bytes to position the file pointer at.
      * @param contents The contents to write to the file.
      */
-    suspend fun write(path: String, position: Long, contents: String)
+    suspend fun write(
+        path: String,
+        position: Long,
+        contents: String,
+    )
 
     /**
      * Appends arbitrary bytes to a file.
@@ -70,7 +76,10 @@ internal interface PlatformFileInputOutput : PlatformDirectoryListing {
      * @param path The location of the file.
      * @param contents The contents to append to the file.
      */
-    suspend fun append(path: String, contents: String)
+    suspend fun append(
+        path: String,
+        contents: String,
+    )
 
     /**
      * Ensures that a file exists at a specific location, creating it if necessary.
@@ -90,7 +99,27 @@ internal interface PlatformFileInputOutput : PlatformDirectoryListing {
 /**
  * Platform-specific implementation of [PlatformFileInputOutput].
  */
-internal expect class PlatformFileInputOutputImpl() : PlatformFileInputOutput
+internal expect class PlatformFileInputOutputImpl() : PlatformFileInputOutput {
+    override val pathSeparator: Char
+    override suspend fun mkdirs(path: String): Boolean
+    override suspend fun size(path: String): Long
+    override suspend fun write(
+        path: String,
+        position: Long,
+        contents: String,
+    )
+    override suspend fun append(
+        path: String,
+        contents: String,
+    )
+    override suspend fun ensure(path: String)
+    override suspend fun delete(path: String)
+    override suspend fun of(path: String): Collection<String>
+    override suspend fun of(
+        path: String,
+        date: LogDate,
+    ): Collection<String>
+}
 
 /**
  * Returns the absolute position within a file based on a relative position.

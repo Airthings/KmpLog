@@ -55,13 +55,21 @@ class FirebaseLoggerFacility(
 
     override fun isEnabled(): Boolean = true
 
-    override fun log(source: String, level: LogLevel, message: LogMessage) {
+    override fun log(
+        source: String,
+        level: LogLevel,
+        message: LogMessage,
+    ) {
         withLogLevel(level) {
             facility.log(source, level, PrinterLoggerFacility.format(level, message), it)
         }
     }
 
-    override fun log(source: String, level: LogLevel, error: Throwable) {
+    override fun log(
+        source: String,
+        level: LogLevel,
+        error: Throwable,
+    ) {
         withLogLevel(level) {
             facility.log(source, level, error, it)
         }

@@ -43,5 +43,8 @@ interface PlatformDirectoryListing {
      * @param path The location of the directory to scan.
      * @param date The date from which log files should be considered.
      */
-    suspend fun of(path: String, date: LogDate): Collection<String>
+    suspend fun of(
+        path: String,
+        date: LogDate,
+    ): Collection<String>
 }

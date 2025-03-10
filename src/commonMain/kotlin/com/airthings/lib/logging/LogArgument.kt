@@ -54,7 +54,10 @@ interface LogArgument {
          * @param label The label of the argument.
          * @param value The value of the argument, may be null.
          */
-        fun format(label: String, value: Any?): String = "[$label=${formatValue(value)}]"
+        fun format(
+            label: String,
+            value: Any?,
+        ): String = "[$label=${formatValue(value)}]"
 
         /**
          * Returns a textual representation of [value].
