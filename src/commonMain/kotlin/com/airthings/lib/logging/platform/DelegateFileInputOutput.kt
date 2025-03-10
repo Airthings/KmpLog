@@ -81,9 +81,7 @@ internal class DelegateFileInputOutput(
         )
     }
 
-    private suspend fun <T> ensureFolder(
-        action: suspend PlatformFileInputOutput.() -> T,
-    ): T = with(io) {
+    private suspend fun <T> ensureFolder(action: suspend PlatformFileInputOutput.() -> T): T = with(io) {
         val isDirectoryExists = mkdirs(folder)
         try {
             io.action()

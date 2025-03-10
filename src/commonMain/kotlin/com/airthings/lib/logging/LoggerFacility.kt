@@ -139,7 +139,10 @@ interface LoggerFacility {
          * @param name The unique name to use for this [LoggerFacility] instance.
          * @param facility The [LoggerFacility] instance to register.
          */
-        fun register(name: String, facility: LoggerFacility) {
+        fun register(
+            name: String,
+            facility: LoggerFacility,
+        ) {
             val facilities = facilitiesMap
             if (!facilities.containsKey(name)) {
                 facilitiesMapCreator(1 + facilities.size).apply {

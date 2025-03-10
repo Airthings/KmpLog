@@ -37,7 +37,6 @@ import platform.Foundation.NSError
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSFileSize
 import platform.Foundation.NSURL
-import platform.Foundation.URLByAppendingPathComponent
 import platform.posix.EOF
 import platform.posix.SEEK_SET
 import platform.posix.fclose
@@ -50,13 +49,13 @@ private typealias NSERROR_CPOINTER = CPointer<ObjCObjectVar<NSError?>>
 
 @OptIn(ExperimentalForeignApi::class)
 internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
-    override val pathSeparator: Char = '/'
+    actual override val pathSeparator: Char = '/'
 
-    override suspend fun size(path: String): Long = nsErrorWrapper(0L) {
+    actual override suspend fun size(path: String): Long = nsErrorWrapper(0L) {
         sizeImpl(path)
     }
 
-    override suspend fun mkdirs(path: String): Boolean {
+    actual override suspend fun mkdirs(path: String): Boolean {
         nsErrorWrapper(false) {
             NSFileManager.defaultManager.createDirectoryAtPath(
                 path = path,
@@ -69,7 +68,11 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         return isDirectory(path)
     }
 
-    override suspend fun write(path: String, position: Long, contents: String) {
+    actual override suspend fun write(
+        path: String,
+        position: Long,
+        contents: String,
+    ) {
         nsErrorWrapper(Unit) {
             val file = fopen(__filename = path, __mode = "a")
                 ?: throw IllegalArgumentException("Cannot open file for appending: $path")
@@ -91,7 +94,10 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         }
     }
 
-    override suspend fun append(path: String, contents: String) {
+    actual override suspend fun append(
+        path: String,
+        contents: String,
+    ) {
         nsErrorWrapper(Unit) {
             val file = fopen(__filename = path, __mode = "a")
                 ?: throw IllegalArgumentException("Cannot open file for appending: $path")
@@ -106,7 +112,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         }
     }
 
-    override suspend fun ensure(path: String) {
+    actual override suspend fun ensure(path: String) {
         val exists = memScoped {
             val cValue = alloc<BooleanVar>()
             cValue.value = false
@@ -124,7 +130,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         }
     }
 
-    override suspend fun delete(path: String) {
+    actual override suspend fun delete(path: String) {
         nsErrorWrapper(Unit) {
             NSFileManager.defaultManager.removeItemAtPath(
                 path = path,
@@ -133,12 +139,15 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         }
     }
 
-    override suspend fun of(path: String): Collection<String> = filesImpl(
+    actual override suspend fun of(path: String): Collection<String> = filesImpl(
         path = path,
         date = null,
     )
 
-    override suspend fun of(path: String, date: LogDate): Collection<String> = filesImpl(
+    actual override suspend fun of(
+        path: String,
+        date: LogDate,
+    ): Collection<String> = filesImpl(
         path = path,
         date = date,
     )

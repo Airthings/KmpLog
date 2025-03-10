@@ -28,7 +28,11 @@ import platform.Foundation.NSLog
  * Implements logging in iOS via a simple [NSLog] call.
  */
 actual class PlatformPrinterLoggerFacilityImpl : PlatformPrinterLoggerFacility {
-    override fun print(source: String, level: LogLevel, message: String) {
+    actual override fun print(
+        source: String,
+        level: LogLevel,
+        message: String,
+    ) {
         // To sync with Android's logging format.
         val prefix = when (level) {
             LogLevel.INFO -> "I"
