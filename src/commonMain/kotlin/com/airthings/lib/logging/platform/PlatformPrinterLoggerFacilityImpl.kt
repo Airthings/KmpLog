@@ -26,5 +26,9 @@ import com.airthings.lib.logging.facility.PlatformPrinterLoggerFacility
  * Expect declaration for a [PlatformPrinterLoggerFacility].
  */
 expect class PlatformPrinterLoggerFacilityImpl() : PlatformPrinterLoggerFacility {
-    override fun print(source: String, level: LogLevel, message: String)
+    override fun print(
+        source: String,
+        level: LogLevel,
+        message: String,
+    )
 }

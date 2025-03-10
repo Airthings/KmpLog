@@ -55,7 +55,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         sizeImpl(path)
     }
 
-    actual override  suspend fun mkdirs(path: String): Boolean {
+    actual override suspend fun mkdirs(path: String): Boolean {
         nsErrorWrapper(false) {
             NSFileManager.defaultManager.createDirectoryAtPath(
                 path = path,
