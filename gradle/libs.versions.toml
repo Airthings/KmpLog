@@ -7,7 +7,7 @@ androidGradle = "8.7.3"
 ktlint = "12.2.0"
 detekt = "1.23.8"
 outdated = "0.52.0"
-kmmbridge = "1.2.0"
+kmmbridge = "1.2.1"
 
 [libraries]
 stately = { module = "co.touchlab:stately-concurrency", version.ref = "stately" }
