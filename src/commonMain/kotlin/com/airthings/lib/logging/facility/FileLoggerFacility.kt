@@ -148,7 +148,11 @@ class FileLoggerFacility(
 
     override fun isEnabled(): Boolean = true
 
-    override fun log(source: String, level: LogLevel, message: LogMessage) {
+    override fun log(
+        source: String,
+        level: LogLevel,
+        message: LogMessage,
+    ) {
         withLogLevel(level) { logFile ->
             io.append(
                 path = logFile,
@@ -157,7 +161,11 @@ class FileLoggerFacility(
         }
     }
 
-    override fun log(source: String, level: LogLevel, error: Throwable) {
+    override fun log(
+        source: String,
+        level: LogLevel,
+        error: Throwable,
+    ) {
         withLogLevel(level) { logFile ->
             io.append(
                 path = logFile,
@@ -166,7 +174,12 @@ class FileLoggerFacility(
         }
     }
 
-    override fun log(source: String, level: LogLevel, message: LogMessage, error: Throwable) {
+    override fun log(
+        source: String,
+        level: LogLevel,
+        message: LogMessage,
+        error: Throwable,
+    ) {
         log(
             source = source,
             level = level,
@@ -214,7 +227,10 @@ class FileLoggerFacility(
         io.delete(path)
     }
 
-    private fun withLogLevel(level: LogLevel, action: suspend (String) -> Unit) {
+    private fun withLogLevel(
+        level: LogLevel,
+        action: suspend (String) -> Unit,
+    ) {
         if (level.value < minimumLogLevel.value) {
             return
         }

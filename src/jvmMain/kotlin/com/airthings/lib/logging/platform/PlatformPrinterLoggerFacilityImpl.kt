@@ -28,7 +28,11 @@ import java.util.logging.Logger
  * Implements logging in JVM via the [java.util.logging.Logger] package.
  */
 actual class PlatformPrinterLoggerFacilityImpl : PlatformPrinterLoggerFacility {
-    override fun print(source: String, level: LogLevel, message: String) {
+    override fun print(
+        source: String,
+        level: LogLevel,
+        message: String,
+    ) {
         when (level) {
             LogLevel.INFO -> Logger.getLogger(source).info(message)
             LogLevel.WARNING -> Logger.getLogger(source).warning(message)

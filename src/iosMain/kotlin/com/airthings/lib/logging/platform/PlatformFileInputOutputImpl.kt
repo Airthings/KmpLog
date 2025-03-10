@@ -37,6 +37,7 @@ import platform.Foundation.NSError
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSFileSize
 import platform.Foundation.NSURL
+import platform.Foundation.URLByAppendingPathComponent
 import platform.posix.EOF
 import platform.posix.SEEK_SET
 import platform.posix.fclose
@@ -68,7 +69,11 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         return isDirectory(path)
     }
 
-    override suspend fun write(path: String, position: Long, contents: String) {
+    override suspend fun write(
+        path: String,
+        position: Long,
+        contents: String,
+    ) {
         nsErrorWrapper(Unit) {
             val file = fopen(__filename = path, __mode = "a")
                 ?: throw IllegalArgumentException("Cannot open file for appending: $path")
@@ -90,7 +95,10 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         }
     }
 
-    override suspend fun append(path: String, contents: String) {
+    override suspend fun append(
+        path: String,
+        contents: String,
+    ) {
         nsErrorWrapper(Unit) {
             val file = fopen(__filename = path, __mode = "a")
                 ?: throw IllegalArgumentException("Cannot open file for appending: $path")
@@ -137,7 +145,10 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         date = null,
     )
 
-    override suspend fun of(path: String, date: LogDate): Collection<String> = filesImpl(
+    override suspend fun of(
+        path: String,
+        date: LogDate,
+    ): Collection<String> = filesImpl(
         path = path,
         date = date,
     )
@@ -161,31 +172,33 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         ?.coerceAtLeast(0L)
         ?: throw IllegalArgumentException("Cannot get size of file: $path")
 
-    private fun filesImpl(path: String, date: LogDate?): Collection<String> =
-        ArrayList<String>(INITIAL_ARRAY_SIZE).apply {
-            val fm = NSFileManager.defaultManager
-            val enumerator = fm.enumeratorAtPath(path)
+    private fun filesImpl(
+        path: String,
+        date: LogDate?,
+    ): Collection<String> = ArrayList<String>(INITIAL_ARRAY_SIZE).apply {
+        val fm = NSFileManager.defaultManager
+        val enumerator = fm.enumeratorAtPath(path)
 
-            if (enumerator != null) {
-                enumerator.skipDescendents()
+        if (enumerator != null) {
+            enumerator.skipDescendents()
 
-                do {
-                    val filename = enumerator.nextObject()
+            do {
+                val filename = enumerator.nextObject()
 
-                    if (filename is String && filename.isNotBlank() && filename.ifAfter(date)) {
-                        try {
-                            NSURL(string = path)
-                                .URLByAppendingPathComponent(filename)
-                                ?.absoluteString
-                                ?.apply(::add)
-                        } catch (ignored: Throwable) {
-                            // This file caused some kind of error; we'll ignore it, and let
-                            // the loop process the next entry.
-                        }
+                if (filename is String && filename.isNotBlank() && filename.ifAfter(date)) {
+                    try {
+                        NSURL(string = path)
+                            .URLByAppendingPathComponent(filename)
+                            ?.absoluteString
+                            ?.apply(::add)
+                    } catch (ignored: Throwable) {
+                        // This file caused some kind of error; we'll ignore it, and let
+                        // the loop process the next entry.
                     }
-                } while (filename != null)
-            }
+                }
+            } while (filename != null)
         }
+    }
 }
 
 /**
@@ -195,7 +208,10 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
  * Otherwise, the actual result of [block] is returned.
  */
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-private fun <T> nsErrorWrapper(fallback: T, block: NSERROR_CPOINTER.() -> T): T {
+private fun <T> nsErrorWrapper(
+    fallback: T,
+    block: NSERROR_CPOINTER.() -> T,
+): T {
     memScoped {
         val errorPointer: NSERROR_CPOINTER = alloc<ObjCObjectVar<NSError?>>().ptr
         val result: T = block(errorPointer)

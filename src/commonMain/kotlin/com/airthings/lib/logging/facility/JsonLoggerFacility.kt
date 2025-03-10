@@ -148,7 +148,11 @@ class JsonLoggerFacility(
 
     override fun isEnabled(): Boolean = true
 
-    override fun log(source: String, level: LogLevel, message: LogMessage) {
+    override fun log(
+        source: String,
+        level: LogLevel,
+        message: LogMessage,
+    ) {
         withLogLevel(level) { logFile, prefix ->
             val jsonOutput = jsonOutput(
                 source = source,
@@ -166,7 +170,11 @@ class JsonLoggerFacility(
         }
     }
 
-    override fun log(source: String, level: LogLevel, error: Throwable) {
+    override fun log(
+        source: String,
+        level: LogLevel,
+        error: Throwable,
+    ) {
         withLogLevel(level) { logFile, prefix ->
             val jsonOutput = jsonOutput(
                 source = source,
@@ -184,7 +192,12 @@ class JsonLoggerFacility(
         }
     }
 
-    override fun log(source: String, level: LogLevel, message: LogMessage, error: Throwable) {
+    override fun log(
+        source: String,
+        level: LogLevel,
+        message: LogMessage,
+        error: Throwable,
+    ) {
         withLogLevel(level) { logFile, prefix ->
             val jsonOutput = jsonOutput(
                 source = source,
@@ -214,7 +227,10 @@ class JsonLoggerFacility(
      */
     suspend fun files(date: LogDate): Collection<String> = io.of(baseFolder, date)
 
-    private fun withLogLevel(level: LogLevel, action: suspend (jsonOutput: String, prefix: String) -> Unit) {
+    private fun withLogLevel(
+        level: LogLevel,
+        action: suspend (jsonOutput: String, prefix: String) -> Unit,
+    ) {
         if (level.value < minimumLogLevel.value) {
             return
         }

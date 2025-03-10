@@ -54,7 +54,10 @@ interface LogArgument {
          * @param label The label of the argument.
          * @param value The value of the argument, may be null.
          */
-        fun format(label: String, value: Any?): String = "[$label=${formatValue(value)}]"
+        fun format(
+            label: String,
+            value: Any?,
+        ): String = "[$label=${formatValue(value)}]"
 
         /**
          * Returns a textual representation of [value].
@@ -137,7 +140,10 @@ interface LogArgument {
             iterator = iterable.iterator(),
         )
 
-        private fun formatIterator(type: String, iterator: Iterator<*>): String = StringBuilder(BUFFER_SIZE)
+        private fun formatIterator(
+            type: String,
+            iterator: Iterator<*>,
+        ): String = StringBuilder(BUFFER_SIZE)
             .apply {
                 append("$type(")
                 while (iterator.hasNext()) {

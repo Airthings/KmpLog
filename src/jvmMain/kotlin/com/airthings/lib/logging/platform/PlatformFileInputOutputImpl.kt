@@ -41,7 +41,11 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
 
     override suspend fun size(path: String): Long = File(path).length()
 
-    override suspend fun write(path: String, position: Long, contents: String) {
+    override suspend fun write(
+        path: String,
+        position: Long,
+        contents: String,
+    ) {
         synchronized(writeLock) {
             FileOutputStream(File(path), true).use {
                 val channel = it.channel
@@ -54,7 +58,10 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         }
     }
 
-    override suspend fun append(path: String, contents: String) {
+    override suspend fun append(
+        path: String,
+        contents: String,
+    ) {
         synchronized(writeLock) {
             FileOutputStream(File(path), true).use {
                 it.write(contents.toByteArray())
@@ -83,26 +90,31 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         date = null,
     )
 
-    override suspend fun of(path: String, date: LogDate): Collection<String> = filesImpl(
+    override suspend fun of(
+        path: String,
+        date: LogDate,
+    ): Collection<String> = filesImpl(
         path = path,
         date = date,
     )
 
     override fun toString(): String = PLATFORM_JVM
 
-    private fun filesImpl(path: String, date: LogDate?): Collection<String> =
-        ArrayList<String>(INITIAL_ARRAY_SIZE).apply {
-            val filePath = File(path)
-            val fileWalker = filePath.walkTopDown()
-            val iterator = fileWalker.iterator()
+    private fun filesImpl(
+        path: String,
+        date: LogDate?,
+    ): Collection<String> = ArrayList<String>(INITIAL_ARRAY_SIZE).apply {
+        val filePath = File(path)
+        val fileWalker = filePath.walkTopDown()
+        val iterator = fileWalker.iterator()
 
-            while (iterator.hasNext()) {
-                val file = iterator.next()
-                val canonicalPath = file.canonicalPath
+        while (iterator.hasNext()) {
+            val file = iterator.next()
+            val canonicalPath = file.canonicalPath
 
-                if (!file.isDirectory && canonicalPath.isNotBlank() && file.name.ifAfter(date)) {
-                    add(canonicalPath)
-                }
+            if (!file.isDirectory && canonicalPath.isNotBlank() && file.name.ifAfter(date)) {
+                add(canonicalPath)
             }
         }
+    }
 }

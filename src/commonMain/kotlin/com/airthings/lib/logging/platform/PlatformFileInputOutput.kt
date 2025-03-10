@@ -62,7 +62,11 @@ internal interface PlatformFileInputOutput : PlatformDirectoryListing {
      * @param position Number of bytes to position the file pointer at.
      * @param contents The contents to write to the file.
      */
-    suspend fun write(path: String, position: Long, contents: String)
+    suspend fun write(
+        path: String,
+        position: Long,
+        contents: String,
+    )
 
     /**
      * Appends arbitrary bytes to a file.
@@ -70,7 +74,10 @@ internal interface PlatformFileInputOutput : PlatformDirectoryListing {
      * @param path The location of the file.
      * @param contents The contents to append to the file.
      */
-    suspend fun append(path: String, contents: String)
+    suspend fun append(
+        path: String,
+        contents: String,
+    )
 
     /**
      * Ensures that a file exists at a specific location, creating it if necessary.
