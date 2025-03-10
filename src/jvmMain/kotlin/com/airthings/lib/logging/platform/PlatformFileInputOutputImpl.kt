@@ -29,9 +29,9 @@ import java.io.FileOutputStream
 internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
     private val writeLock = Any()
 
-    override val pathSeparator: Char = File.separatorChar
+    actual override  val pathSeparator: Char = File.separatorChar
 
-    override suspend fun mkdirs(path: String): Boolean {
+    actual override  suspend fun mkdirs(path: String): Boolean {
         val pathFile = File(path)
 
         pathFile.mkdirs()
@@ -39,9 +39,9 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         return pathFile.isDirectory
     }
 
-    override suspend fun size(path: String): Long = File(path).length()
+    actual override  suspend fun size(path: String): Long = File(path).length()
 
-    override suspend fun write(
+    actual override  suspend fun write(
         path: String,
         position: Long,
         contents: String,
@@ -58,7 +58,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         }
     }
 
-    override suspend fun append(
+    actual override  suspend fun append(
         path: String,
         contents: String,
     ) {
@@ -69,7 +69,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         }
     }
 
-    override suspend fun ensure(path: String) {
+    actual override  suspend fun ensure(path: String) {
         val parentPath = File(path).parentFile.canonicalPath
 
         if (mkdirs(parentPath)) {
@@ -79,18 +79,18 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         }
     }
 
-    override suspend fun delete(path: String) {
+    actual override  suspend fun delete(path: String) {
         synchronized(writeLock) {
             File(path).delete()
         }
     }
 
-    override suspend fun of(path: String): Collection<String> = filesImpl(
+    actual override  suspend fun of(path: String): Collection<String> = filesImpl(
         path = path,
         date = null,
     )
 
-    override suspend fun of(
+    actual override  suspend fun of(
         path: String,
         date: LogDate,
     ): Collection<String> = filesImpl(

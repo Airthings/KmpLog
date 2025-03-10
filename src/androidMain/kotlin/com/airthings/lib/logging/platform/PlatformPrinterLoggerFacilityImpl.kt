@@ -28,7 +28,7 @@ import com.airthings.lib.logging.facility.PlatformPrinterLoggerFacility
  * Implements logging in Android via the [android.util.Log] object.
  */
 actual class PlatformPrinterLoggerFacilityImpl : PlatformPrinterLoggerFacility {
-    override fun print(
+    actual override fun print(
         source: String,
         level: LogLevel,
         message: String,

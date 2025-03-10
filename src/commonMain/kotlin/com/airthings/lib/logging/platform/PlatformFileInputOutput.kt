@@ -19,6 +19,8 @@
 
 package com.airthings.lib.logging.platform
 
+import com.airthings.lib.logging.LogDate
+
 /**
  * Defines a contract to perform common input/output on files.
  *
@@ -97,7 +99,17 @@ internal interface PlatformFileInputOutput : PlatformDirectoryListing {
 /**
  * Platform-specific implementation of [PlatformFileInputOutput].
  */
-internal expect class PlatformFileInputOutputImpl() : PlatformFileInputOutput
+internal expect class PlatformFileInputOutputImpl() : PlatformFileInputOutput {
+    override val pathSeparator: Char
+    override suspend fun mkdirs(path: String): Boolean
+    override suspend fun size(path: String): Long
+    override suspend fun write(path: String, position: Long, contents: String)
+    override suspend fun append(path: String, contents: String)
+    override suspend fun ensure(path: String)
+    override suspend fun delete(path: String)
+    override suspend fun of(path: String): Collection<String>
+    override suspend fun of(path: String, date: LogDate): Collection<String>
+}
 
 /**
  * Returns the absolute position within a file based on a relative position.
