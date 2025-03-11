@@ -2,8 +2,8 @@ name: "Lint and build code, and publish artifacts to repository"
 
 on:
   push:
-    branches:
-      - "main"
+    tags:
+      - '[0-9]+\.[0-9]+\.[0-9]+'
 
 jobs:
   lint:
@@ -31,14 +31,13 @@ jobs:
 
   publish:
     needs: build
-    permissions:
-      contents: write
-      packages: write
-    uses: touchlab/KMMBridgeGithubWorkflow/.github/workflows/faktorybuildautoversion.yml@v1.1
-    with:
-      runsOn: "macOS-14"
-      jvmVersion: 17
-      versionBaseProperty: LIBRARY_VERSION
-      publishTask: kmmBridgePublish publishAllPublicationsToGitHubPackagesRepository
-    secrets:
-      gradle_params: -PGITHUB_PUBLISH_USER=${{ secrets.GITHUB_ACTOR }} -PGITHUB_PUBLISH_TOKEN=${{ secrets.GITHUB_TOKEN }} -PGITHUB_REPO=https://github.com/Airthings/KmpLog.git
+    runs-on: "macOS-14"
+    steps:
+      - name: "Publish"
+        with:
+          jvmVersion: 17
+        run: |
+          ./gradlew kmmBridgePublish publishAllPublicationsToGitHubPackagesRepository \
+            -PENABLE_PUBLISHING=true \
+            -PGITHUB_PUBLISH_TOKEN=${{ secrets.GITHUB_TOKEN }} \
+            -PGITHUB_REPO=https://github.com/Airthings/KmpLog.git
