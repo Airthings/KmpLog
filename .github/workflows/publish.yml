@@ -34,8 +34,9 @@ jobs:
     runs-on: "macOS-14"
     steps:
       - name: "Publish"
+        shell: sh
         run: |
-          ./gradlew kmmBridgePublish publishAllPublicationsToGitHubPackagesRepository \
+          sh gradlew kmmBridgePublish publishAllPublicationsToGitHubPackagesRepository \
             -PENABLE_PUBLISHING=true \
             -PGITHUB_PUBLISH_TOKEN=${{ secrets.GITHUB_TOKEN }} \
             -PGITHUB_REPO=https://github.com/Airthings/KmpLog.git
