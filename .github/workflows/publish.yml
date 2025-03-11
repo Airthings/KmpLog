@@ -34,8 +34,6 @@ jobs:
     runs-on: "macOS-14"
     steps:
       - name: "Publish"
-        with:
-          jvmVersion: 17
         run: |
           ./gradlew kmmBridgePublish publishAllPublicationsToGitHubPackagesRepository \
             -PENABLE_PUBLISHING=true \
