@@ -28,7 +28,7 @@ jobs:
       - name: "Set up Adopt OpenJDK 17"
         uses: ./.github/actions/java
       - name: "Validate Gradle wrapper"
-        uses: gradle/wrapper-validation-action@v1
+        uses: gradle/actions/wrapper-validation@v4
       - name: "Build code"
         shell: sh
         run: sh gradlew build
