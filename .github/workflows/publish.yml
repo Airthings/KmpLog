@@ -38,7 +38,7 @@ jobs:
           tag_name: "${{ steps.versionPropertyValue.outputs.propVal }}"
 
       - name: "Publish"
-        shell: sh"
+        shell: sh
         run: |
           pwd
           echo "Workspace: ${{ github.workspace }}"
