@@ -40,9 +40,6 @@ jobs:
       - name: "Publish"
         shell: sh
         run: |
-          pwd
-          echo "Workspace: ${{ github.workspace }}"
-          ls -l "${{ github.workspace }}/build/"
           sh gradlew kmmBridgePublish publishAllPublicationsToGitHubPackagesRepository \
             -PGITHUB_ARTIFACT_RELEASE_ID=${{ steps.devrelease.outputs.id }} \
             -PENABLE_PUBLISHING=true \
