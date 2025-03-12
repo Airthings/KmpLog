@@ -27,15 +27,16 @@ jobs:
       - name: "Set up Adopt OpenJDK 17"
         uses: ./.github/actions/java
       - name: "Validate Gradle wrapper"
-        uses: gradle/wrapper-validation-action@v1
+        uses: gradle/actions/wrapper-validation@v4
 
   publish:
     needs: build
     runs-on: "macOS-14"
     steps:
       - name: "Publish"
+        shell: sh
         run: |
-          ./gradlew kmmBridgePublish publishAllPublicationsToGitHubPackagesRepository \
+          sh gradlew kmmBridgePublish publishAllPublicationsToGitHubPackagesRepository \
             -PENABLE_PUBLISHING=true \
             -PGITHUB_PUBLISH_TOKEN=${{ secrets.GITHUB_TOKEN }} \
             -PGITHUB_REPO=https://github.com/Airthings/KmpLog.git
