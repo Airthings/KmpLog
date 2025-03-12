@@ -40,7 +40,7 @@ jobs:
       - name: "Publish"
         shell: sh
         run: |
-          sh gradlew kmmBridgePublish publishAllPublicationsToGitHubPackagesRepository \
+          sh gradlew publishKotlinMultiplatformPublicationToGitHubPackagesRepository publishAndroidDebugPublicationToGitHubPackagesRepository publishAndroidReleasePublicationToGitHubPackagesRepository kmmBridgePublish \
             -PGITHUB_ARTIFACT_RELEASE_ID=${{ steps.devrelease.outputs.id }} \
             -PENABLE_PUBLISHING=true \
             -PGITHUB_PUBLISH_TOKEN=${{ secrets.GITHUB_TOKEN }} \
