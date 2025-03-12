@@ -7,7 +7,6 @@ on:
 
 jobs:
   build_and_publish:
-    needs: lint
     runs-on: macos-latest
     steps:
       - name: "Clone code"
