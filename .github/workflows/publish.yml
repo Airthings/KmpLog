@@ -28,6 +28,9 @@ jobs:
         uses: ./.github/actions/java
       - name: "Validate Gradle wrapper"
         uses: gradle/actions/wrapper-validation@v4
+      - name: "Build code"
+        shell: sh
+        run: sh gradlew build
 
   publish:
     needs: build
@@ -36,6 +39,9 @@ jobs:
       - name: "Publish"
         shell: sh
         run: |
+          pwd
+          echo "Workspace: ${{ github.workspace }}"
+          ls -l "${{ github.workspace }}/build/"
           sh gradlew kmmBridgePublish publishAllPublicationsToGitHubPackagesRepository \
             -PENABLE_PUBLISHING=true \
             -PGITHUB_PUBLISH_TOKEN=${{ secrets.GITHUB_TOKEN }} \
