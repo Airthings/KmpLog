@@ -40,9 +40,20 @@ jobs:
       - name: "Publish"
         shell: sh
         run: |
-          sh gradlew publishKotlinMultiplatformPublicationToGitHubPackagesRepository publishAndroidDebugPublicationToGitHubPackagesRepository publishAndroidReleasePublicationToGitHubPackagesRepository kmmBridgePublish \
+          sh gradlew publishKotlinMultiplatformPublicationToGitHubPackagesRepository publishAndroidReleasePublicationToGitHubPackagesRepository kmmBridgePublish \
             -PGITHUB_ARTIFACT_RELEASE_ID=${{ steps.devrelease.outputs.id }} \
             -PENABLE_PUBLISHING=true \
             -PGITHUB_PUBLISH_TOKEN=${{ secrets.GITHUB_TOKEN }} \
-            -PGITHUB_REPO=${{ github.repository }}
-            --no-daemon --info --stacktrace
+            -PGITHUB_REPO=${{ github.repository }} \
+            --no-daemon \
+            --info \
+            --stacktrace
+
+      # The GitHub Release hosts the Xcode binary, but we need to query GitHub for the URL after the binary is uploaded,
+      # then generate the Package.swift file. Once that is committed, we need to point the release tag at the final commit.
+      - uses: touchlab/ga-update-release-tag@v1
+        id: update-release-tag
+        with:
+          commitMessage: "KMP SPM package release for ${{ steps.versionPropertyValue.outputs.propVal }}"
+          tagMessage: "KMP release version ${{ steps.versionPropertyValue.outputs.propVal }}"
+          tagVersion: ${{ steps.versionPropertyValue.outputs.propVal }}
