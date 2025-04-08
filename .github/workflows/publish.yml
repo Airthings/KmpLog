@@ -2,7 +2,7 @@ name: "Lint and build code, and publish artifacts to repository"
 
 on:
   push:
-    tags:
+    branches:
       - 'fix-publishing-once-and-for-all'
 
 permissions:
