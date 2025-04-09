@@ -206,16 +206,16 @@ publishing {
  *
  * Source: https://kotlinlang.slack.com/archives/C3PQML5NU/p1711715546770359
  */
-//rootProject.afterEvaluate {
-//    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink>().forEach { linkTask ->
-//        val frameworkDestinationDir = linkTask.outputFile
-//        linkTask.doLast {
-//            rootProject.copy {
-//                val privacyFile = rootProject.file("PrivacyInfo.xcprivacy")
-//
-//                from(privacyFile)
-//                into(frameworkDestinationDir.get())
-//            }
-//        }
-//    }
-//}
+rootProject.afterEvaluate {
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink>().forEach { linkTask ->
+        val frameworkDestinationDir = linkTask.outputFile
+        linkTask.doLast {
+            rootProject.copy {
+                val privacyFile = rootProject.file("PrivacyInfo.xcprivacy")
+
+                from(privacyFile)
+                into(frameworkDestinationDir.get())
+            }
+        }
+    }
+}
