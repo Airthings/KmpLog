@@ -17,6 +17,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+@file:OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+
 package com.airthings.lib.logging.platform
 
 import com.airthings.lib.logging.INITIAL_ARRAY_SIZE
@@ -29,24 +31,26 @@ import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.ObjCObjectVar
 import kotlinx.cinterop.alloc
+import kotlinx.cinterop.allocArrayOf
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.pointed
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
+import platform.Foundation.NSData
 import platform.Foundation.NSError
 import platform.Foundation.NSFileHandle
 import platform.Foundation.NSFileManager
-import platform.Foundation.NSFileSize
 import platform.Foundation.NSURL
 import platform.Foundation.closeFile
+import platform.Foundation.create
 import platform.Foundation.fileHandleForReadingAtPath
+import platform.Foundation.fileHandleForWritingAtPath
 import platform.Foundation.seekToEndOfFile
+import platform.Foundation.seekToFileOffset
 import platform.posix.EOF
-import platform.posix.SEEK_SET
 import platform.posix.fclose
 import platform.posix.fopen
 import platform.posix.fputs
-import platform.posix.fseek
 
 @OptIn(ExperimentalForeignApi::class)
 private typealias NSERROR_CPOINTER = CPointer<ObjCObjectVar<NSError?>>
@@ -76,22 +80,19 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         contents: String,
     ) {
         nsErrorWrapper(Unit) {
-            val file = fopen(__filename = path, __mode = "a")
-                ?: throw IllegalArgumentException("Cannot open file for appending: $path")
+            val fileHandle = NSFileHandle.fileHandleForWritingAtPath(path)
+                ?: throw IllegalArgumentException("Cannot open file for writing: $path")
 
             val size = sizeImpl(path)
 
-            val relativePosition = position.relativeToSize(size)
+            val relativePosition = position.relativeToSize(size).toULong()
 
             try {
-                if (fseek(file, relativePosition, SEEK_SET) != 0) {
-                    throw Exception("Unable to set the write position to $position in file: $path")
-                }
-                if (fputs(contents, file) == EOF) {
-                    throw Exception("Unable to write contents to file: $path")
-                }
+                fileHandle.seekToFileOffset(relativePosition)
+                val data = contents.encodeToByteArray().asNSData()
+                fileHandle.writeData(data = data, error = this)
             } finally {
-                fclose(file)
+                fileHandle.closeFile()
             }
         }
     }
@@ -222,4 +223,11 @@ private fun <T> nsErrorWrapper(
 
         return if (error == null) result else fallback
     }
+}
+
+fun ByteArray.asNSData(): NSData = memScoped {
+    NSData.create(
+        bytes = allocArrayOf(this@asNSData),
+        length = this@asNSData.size.toULong(),
+    )
 }
