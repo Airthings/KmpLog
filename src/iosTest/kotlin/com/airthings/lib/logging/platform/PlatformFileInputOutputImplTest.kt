@@ -17,10 +17,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.airthings.lib.logging.platform
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 import kotlinx.coroutines.test.runTest
 import platform.Foundation.NSBundle
 import platform.Foundation.NSURL
@@ -30,14 +35,13 @@ class PlatformFileInputOutputImplTest {
     fun `empty file`() = runTest {
         val path = mockPath()
         val underTest = PlatformFileInputOutputImpl()
+        underTest.ensure(path)
         assertTrue { underTest.mkdirs(path) }
-        assertTrue { underTest.size(path) == 0L }
+        assertEquals(expected = 0, actual = underTest.size(path))
     }
 }
 
-private fun mockPath(): String {
-    return NSURL(string = NSBundle.mainBundle.bundlePath)
-        .URLByAppendingPathComponent("test")!!
+private fun mockPath(): String = NSURL(string = NSBundle.mainBundle.bundlePath)
+        .URLByAppendingPathComponent(Uuid.random().toString())!!
         .URLByAppendingPathExtension("txt")!!
         .path!!
-}

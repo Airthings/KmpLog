@@ -34,9 +34,13 @@ import kotlinx.cinterop.pointed
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 import platform.Foundation.NSError
+import platform.Foundation.NSFileHandle
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSFileSize
 import platform.Foundation.NSURL
+import platform.Foundation.closeFile
+import platform.Foundation.fileHandleForReadingAtPath
+import platform.Foundation.seekToEndOfFile
 import platform.posix.EOF
 import platform.posix.SEEK_SET
 import platform.posix.fclose
@@ -51,9 +55,7 @@ private typealias NSERROR_CPOINTER = CPointer<ObjCObjectVar<NSError?>>
 internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
     actual override val pathSeparator: Char = '/'
 
-    actual override suspend fun size(path: String): Long = nsErrorWrapper(0L) {
-        sizeImpl(path)
-    }
+    actual override suspend fun size(path: String): Long = sizeImpl(path)
 
     actual override suspend fun mkdirs(path: String): Boolean {
         nsErrorWrapper(false) {
@@ -163,13 +165,15 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         )
     }
 
-    private fun NSERROR_CPOINTER.sizeImpl(path: String): Long = NSFileManager.defaultManager
-        .attributesOfFileSystemForPath(path, this)
-        ?.get(NSFileSize)
-        ?.toString()
-        ?.toLongOrNull()
-        ?.coerceAtLeast(0L)
-        ?: throw IllegalArgumentException("Cannot get size of file: $path")
+    private fun sizeImpl(path: String): Long {
+        val fileHandle = NSFileHandle.fileHandleForReadingAtPath(path)
+            ?: throw IllegalArgumentException("Cannot open file for reading: $path")
+        return try {
+            fileHandle.seekToEndOfFile().toLong()
+        } finally {
+            fileHandle.closeFile()
+        }
+    }
 
     private fun filesImpl(
         path: String,
