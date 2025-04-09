@@ -23,6 +23,7 @@ package com.airthings.lib.logging.platform
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertTrue
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -34,8 +35,11 @@ class PlatformFileInputOutputImplTest {
     @Test
     fun `empty file`() = runTest {
         val path = mockPath()
+
         val underTest = PlatformFileInputOutputImpl()
+
         underTest.ensure(path)
+
         assertTrue { underTest.mkdirs(path) }
         assertEquals(expected = 0, actual = underTest.size(path))
     }
@@ -43,25 +47,53 @@ class PlatformFileInputOutputImplTest {
     @Test
     fun `write a single line`() = runTest {
         val path = mockPath()
+
         val underTest = PlatformFileInputOutputImpl()
+
         underTest.ensure(path)
+
         assertTrue { underTest.mkdirs(path) }
         assertEquals(expected = 0, actual = underTest.size(path))
 
         underTest.write(path, position = 0, contents = "Hello, world")
+
         assertEquals(expected = 12, actual = underTest.size(path))
     }
 
     @Test
     fun `append a single line`() = runTest {
         val path = mockPath()
+
         val underTest = PlatformFileInputOutputImpl()
+
         underTest.ensure(path)
+
         assertTrue { underTest.mkdirs(path) }
         assertEquals(expected = 0, actual = underTest.size(path))
 
         underTest.append(path, contents = "Hello, world")
+
         assertEquals(expected = 12, actual = underTest.size(path))
+    }
+
+    @Test
+    fun `delete a file`() = runTest {
+        val path = mockPath()
+
+        val underTest = PlatformFileInputOutputImpl()
+
+        underTest.ensure(path)
+
+        assertTrue { underTest.mkdirs(path) }
+        assertEquals(expected = 0, actual = underTest.size(path))
+
+        underTest.append(path, contents = "Hello, world")
+
+        assertEquals(expected = 12, actual = underTest.size(path))
+
+        underTest.delete(path)
+
+        assertFails { underTest.size(path) }
     }
 }
 
