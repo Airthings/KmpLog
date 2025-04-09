@@ -140,6 +140,12 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.kotlin.test.common)
+            implementation(libs.kotlin.test.annotations.common)
+            implementation(libs.kotlinx.coroutines.test)
+        }
     }
 }
 
@@ -200,16 +206,16 @@ publishing {
  *
  * Source: https://kotlinlang.slack.com/archives/C3PQML5NU/p1711715546770359
  */
-rootProject.afterEvaluate {
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink>().forEach { linkTask ->
-        val frameworkDestinationDir = linkTask.outputFile
-        linkTask.doLast {
-            rootProject.copy {
-                val privacyFile = rootProject.file("PrivacyInfo.xcprivacy")
-
-                from(privacyFile)
-                into(frameworkDestinationDir.get())
-            }
-        }
-    }
-}
+//rootProject.afterEvaluate {
+//    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink>().forEach { linkTask ->
+//        val frameworkDestinationDir = linkTask.outputFile
+//        linkTask.doLast {
+//            rootProject.copy {
+//                val privacyFile = rootProject.file("PrivacyInfo.xcprivacy")
+//
+//                from(privacyFile)
+//                into(frameworkDestinationDir.get())
+//            }
+//        }
+//    }
+//}
