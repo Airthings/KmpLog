@@ -47,10 +47,6 @@ import platform.Foundation.fileHandleForReadingAtPath
 import platform.Foundation.fileHandleForWritingAtPath
 import platform.Foundation.seekToEndOfFile
 import platform.Foundation.seekToFileOffset
-import platform.posix.EOF
-import platform.posix.fclose
-import platform.posix.fopen
-import platform.posix.fputs
 
 @OptIn(ExperimentalForeignApi::class)
 private typealias NSERROR_CPOINTER = CPointer<ObjCObjectVar<NSError?>>
@@ -89,8 +85,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
 
             try {
                 fileHandle.seekToFileOffset(relativePosition)
-                val data = contents.encodeToByteArray().asNSData()
-                fileHandle.writeData(data = data, error = this)
+                fileHandle.writeData(data = contents.asNSData(), error = this)
             } finally {
                 fileHandle.closeFile()
             }
@@ -102,15 +97,14 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         contents: String,
     ) {
         nsErrorWrapper(Unit) {
-            val file = fopen(__filename = path, __mode = "a")
+            val fileHandle = NSFileHandle.fileHandleForWritingAtPath(path)
                 ?: throw IllegalArgumentException("Cannot open file for appending: $path")
 
             try {
-                if (fputs(contents, file) == EOF) {
-                    throw Exception("Unable to write contents to file: $path")
-                }
+                fileHandle.seekToEndOfFile()
+                fileHandle.writeData(contents.asNSData(), error = this)
             } finally {
-                fclose(file)
+                fileHandle.closeFile()
             }
         }
     }
@@ -126,9 +120,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         }
         if (!exists) {
             nsErrorWrapper(Unit) {
-                val file = fopen(path, "w")
-                    ?: throw IllegalArgumentException("Cannot open file for writing: $path")
-                fclose(file)
+                NSFileManager.defaultManager.createFileAtPath(path, contents = null, attributes = null)
             }
         }
     }
@@ -224,6 +216,8 @@ private fun <T> nsErrorWrapper(
         return if (error == null) result else fallback
     }
 }
+
+fun String.asNSData(): NSData = encodeToByteArray().asNSData()
 
 fun ByteArray.asNSData(): NSData = memScoped {
     NSData.create(
