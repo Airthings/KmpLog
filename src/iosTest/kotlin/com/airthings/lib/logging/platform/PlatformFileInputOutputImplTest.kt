@@ -33,6 +33,15 @@ import platform.Foundation.NSURL
 
 class PlatformFileInputOutputImplTest {
     @Test
+    fun `missing file`() = runTest {
+        val path = mockPath()
+
+        val underTest = PlatformFileInputOutputImpl()
+
+        assertFails { underTest.size(path) }
+    }
+
+    @Test
     fun `empty file`() = runTest {
         val path = mockPath()
 
