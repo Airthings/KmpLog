@@ -54,7 +54,7 @@ private typealias NSERROR_CPOINTER = CPointer<ObjCObjectVar<NSError?>>
 internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
     actual override val pathSeparator: Char = '/'
 
-    actual override suspend fun size(path: String): Long = nsErrorWrapper(0) {
+    actual override suspend fun size(path: String): Long = nsErrorWrapper(0L) {
         sizeImpl(path)
     }
 
