@@ -76,7 +76,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         contents: String,
     ) {
         nsErrorWrapper(Unit) {
-            val fileHandle = NSFileHandle.fileHandleForWritingAtPath(path)
+            val file = NSFileHandle.fileHandleForWritingAtPath(path)
                 ?: throw IllegalArgumentException("Cannot open file for writing: $path")
 
             val size = sizeImpl(path)
@@ -84,10 +84,10 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
             val relativePosition = position.relativeToSize(size).toULong()
 
             try {
-                fileHandle.seekToFileOffset(relativePosition)
-                fileHandle.writeData(data = contents.asNSData(), error = this)
+                file.seekToFileOffset(relativePosition)
+                file.writeData(data = contents.asNSData(), error = this)
             } finally {
-                fileHandle.closeFile()
+                file.closeFile()
             }
         }
     }
@@ -97,14 +97,14 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         contents: String,
     ) {
         nsErrorWrapper(Unit) {
-            val fileHandle = NSFileHandle.fileHandleForWritingAtPath(path)
+            val file = NSFileHandle.fileHandleForWritingAtPath(path)
                 ?: throw IllegalArgumentException("Cannot open file for appending: $path")
 
             try {
-                fileHandle.seekToEndOfFile()
-                fileHandle.writeData(contents.asNSData(), error = this)
+                file.seekToEndOfFile()
+                file.writeData(contents.asNSData(), error = this)
             } finally {
-                fileHandle.closeFile()
+                file.closeFile()
             }
         }
     }
@@ -159,12 +159,12 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
     }
 
     private fun sizeImpl(path: String): Long {
-        val fileHandle = NSFileHandle.fileHandleForReadingAtPath(path)
+        val file = NSFileHandle.fileHandleForReadingAtPath(path)
             ?: throw IllegalArgumentException("Cannot open file for reading: $path")
         return try {
-            fileHandle.seekToEndOfFile().toLong()
+            file.seekToEndOfFile().toLong()
         } finally {
-            fileHandle.closeFile()
+            file.closeFile()
         }
     }
 
