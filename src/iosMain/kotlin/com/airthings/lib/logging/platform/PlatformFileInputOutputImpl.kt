@@ -43,7 +43,6 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSURL
 import platform.Foundation.closeFile
 import platform.Foundation.create
-import platform.Foundation.fileHandleForReadingAtPath
 import platform.Foundation.fileHandleForWritingAtPath
 import platform.Foundation.seekToEndOfFile
 import platform.Foundation.seekToFileOffset
@@ -55,7 +54,9 @@ private typealias NSERROR_CPOINTER = CPointer<ObjCObjectVar<NSError?>>
 internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
     actual override val pathSeparator: Char = '/'
 
-    actual override suspend fun size(path: String): Long = sizeImpl(path)
+    actual override suspend fun size(path: String): Long = nsErrorWrapper(0) {
+        sizeImpl(path)
+    }
 
     actual override suspend fun mkdirs(path: String): Boolean {
         nsErrorWrapper(false) {
@@ -158,14 +159,9 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         )
     }
 
-    private fun sizeImpl(path: String): Long {
-        val file = NSFileHandle.fileHandleForReadingAtPath(path)
-            ?: throw IllegalArgumentException("Cannot open file for reading: $path")
-        return try {
-            file.seekToEndOfFile().toLong()
-        } finally {
-            file.closeFile()
-        }
+    private fun NSERROR_CPOINTER.sizeImpl(path: String): Long {
+        val fileAttributes = NSFileManager.defaultManager.attributesOfItemAtPath(path, this)
+        return fileAttributes?.getValue("NSFileSize").toString().toLong()
     }
 
     private fun filesImpl(
