@@ -23,7 +23,6 @@ package com.airthings.lib.logging.platform
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFails
 import kotlin.test.assertTrue
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -38,7 +37,7 @@ class PlatformFileInputOutputImplTest {
 
         val underTest = PlatformFileInputOutputImpl()
 
-        assertFails { underTest.size(path) }
+        assertEquals(expected = 0, actual = underTest.size(path))
     }
 
     @Test
@@ -102,7 +101,7 @@ class PlatformFileInputOutputImplTest {
 
         underTest.delete(path)
 
-        assertFails { underTest.size(path) }
+        assertEquals(expected = 0, actual = underTest.size(path))
     }
 }
 

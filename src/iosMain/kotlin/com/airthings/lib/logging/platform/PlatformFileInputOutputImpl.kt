@@ -161,7 +161,7 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
 
     private fun NSERROR_CPOINTER.sizeImpl(path: String): Long {
         val fileAttributes = NSFileManager.defaultManager.attributesOfItemAtPath(path, this)
-        return fileAttributes?.getValue("NSFileSize").toString().toLong()
+        return fileAttributes?.getValue("NSFileSize")?.toString()?.toLong() ?: 0
     }
 
     private fun filesImpl(
