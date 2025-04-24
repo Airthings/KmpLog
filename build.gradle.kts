@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 /*
  * Copyright 2023 Airthings ASA. All rights reserved.
  *
@@ -121,20 +123,28 @@ kotlin {
 
     // Export KDoc comments to generated Objective-C header (https://rdr.to/8KKpSbCUBdY).
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
-        compilations["main"].kotlinOptions.freeCompilerArgs += "-Xexport-kdoc"
+        compilations.getByName("main") {
+            compileTaskProvider {
+                compilerOptions {
+                    freeCompilerArgs.add("-Xexport-kdoc")
+                }
+            }
+        }
     }
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = jvmVersion
+        compilerOptions {
+            jvmTarget.set(JvmTarget.fromTarget(jvmVersion))
         }
     }
 
     // See for details: https://youtrack.jetbrains.com/issue/KT-61573
     targets.all {
         compilations.all {
-            compilerOptions.configure {
-                freeCompilerArgs.add("-Xexpect-actual-classes")
+            compileTaskProvider {
+                compilerOptions {
+                    freeCompilerArgs.add("-Xexpect-actual-classes")
+                }
             }
         }
     }
@@ -164,7 +174,6 @@ android {
 
     defaultConfig {
         minSdk = "${properties["build.android.minimumSdk"]}".toInt()
-        targetSdk = "${properties["build.android.targetSdk"]}".toInt()
     }
 
     compileOptions {
