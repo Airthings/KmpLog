@@ -177,6 +177,7 @@ android {
 
 kmmbridge {
     frameworkName.set(iosFrameworkName)
+    mavenPublishArtifacts()
     gitHubReleaseArtifacts()
     spm(
         spmDirectory = "./",
