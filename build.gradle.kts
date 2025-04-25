@@ -202,7 +202,7 @@ publishing {
     repositories {
         mavenLocal()
         maven {
-            name = "AirthingsGitHubPackages"
+            name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/airthings/kmplog")
 
             credentials {
