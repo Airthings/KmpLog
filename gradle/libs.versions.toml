@@ -1,7 +1,7 @@
 [versions]
 kotlin = "2.1.21"
 coroutines = "1.10.2"
-datetime = "0.6.2"
+datetime = "0.7.1"
 stately = "2.1.0"
 androidGradle = "8.9.3"
 ktlint = "12.3.0"

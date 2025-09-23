@@ -22,6 +22,7 @@
 package com.airthings.lib.logging
 
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.number
 
 /**
  * Holds a date corresponding with a log file, message, or otherwise.
@@ -43,7 +44,7 @@ data class LogDate(
      * @param date The local date time component.
      */
     @Suppress("unused")
-    constructor(date: LocalDateTime) : this(date.year, date.monthNumber, date.dayOfMonth)
+    constructor(date: LocalDateTime) : this(date.year, date.month.number, date.day)
 
     init {
         require(month in 1..12) { "The value of `month` must be within the range 1..12" }

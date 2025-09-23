@@ -19,14 +19,17 @@
 
 package com.airthings.lib.logging
 
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 
 /**
  * Returns the current time in UTC.
  */
+@OptIn(ExperimentalTime::class)
 internal fun utc(): LocalDateTime = Clock.System.now().toLocalDateTime(TimeZone.UTC)
 
 /**
@@ -44,8 +47,8 @@ internal fun Int.padded(length: Int = 2): String = "$this".padStart(length, '0')
 internal fun dateStamp(value: LocalDateTime?): String {
     val normalizedValue = value ?: utc()
     val year = normalizedValue.year
-    val month = normalizedValue.monthNumber.padded()
-    val day = normalizedValue.dayOfMonth.padded()
+    val month = normalizedValue.month.number.padded()
+    val day = normalizedValue.day.padded()
     return "$year-$month-$day"
 }
 
