@@ -1,10 +1,10 @@
 [versions]
-kotlin = "2.1.21"
+kotlin = "2.2.20"
 coroutines = "1.10.2"
 datetime = "0.7.1"
 stately = "2.1.0"
 androidGradle = "8.9.3"
-ktlint = "12.3.0"
+ktlint = "13.1.0"
 detekt = "1.23.8"
 outdated = "0.52.0"
 kmmbridge = "1.2.1"
