@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Clone code"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: "Lint code"
@@ -23,13 +23,13 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: "Clone code"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: "Set up Adopt OpenJDK 17"
         uses: ./.github/actions/java
       - name: "Validate Gradle wrapper"
-        uses: gradle/actions/wrapper-validation@v4
+        uses: gradle/actions/wrapper-validation@v6
       - name: "Build code"
         shell: sh
         run: sh gradlew build

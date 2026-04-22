@@ -12,7 +12,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: "Clone code"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -31,11 +31,11 @@ jobs:
         uses: ./.github/actions/java
 
       - name: "Setup Gradle"
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
 
       - name: "Create or Find Artifact Release"
         id: devrelease
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: "${{ steps.versionPropertyValue.outputs.propVal }}"
