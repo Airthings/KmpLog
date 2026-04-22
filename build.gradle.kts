@@ -120,21 +120,27 @@ kotlin {
     }
 
     // Export KDoc comments to generated Objective-C header (https://rdr.to/8KKpSbCUBdY).
-    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
-        compilations["main"].kotlinOptions.freeCompilerArgs += "-Xexport-kdoc"
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
+        compilations.getByName("main").compileTaskProvider.configure {
+            compilerOptions {
+                freeCompilerArgs.add("-Xexport-kdoc")
+            }
+        }
     }
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = jvmVersion
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(jvmVersion))
         }
     }
 
     // See for details: https://youtrack.jetbrains.com/issue/KT-61573
-    targets.all {
-        compilations.all {
-            compilerOptions.configure {
-                freeCompilerArgs.add("-Xexpect-actual-classes")
+    targets.configureEach {
+        compilations.configureEach {
+            compileTaskProvider.configure {
+                compilerOptions {
+                    freeCompilerArgs.add("-Xexpect-actual-classes")
+                }
             }
         }
     }
@@ -164,7 +170,6 @@ android {
 
     defaultConfig {
         minSdk = "${properties["build.android.minimumSdk"]}".toInt()
-        targetSdk = "${properties["build.android.targetSdk"]}".toInt()
     }
 
     compileOptions {
