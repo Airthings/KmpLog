@@ -31,12 +31,7 @@ import kotlinx.datetime.LocalDateTime
  * @param day The day part of the date, within the range of 1..31.
  * @param separator The character used to separate the date parts, defaults to [SEPARATOR].
  */
-data class LogDate(
-    val year: Int,
-    val month: Int,
-    val day: Int,
-    val separator: Char = SEPARATOR,
-) {
+data class LogDate(val year: Int, val month: Int, val day: Int, val separator: Char = SEPARATOR) {
     /**
      * Returns a [LogDate] instance from a [LocalDateTime] component.
      *
@@ -134,8 +129,10 @@ fun String.asLogDate(separator: Char?): LogDate? {
  * @param another The other [LogDate] instance to compare against.
  */
 fun LogDate.after(another: LogDate): Boolean = year > another.year ||
-    year == another.year && month > another.month ||
-    month == another.month && day > another.day
+    year == another.year &&
+    month > another.month ||
+    month == another.month &&
+    day > another.day
 
 /**
  * Returns true if this string denotes a log file created after [date], or if [date] is null,

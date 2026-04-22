@@ -32,24 +32,20 @@ import com.airthings.lib.logging.LogMessage
  * @param args List of arguments associated with the message.
  */
 @Suppress("unused")
-class NetworkLogMessage(
-    method: String,
-    path: String,
-    message: String,
-    args: List<LogArgument>,
-) : LogMessage(
-    message = message,
-    args = listOf(
-        LogArg(
-            label = "method",
-            value = method.uppercase(),
-        ),
-        LogArg(
-            label = "path",
-            value = path,
-        ),
-    ) + args,
-) {
+class NetworkLogMessage(method: String, path: String, message: String, args: List<LogArgument>) :
+    LogMessage(
+        message = message,
+        args = listOf(
+            LogArg(
+                label = "method",
+                value = method.uppercase(),
+            ),
+            LogArg(
+                label = "path",
+                value = path,
+            ),
+        ) + args,
+    ) {
     /**
      * A [LogMessage] suitable for network operations.
      *

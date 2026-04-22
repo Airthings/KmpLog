@@ -36,11 +36,7 @@ import kotlinx.coroutines.launch
  * @param coroutineScope The coroutine scope used to call the log functions on the facilities.
  */
 @Suppress("MemberVisibilityCanBePrivate", "unused")
-class Logger(
-    val source: String,
-    val decoration: LogDecoration?,
-    val coroutineScope: CoroutineScope,
-) {
+class Logger(val source: String, val decoration: LogDecoration?, val coroutineScope: CoroutineScope) {
     /**
      * Instantiates a new [Logger] with the default [coroutineScope].
      *
