@@ -81,8 +81,6 @@ class LogDateTest {
 
     @Test
     fun `hashCode ignores the separator just like equals`() {
-        // Holds for realistic years — the compact-digit Int path ignores the separator. See the
-        // "nice-to-have" TODO in KmpLog memory for the absurd-year edge case where this breaks.
         assertEquals(
             LogDate(2024, 3, 5, separator = '-').hashCode(),
             LogDate(2024, 3, 5, separator = ':').hashCode(),
@@ -151,7 +149,7 @@ class LogDateTest {
 
     // endregion
 
-    // region after (regression for the operator-precedence bug)
+    // region after
 
     @Test
     fun `after returns true when years differ and this is later`() {
@@ -164,10 +162,7 @@ class LogDateTest {
     }
 
     @Test
-    fun `after returns false when same year and same month and earlier day across years`() {
-        // The smoking gun — same month, different year, earlier year has a larger day.
-        // Pre-fix this returned true because `||`/`&&` were not parenthesised and the day-check
-        // branch fired regardless of year.
+    fun `after returns false when same month but this year is earlier and day is later`() {
         assertFalse(LogDate(2023, 1, 5).after(LogDate(2024, 1, 3)))
     }
 
