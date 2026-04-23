@@ -133,9 +133,11 @@ fun String.asLogDate(separator: Char?): LogDate? {
  *
  * @param another The other [LogDate] instance to compare against.
  */
-fun LogDate.after(another: LogDate): Boolean = year > another.year ||
-    year == another.year && month > another.month ||
-    month == another.month && day > another.day
+fun LogDate.after(another: LogDate): Boolean {
+    if (year != another.year) return year > another.year
+    if (month != another.month) return month > another.month
+    return day > another.day
+}
 
 /**
  * Returns true if this string denotes a log file created after [date], or if [date] is null,
