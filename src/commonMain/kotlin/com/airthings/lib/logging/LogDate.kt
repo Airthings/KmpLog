@@ -31,12 +31,7 @@ import kotlinx.datetime.LocalDateTime
  * @param day The day part of the date, within the range of 1..31.
  * @param separator The character used to separate the date parts, defaults to [SEPARATOR].
  */
-data class LogDate(
-    val year: Int,
-    val month: Int,
-    val day: Int,
-    val separator: Char = SEPARATOR,
-) {
+data class LogDate(val year: Int, val month: Int, val day: Int, val separator: Char = SEPARATOR) {
     /**
      * Returns a [LogDate] instance from a [LocalDateTime] component.
      *
