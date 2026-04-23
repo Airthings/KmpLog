@@ -35,6 +35,7 @@ actual class PlatformPrinterLoggerFacilityImpl : PlatformPrinterLoggerFacility {
     ) {
         // To sync with Android's logging format.
         val prefix = when (level) {
+            LogLevel.DEBUG -> "D"
             LogLevel.INFO -> "I"
             LogLevel.WARNING -> "W"
             LogLevel.ERROR -> "E"

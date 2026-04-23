@@ -34,6 +34,7 @@ actual class PlatformPrinterLoggerFacilityImpl : PlatformPrinterLoggerFacility {
         message: String,
     ) {
         when (level) {
+            LogLevel.DEBUG -> Log.d(source, message)
             LogLevel.INFO -> Log.i(source, message)
             LogLevel.WARNING -> Log.w(source, message)
             LogLevel.ERROR -> Log.e(source, message)
