@@ -36,10 +36,7 @@ import com.airthings.lib.logging.message.NetworkLogMessage
  * @see [NetworkLogMessage] shows how to concatenate the arguments from derivative implementations.
  */
 @Suppress("MemberVisibilityCanBePrivate")
-open class LogMessage(
-    val message: String,
-    val args: List<LogArgument>,
-) {
+open class LogMessage(val message: String, val args: List<LogArgument>) {
     /**
      * A [LogMessage] with no arguments.
      *

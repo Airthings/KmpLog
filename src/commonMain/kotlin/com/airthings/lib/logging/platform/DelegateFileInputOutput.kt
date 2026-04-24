@@ -98,8 +98,6 @@ internal class DelegateFileInputOutput(
          *
          * @param folder The invalid folder's path.
          */
-        fun reportMissingFolder(folder: String) {
-            throw IllegalStateException("Log folder is invalid: $folder")
-        }
+        fun reportMissingFolder(folder: String): Unit = throw IllegalStateException("Log folder is invalid: $folder")
     }
 }

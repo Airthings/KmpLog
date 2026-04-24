@@ -36,11 +36,7 @@ import kotlinx.coroutines.launch
  * @param coroutineScope The coroutine scope used to call the log functions on the facilities.
  */
 @Suppress("MemberVisibilityCanBePrivate", "unused")
-class Logger(
-    val source: String,
-    val decoration: LogDecoration?,
-    val coroutineScope: CoroutineScope,
-) {
+class Logger(val source: String, val decoration: LogDecoration?, val coroutineScope: CoroutineScope) {
     /**
      * Instantiates a new [Logger] with the default [coroutineScope].
      *
@@ -62,6 +58,200 @@ class Logger(
         source = source,
         decoration = null,
     )
+
+    /**
+     * Logs a message with a [LogLevel.DEBUG] level.
+     *
+     * @param message The message.
+     */
+    fun debug(message: String) {
+        debug(
+            message = LogMessage(message),
+        )
+    }
+
+    /**
+     * Logs a message with a [LogLevel.DEBUG] level.
+     *
+     * For a boilerplate-free implementation, check out the overloaded function with vararg arguments.
+     *
+     * @param message The message.
+     * @param arguments The arguments in a map.
+     *
+     * @see debug(message: String, vararg arguments: Pair<String, Any?>)
+     */
+    fun debug(
+        message: String,
+        arguments: Map<String, Any?>,
+    ) {
+        debug(
+            message = LogMessage(message, arguments),
+        )
+    }
+
+    /**
+     * Logs a message with a [LogLevel.DEBUG] level.
+     *
+     * @param message The message.
+     * @param arguments The arguments in a vararg.
+     */
+    fun debug(
+        message: String,
+        vararg arguments: Pair<String, Any?>,
+    ) {
+        debug(
+            message = LogMessage.from(
+                message = message,
+                arguments = arguments,
+            ),
+        )
+    }
+
+    /**
+     * Logs a message with a [LogLevel.DEBUG] level.
+     *
+     * @param message The message's details.
+     */
+    fun debug(message: LogMessage) {
+        log(
+            source = source,
+            level = LogLevel.DEBUG,
+            message = message,
+        )
+    }
+
+    /**
+     * Logs a message with a [LogLevel.DEBUG] level.
+     *
+     * @param message The message.
+     * @param error An error to accompany the message.
+     */
+    fun debug(
+        message: String,
+        error: Throwable,
+    ) {
+        debug(
+            message = LogMessage(message),
+            error = error,
+        )
+    }
+
+    /**
+     * Logs a message with a [LogLevel.DEBUG] level.
+     *
+     * For a boilerplate-free implementation, check out the overloaded function with vararg arguments.
+     *
+     * @param message The message.
+     * @param arguments The arguments in a map.
+     * @param error An error to accompany the message.
+     *
+     * @see debug(message: String, vararg arguments: Pair<String, Any?>, error: Throwable)
+     */
+    fun debug(
+        message: String,
+        arguments: Map<String, Any?>,
+        error: Throwable,
+    ) {
+        debug(
+            message = LogMessage(
+                message = message,
+                args = arguments,
+            ),
+            error = error,
+        )
+    }
+
+    /**
+     * Logs a message with a [LogLevel.DEBUG] level.
+     *
+     * @param message The message.
+     * @param arguments The arguments in a vararg.
+     * @param error An error to accompany the message.
+     */
+    fun debug(
+        message: String,
+        vararg arguments: Pair<String, Any?>,
+        error: Throwable,
+    ) {
+        debug(
+            message = LogMessage.from(
+                message = message,
+                arguments = arguments,
+            ),
+            error = error,
+        )
+    }
+
+    /**
+     * Logs a message with a [LogLevel.DEBUG] level.
+     *
+     * @param message The message's details.
+     * @param error An error to accompany the message.
+     */
+    fun debug(
+        message: LogMessage,
+        error: Throwable,
+    ) {
+        log(
+            source = source,
+            level = LogLevel.DEBUG,
+            message = message,
+            error = error,
+        )
+    }
+
+    /**
+     * Logs a message with a [LogLevel.DEBUG] level using a custom [log tag][source].
+     *
+     * @param source A source tag to associate with this log message.
+     * @param message The message.
+     */
+    fun debug(
+        source: String,
+        message: String,
+    ) {
+        debug(
+            source = source,
+            message = LogMessage(message),
+        )
+    }
+
+    /**
+     * Logs a message with a [LogLevel.DEBUG] level using a custom [log tag][source].
+     *
+     * @param source A source tag to associate with this log message.
+     * @param message The message's details.
+     */
+    fun debug(
+        source: String,
+        message: LogMessage,
+    ) {
+        log(
+            source = source,
+            level = LogLevel.DEBUG,
+            message = message,
+        )
+    }
+
+    /**
+     * Logs a message with a [LogLevel.DEBUG] level using a custom [log tag][source].
+     *
+     * @param source A source tag to associate with this log message.
+     * @param message The message's details.
+     * @param error An error to accompany the message.
+     */
+    fun debug(
+        source: String,
+        message: LogMessage,
+        error: Throwable,
+    ) {
+        log(
+            source = source,
+            level = LogLevel.DEBUG,
+            message = message,
+            error = error,
+        )
+    }
 
     /**
      * Logs a message with a [LogLevel.INFO] level.

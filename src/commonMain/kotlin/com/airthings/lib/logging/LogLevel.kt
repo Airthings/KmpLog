@@ -33,6 +33,15 @@ enum class LogLevel(
     val emoticon: String,
 ) {
     /**
+     * A verbose event used for development diagnostics, filtered out by default in production.
+     */
+    DEBUG(
+        label = "debug",
+        value = -10,
+        emoticon = "📝",
+    ),
+
+    /**
      * An informative event, used mainly to record information about the app's normal operation.
      */
     INFO(
