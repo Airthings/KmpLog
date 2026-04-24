@@ -56,6 +56,7 @@ plugins {
     `maven-publish`
     alias(libs.plugins.kmmbridgePlugin)
     alias(libs.plugins.privacyPlugin)
+    alias(libs.plugins.koverPlugin)
 }
 
 dependencies {

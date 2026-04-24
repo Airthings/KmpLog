@@ -9,6 +9,7 @@ detekt = "1.23.8"
 outdated = "0.54.0"
 kmmbridge = "1.2.1"
 privacy = "1.0.0"
+kover = "0.9.8"
 
 [libraries]
 stately = { module = "co.touchlab:stately-concurrency", version.ref = "stately" }
@@ -29,3 +30,4 @@ versionsPlugin = { id = "com.github.ben-manes.versions", version.ref = "outdated
 androidLibrary = { id = "com.android.library", version.ref = "androidGradle" }
 kmmbridgePlugin = { id = "co.touchlab.kmmbridge.github", version.ref = "kmmbridge" }
 privacyPlugin = { id = "org.jetbrains.kotlin.apple-privacy-manifests", version.ref = "privacy" }
+koverPlugin = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
