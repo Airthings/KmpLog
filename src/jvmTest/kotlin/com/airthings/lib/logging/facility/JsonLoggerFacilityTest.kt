@@ -205,7 +205,8 @@ class JsonLoggerFacilityTest {
      * Structural invariants checked:
      *  - Starts with `[` and ends with `]`.
      *  - Brace count matches (balanced `{` and `}`).
-     *  - Exactly `expectedEntries - 1` top-level `,` separators at brace-depth 1.
+     *  - Exactly `expectedEntries - 1` top-level `,` separators at depth 0
+     *    (after stripping the outer `[...]`).
      */
     private fun assertValidJsonArrayShape(
         contents: String,

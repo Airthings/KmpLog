@@ -250,22 +250,18 @@ class JsonLoggerFacility(
                         notifier?.onLogFileClosed(currentLogFileLocked)
                     }
                     io.ensure(logFile)
-
-                    // A fresh JSON log file starts its life as an empty array ("[]"). Don't
-                    // overwrite one that already exists from a previous session.
-                    if (io.size(logFile) == 0L) {
-                        io.append(logFile, "$ARRAY_OPEN$ARRAY_CLOSE")
-                    }
-
                     currentLogFile.set(logFile)
                     notifier?.onLogFileOpened(logFile)
                 }
 
-                // A file that's just "[]" is 2 bytes. Anything longer means there's already
-                // at least one entry, so the new entry needs to be preceded by a comma
-                // separator.
-                val hasPriorEntries = io.size(logFile) > 2L
-                action(logFile, if (hasPriorEntries) "," else "")
+                // A fresh JSON log file starts its life as an empty array ("[]") — 2 bytes.
+                // Anything longer means there's already at least one entry, so the new entry
+                // needs to be preceded by a comma separator.
+                val size = io.size(logFile)
+                if (size == 0L) {
+                    io.append(logFile, "$ARRAY_OPEN$ARRAY_CLOSE")
+                }
+                action(logFile, if (size > 2L) "," else "")
             }
         }
     }
