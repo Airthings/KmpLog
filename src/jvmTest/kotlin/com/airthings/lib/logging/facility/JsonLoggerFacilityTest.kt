@@ -1,6 +1,7 @@
 package com.airthings.lib.logging.facility
 
 import com.airthings.lib.logging.LogArg
+import com.airthings.lib.logging.LogDate
 import com.airthings.lib.logging.LogLevel
 import com.airthings.lib.logging.LogMessage
 import com.airthings.lib.logging.platform.PlatformFileInputOutputNotifier
@@ -15,6 +16,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.runTest
 
 class JsonLoggerFacilityTest {
 
@@ -175,6 +177,51 @@ class JsonLoggerFacilityTest {
 
         assertEquals(1, opened.size)
         assertTrue(opened.first().endsWith(".json"))
+    }
+
+    @Test
+    fun `secondary constructor with baseFolder+scope+notifier defaults to WARNING`() {
+        val facility = JsonLoggerFacility(
+            baseFolder = tempDir.absolutePath,
+            scope = scope,
+            notifier = null,
+        )
+        facility.log(source = "src", level = LogLevel.INFO, message = LogMessage("filtered out"))
+        assertEquals(0, jsonFiles().size)
+    }
+
+    @Test
+    fun `secondary constructor with minimumLogLevel+baseFolder+notifier uses default scope`() {
+        // The default scope uses Dispatchers.Main which isn't available in plain JUnit; verify
+        // construction succeeds without invoking log() on this instance.
+        JsonLoggerFacility(
+            minimumLogLevel = LogLevel.INFO,
+            baseFolder = tempDir.absolutePath,
+            notifier = null,
+        )
+    }
+
+    @Test
+    fun `files() returns the JSON log files in the folder`() = runTest {
+        val facility = newFacility()
+        File(tempDir, "2024-03-05.json").createNewFile()
+        File(tempDir, "2024-03-06.json").createNewFile()
+
+        val files = facility.files()
+
+        assertEquals(2, files.size)
+    }
+
+    @Test
+    fun `files(date) returns only JSON log files newer than the cutoff`() = runTest {
+        val facility = newFacility()
+        File(tempDir, "2024-03-05.json").createNewFile()
+        File(tempDir, "2024-03-07.json").createNewFile()
+
+        val files = facility.files(LogDate(2024, 3, 6))
+
+        assertEquals(1, files.size)
+        assertTrue(files.first().endsWith("2024-03-07.json"))
     }
 
     // region helpers
