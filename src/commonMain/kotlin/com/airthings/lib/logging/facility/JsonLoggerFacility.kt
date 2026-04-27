@@ -37,6 +37,8 @@ import com.airthings.lib.logging.platform.PlatformFileInputOutputNotifier
 import com.airthings.lib.logging.utc
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.LocalDateTime
 
 /**
@@ -137,6 +139,7 @@ class JsonLoggerFacility(
         },
     )
     private val currentLogFile = AtomicReference<String?>(null)
+    private val writeMutex = Mutex()
 
     /**
      * Returns the platform-dependent [PlatformDirectoryListing] instance.
@@ -236,26 +239,36 @@ class JsonLoggerFacility(
         }
 
         coroutineScope.launch {
-            val logFile = "$baseFolder${io.pathSeparator}${dateStamp(null)}.json"
-            val currentLogFileLocked = currentLogFile.value
+            var closedPath: String? = null
+            var openedPath: String? = null
 
-            // New JSON log files always contain an empty array ("[]") which is 2 bytes long.
-            val isEmpty = io.size(logFile) > 2L
+            // Serialize size-check and write: two concurrent launches can otherwise both
+            // read the same pre-write size and both skip the comma separator. Notifier
+            // callbacks are user code and must run outside the lock — invoking them under
+            // a non-reentrant `Mutex` would deadlock if a notifier triggers another log().
+            writeMutex.withLock {
+                val logFile = "$baseFolder${io.pathSeparator}${dateStamp(null)}.json"
+                val currentLogFileLocked = currentLogFile.value
 
-            if (currentLogFileLocked != logFile) {
-                if (currentLogFileLocked != null) {
-                    notifier?.onLogFileClosed(currentLogFileLocked)
+                if (currentLogFileLocked != logFile) {
+                    closedPath = currentLogFileLocked
+                    io.ensure(logFile)
+                    currentLogFile.set(logFile)
+                    openedPath = logFile
                 }
-                io.ensure(logFile)
 
-                // New JSON log files start their life as an empty array ("[]").
-                io.append(logFile, "$ARRAY_OPEN$ARRAY_CLOSE")
-
-                currentLogFile.set(logFile)
-                notifier?.onLogFileOpened(logFile)
+                // A fresh JSON log file starts its life as an empty array ("[]") — 2 bytes.
+                // Anything longer means there's already at least one entry, so the new entry
+                // needs to be preceded by a comma separator.
+                val size = io.size(logFile)
+                if (size == 0L) {
+                    io.append(logFile, "$ARRAY_OPEN$ARRAY_CLOSE")
+                }
+                action(logFile, if (size > 2L) "," else "")
             }
 
-            action(logFile, if (isEmpty) "" else ",")
+            closedPath?.let { notifier?.onLogFileClosed(it) }
+            openedPath?.let { notifier?.onLogFileOpened(it) }
         }
     }
 
@@ -335,6 +348,8 @@ class JsonLoggerFacility(
 
                 if (!args.isNullOrEmpty()) {
                     append(COMMA)
+                    append(ARGS_KEY.jsonQuote())
+                    append(':')
                     append(args.jsonEntry())
                 }
 
