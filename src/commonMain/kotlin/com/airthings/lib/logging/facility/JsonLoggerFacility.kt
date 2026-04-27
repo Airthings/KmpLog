@@ -239,19 +239,22 @@ class JsonLoggerFacility(
         }
 
         coroutineScope.launch {
+            var closedPath: String? = null
+            var openedPath: String? = null
+
             // Serialize size-check and write: two concurrent launches can otherwise both
-            // read the same pre-write size and both skip the comma separator.
+            // read the same pre-write size and both skip the comma separator. Notifier
+            // callbacks are user code and must run outside the lock — invoking them under
+            // a non-reentrant `Mutex` would deadlock if a notifier triggers another log().
             writeMutex.withLock {
                 val logFile = "$baseFolder${io.pathSeparator}${dateStamp(null)}.json"
                 val currentLogFileLocked = currentLogFile.value
 
                 if (currentLogFileLocked != logFile) {
-                    if (currentLogFileLocked != null) {
-                        notifier?.onLogFileClosed(currentLogFileLocked)
-                    }
+                    closedPath = currentLogFileLocked
                     io.ensure(logFile)
                     currentLogFile.set(logFile)
-                    notifier?.onLogFileOpened(logFile)
+                    openedPath = logFile
                 }
 
                 // A fresh JSON log file starts its life as an empty array ("[]") — 2 bytes.
@@ -263,6 +266,9 @@ class JsonLoggerFacility(
                 }
                 action(logFile, if (size > 2L) "," else "")
             }
+
+            closedPath?.let { notifier?.onLogFileClosed(it) }
+            openedPath?.let { notifier?.onLogFileOpened(it) }
         }
     }
 
