@@ -70,8 +70,12 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
     }
 
     actual override suspend fun ensure(path: String) {
-        synchronized(writeLock) {
-            File(path).createNewFile()
+        val parentPath = File(path).parentFile.canonicalPath
+
+        if (mkdirs(parentPath)) {
+            synchronized(writeLock) {
+                File(path).createNewFile()
+            }
         }
     }
 

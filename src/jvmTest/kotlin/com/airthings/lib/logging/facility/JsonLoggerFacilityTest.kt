@@ -16,6 +16,11 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 
 class JsonLoggerFacilityTest {
@@ -193,12 +198,99 @@ class JsonLoggerFacilityTest {
     @Test
     fun `secondary constructor with minimumLogLevel+baseFolder+notifier uses default scope`() {
         // The default scope uses Dispatchers.Main which isn't available in plain JUnit; verify
-        // construction succeeds without invoking log() on this instance.
-        JsonLoggerFacility(
+        // construction succeeds and the basic surface is wired up without invoking log().
+        val facility = JsonLoggerFacility(
             minimumLogLevel = LogLevel.INFO,
             baseFolder = tempDir.absolutePath,
             notifier = null,
         )
+
+        assertTrue(facility.isEnabled())
+        assertContains(facility.toString(), "JsonLoggerFacility(")
+    }
+
+    @Test
+    fun `log escapes control characters as backslash-u sequences`() {
+        val facility = newFacility()
+
+        facility.log(
+            source = "src",
+            level = LogLevel.INFO,
+            message = LogMessage("\u0000-\u000c-\u001f"),
+        )
+
+        val contents = soleJsonFile().readText()
+        assertValidJsonArrayShape(contents, expectedEntries = 1)
+        assertContains(contents, "\\u0000-\\f-\\u001f")
+        assertFalse(
+            contents.contains("\u000c"),
+            "Raw form-feed should not appear in the output: $contents",
+        )
+    }
+
+    @Test
+    fun `concurrent log calls produce a valid JSON array`() {
+        // The writeMutex serializes the size-check + write that would otherwise interleave
+        // and cause two concurrent launches to both omit the comma. Drive real concurrency
+        // (Dispatchers.Unconfined runs every launch synchronously on the caller, which can't
+        // exercise the bug).
+        val facilityJob = Job()
+        val facilityScope = CoroutineScope(Dispatchers.IO + facilityJob)
+        val facility = JsonLoggerFacility(
+            minimumLogLevel = LogLevel.INFO,
+            baseFolder = tempDir.absolutePath,
+            coroutineScope = facilityScope,
+            notifier = null,
+        )
+
+        runBlocking {
+            val n = 50
+            coroutineScope {
+                repeat(n) { i ->
+                    launch(Dispatchers.IO) {
+                        facility.log(
+                            source = "src",
+                            level = LogLevel.INFO,
+                            message = LogMessage("entry-$i"),
+                        )
+                    }
+                }
+            }
+            // facility.log is fire-and-forget; wait for all spawned writes to drain.
+            facilityJob.children.toList().joinAll()
+        }
+
+        val contents = soleJsonFile().readText()
+        assertValidJsonArrayShape(contents, expectedEntries = 50)
+
+        facilityScope.coroutineContext[Job]?.cancel()
+    }
+
+    @Test
+    fun `notifier callback can call log without deadlocking`() {
+        // The mutex/notifier ordering invariant is that callbacks run outside writeMutex —
+        // a notifier that itself calls log() would otherwise deadlock on a non-reentrant
+        // Mutex. If this test ever hangs, that invariant has regressed.
+        lateinit var facility: JsonLoggerFacility
+        val notifier = object : PlatformFileInputOutputNotifier {
+            override fun onLogFolderInvalid(folder: String) = Unit
+            override fun onLogFileOpened(path: String) {
+                facility.log(
+                    source = "src",
+                    level = LogLevel.INFO,
+                    message = LogMessage("from-notifier"),
+                )
+            }
+            override fun onLogFileClosed(path: String) = Unit
+        }
+        facility = newFacility(notifier = notifier)
+
+        facility.log(source = "src", level = LogLevel.INFO, message = LogMessage("first"))
+
+        val contents = soleJsonFile().readText()
+        assertValidJsonArrayShape(contents, expectedEntries = 2)
+        assertContains(contents, "\"message\":\"first\"")
+        assertContains(contents, "\"message\":\"from-notifier\"")
     }
 
     @Test

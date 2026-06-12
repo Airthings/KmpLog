@@ -251,24 +251,30 @@ class JsonLoggerFacility(
                 val currentLogFileLocked = currentLogFile.value
 
                 if (currentLogFileLocked != logFile) {
-                    closedPath = currentLogFileLocked
+                    // ensure() can throw; mutate state only after it succeeds so a retry
+                    // on the next log() sees the same `currentLogFile` and re-attempts.
                     io.ensure(logFile)
+                    closedPath = currentLogFileLocked
                     currentLogFile.set(logFile)
                     openedPath = logFile
                 }
 
-                // A fresh JSON log file starts its life as an empty array ("[]") — 2 bytes.
-                // Anything longer means there's already at least one entry, so the new entry
-                // needs to be preceded by a comma separator.
+                // A fresh JSON log file is "[]" (2 bytes). Anything longer means at least
+                // one entry already, so the new entry needs a comma separator. A file
+                // shorter than 2 bytes (size 0, or a stray "[" from a partial write or
+                // external truncation) is reseeded via write-at-position-0 — `append`
+                // would leave the stray byte in place and produce "[[]".
                 val size = io.size(logFile)
-                if (size == 0L) {
-                    io.append(logFile, "$ARRAY_OPEN$ARRAY_CLOSE")
+                if (size < 2L) {
+                    io.write(logFile, position = 0L, contents = "$ARRAY_OPEN$ARRAY_CLOSE")
                 }
                 action(logFile, if (size > 2L) "," else "")
             }
 
-            closedPath?.let { notifier?.onLogFileClosed(it) }
-            openedPath?.let { notifier?.onLogFileOpened(it) }
+            // Notifier callbacks are user code; isolate failures so a misbehaving observer
+            // can't tear down the log coroutine after the write has already succeeded.
+            closedPath?.let { path -> runCatching { notifier?.onLogFileClosed(path) } }
+            openedPath?.let { path -> runCatching { notifier?.onLogFileOpened(path) } }
         }
     }
 
@@ -286,13 +292,27 @@ class JsonLoggerFacility(
         private const val CURLY_OPEN: Char = '{'
         private const val CURLY_CLOSE: Char = '}'
 
-        private fun String.jsonEscape(): String = replace("\\", "\\\\")
-            .replace("/", "\\/")
-            .replace("\"", "\\\"")
-            .replace("\b", "\\b")
-            .replace("\r", "\\r")
-            .replace("\n", "\\n")
-            .replace("\t", "\\t")
+        private fun String.jsonEscape(): String = buildString(length) {
+            this@jsonEscape.forEach { c ->
+                when (c) {
+                    '\\' -> append("\\\\")
+                    '"' -> append("\\\"")
+                    '/' -> append("\\/")
+                    '\b' -> append("\\b")
+                    '\u000C' -> append("\\f")
+                    '\n' -> append("\\n")
+                    '\r' -> append("\\r")
+                    '\t' -> append("\\t")
+                    else -> if (c < '\u0020') {
+                        // RFC 8259: every control character U+0000..U+001F must be escaped.
+                        append("\\u")
+                        append(c.code.toString(16).padStart(4, '0'))
+                    } else {
+                        append(c)
+                    }
+                }
+            }
+        }
 
         private fun String.jsonQuote(): String = "\"${jsonEscape()}\""
 
