@@ -103,6 +103,8 @@ kotlin {
         iosX64(),
         iosArm64(),
         iosSimulatorArm64(),
+        macosX64(),
+        macosArm64(),
     ).forEach {
         // Fixes this: https://rdr.to/DkdMx1MXyeB
         it.binaries.all {
@@ -188,6 +190,7 @@ kmmbridge {
         swiftToolVersion = "5.9",
         targetPlatforms = {
             iOS { v("14") }
+            macOS { v("11") }
         },
     )
 }
