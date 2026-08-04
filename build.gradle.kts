@@ -30,12 +30,6 @@ buildscript {
         maven(url = "https://jitpack.io")
         maven(url = "https://plugins.gradle.org/m2/")
     }
-
-    dependencies {
-        classpath("com.android.tools.build:gradle:${properties["version.plugin.androidGradle"]}")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${properties["version.kotlin"]}")
-        classpath("com.github.ben-manes:gradle-versions-plugin:${properties["version.plugin.outdated"]}")
-    }
 }
 
 repositories {
