@@ -6,7 +6,7 @@ stately = "2.1.0"
 androidGradle = "8.10.0"
 ktlint = "14.2.0"
 detekt = "1.23.8"
-outdated = "0.54.0"
+outdated = "0.59.0"
 kmmbridge = "1.2.1"
 privacy = "1.0.0"
 
