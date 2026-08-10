@@ -144,12 +144,10 @@ interface LoggerFacility {
             facility: LoggerFacility,
         ) {
             val facilities = facilitiesMap
-            if (!facilities.containsKey(name)) {
-                facilitiesMapCreator(1 + facilities.size).apply {
-                    putAll(facilities)
-                    put(name, facility)
-                    facilitiesMap = this
-                }
+            facilitiesMapCreator(1 + facilities.size).apply {
+                putAll(facilities)
+                put(name, facility)
+                facilitiesMap = this
             }
         }
 

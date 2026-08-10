@@ -30,12 +30,6 @@ buildscript {
         maven(url = "https://jitpack.io")
         maven(url = "https://plugins.gradle.org/m2/")
     }
-
-    dependencies {
-        classpath("com.android.tools.build:gradle:${properties["version.plugin.androidGradle"]}")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${properties["version.kotlin"]}")
-        classpath("com.github.ben-manes:gradle-versions-plugin:${properties["version.plugin.outdated"]}")
-    }
 }
 
 repositories {
@@ -56,6 +50,7 @@ plugins {
     `maven-publish`
     alias(libs.plugins.kmmbridgePlugin)
     alias(libs.plugins.privacyPlugin)
+    alias(libs.plugins.koverPlugin)
 }
 
 dependencies {
@@ -103,6 +98,8 @@ kotlin {
         iosX64(),
         iosArm64(),
         iosSimulatorArm64(),
+        macosX64(),
+        macosArm64(),
     ).forEach {
         // Fixes this: https://rdr.to/DkdMx1MXyeB
         it.binaries.all {
@@ -188,6 +185,7 @@ kmmbridge {
         swiftToolVersion = "5.9",
         targetPlatforms = {
             iOS { v("14") }
+            macOS { v("11") }
         },
     )
 }
