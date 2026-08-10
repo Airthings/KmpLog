@@ -22,9 +22,14 @@ jobs:
         id: versionPropertyValue
         shell: bash
         run: |
-          propVal="$(sed -n 's/^LIBRARY_VERSION=//p' gradle.properties | tr -d '[:space:]')"
-          [ -n "$propVal" ] || { echo "LIBRARY_VERSION not found in gradle.properties" >&2; exit 1; }
-          echo "propVal=$propVal" >> "$GITHUB_OUTPUT"
+          # tail -n 1 mirrors .properties last-definition-wins. Without it a duplicated
+          # key would concatenate into one string and silently name the tag after it.
+          propVal="$(sed -n 's/^LIBRARY_VERSION=//p' gradle.properties | tail -n 1 | tr -d '[:space:]')"
+          if ! printf '%s' "$propVal" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "LIBRARY_VERSION is missing or not a version number: '$propVal'" >&2
+            exit 1
+          fi
+          printf 'propVal=%s\n' "$propVal" >> "$GITHUB_OUTPUT"
 
       - name: "Print versionPropertyValue"
         id: output

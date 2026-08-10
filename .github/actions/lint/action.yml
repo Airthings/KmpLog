@@ -1,4 +1,5 @@
 name: "Lint code"
+description: "Runs ktlint and detekt."
 
 runs:
   using: "composite"
