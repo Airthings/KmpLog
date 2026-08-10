@@ -31,6 +31,23 @@ jobs:
           fi
           printf 'propVal=%s\n' "$propVal" >> "$GITHUB_OUTPUT"
 
+      # Fails before the release is created. Once it exists, a failure further down leaves the
+      # release, the tag and possibly the Maven artifacts behind, and those can't all be cleanly
+      # withdrawn — republishing the same version is not a supported recovery.
+      - name: "Refuse to republish an existing version"
+        shell: bash
+        env:
+          VERSION: ${{ steps.versionPropertyValue.outputs.propVal }}
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --tags origin "refs/tags/${VERSION}" >/dev/null 2>&1; then
+            echo "Tag ${VERSION} already exists." >&2
+            echo "Bump LIBRARY_VERSION in gradle.properties and run this again — a version that has" >&2
+            echo "been published once cannot be republished, because its Maven artifacts are already" >&2
+            echo "in GitHub Packages and moving the tag breaks anyone who resolved it." >&2
+            exit 1
+          fi
+
       - name: "Print versionPropertyValue"
         id: output
         run: echo "${{ steps.versionPropertyValue.outputs.propVal }}"
