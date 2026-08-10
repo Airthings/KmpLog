@@ -22,6 +22,10 @@ class PlatformFileInputOutputImplJvmTest {
     private lateinit var tempDir: java.io.File
     private val underTest = PlatformFileInputOutputImpl()
 
+    /** Joins with the platform separator; the JVM tests also run on Windows, where it is not "/". */
+    private fun tempPath(vararg parts: String): String =
+        parts.fold(tempDir) { dir, part -> java.io.File(dir, part) }.absolutePath
+
     @BeforeTest
     fun setUp() {
         tempDir = Files.createTempDirectory("kmplog-io-").toFile()
@@ -39,19 +43,19 @@ class PlatformFileInputOutputImplJvmTest {
 
     @Test
     fun `size of a missing file is zero`() = runTest {
-        assertEquals(0L, underTest.size("${tempDir.absolutePath}/does-not-exist.log"))
+        assertEquals(0L, underTest.size(tempPath("does-not-exist.log")))
     }
 
     @Test
     fun `mkdirs creates the directory and returns true`() = runTest {
-        val nested = "${tempDir.absolutePath}/a/b/c"
+        val nested = tempPath("a", "b", "c")
         assertTrue(underTest.mkdirs(nested))
         assertTrue(java.io.File(nested).isDirectory)
     }
 
     @Test
     fun `ensure creates an empty file in an existing folder`() = runTest {
-        val path = "${tempDir.absolutePath}/empty.log"
+        val path = tempPath("empty.log")
 
         underTest.ensure(path)
 
@@ -61,7 +65,7 @@ class PlatformFileInputOutputImplJvmTest {
 
     @Test
     fun `write creates the file content`() = runTest {
-        val path = "${tempDir.absolutePath}/w.log"
+        val path = tempPath("w.log")
         underTest.ensure(path)
 
         underTest.write(path, position = 0L, contents = "Hello")
@@ -72,7 +76,7 @@ class PlatformFileInputOutputImplJvmTest {
 
     @Test
     fun `append adds content to the file`() = runTest {
-        val path = "${tempDir.absolutePath}/a.log"
+        val path = tempPath("a.log")
         underTest.ensure(path)
 
         underTest.append(path, "Hello, ")
@@ -83,7 +87,7 @@ class PlatformFileInputOutputImplJvmTest {
 
     @Test
     fun `delete removes the file`() = runTest {
-        val path = "${tempDir.absolutePath}/d.log"
+        val path = tempPath("d.log")
         underTest.ensure(path)
         assertTrue(java.io.File(path).exists())
 

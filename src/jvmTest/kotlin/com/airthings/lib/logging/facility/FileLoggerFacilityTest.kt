@@ -24,6 +24,10 @@ import kotlinx.coroutines.test.runTest
 class FileLoggerFacilityTest {
 
     private lateinit var tempDir: File
+
+    // Unconfined runs the facility's launched write synchronously on the calling thread, which is
+    // what lets these tests read the file straight after log(). Swap the dispatcher and they
+    // start racing the write.
     private val scope = CoroutineScope(Dispatchers.Unconfined)
 
     @BeforeTest

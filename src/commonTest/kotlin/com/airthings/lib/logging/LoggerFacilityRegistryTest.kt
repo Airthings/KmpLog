@@ -3,7 +3,6 @@ package com.airthings.lib.logging
 import com.airthings.lib.logging.facility.MockPrinterLoggerFacility
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -38,25 +37,7 @@ class LoggerFacilityRegistryTest {
     }
 
     @Test
-    fun `register currently keeps the first facility for a duplicate name`() {
-        // ⚠ BUG: LoggerFacility.register's docstring says "the previous one will be replaced"
-        // but the code actually keeps the first registration. This test pins the current (buggy)
-        // behavior to prevent accidental changes. The companion test below documents the
-        // documented semantics and is @Ignored until the fix lands.
-        // See: bug_loggerfacility_register_doc_mismatch.md in the KmpLog memory folder.
-        val first = MockPrinterLoggerFacility()
-        val second = MockPrinterLoggerFacility()
-
-        LoggerFacility.register("mock", first)
-        LoggerFacility.register("mock", second)
-
-        assertSame(first, LoggerFacility.get<MockPrinterLoggerFacility>("mock"))
-    }
-
-    @Ignore
-    @Test
-    fun `register replaces an existing facility for the same name as documented`() {
-        // Un-ignore and remove the companion test above when the bug fix lands.
+    fun `register replaces an existing facility registered under the same name`() {
         val first = MockPrinterLoggerFacility()
         val second = MockPrinterLoggerFacility()
 

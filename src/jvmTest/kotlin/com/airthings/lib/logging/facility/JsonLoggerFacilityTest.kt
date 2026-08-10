@@ -24,6 +24,10 @@ import kotlinx.coroutines.test.runTest
 class JsonLoggerFacilityTest {
 
     private lateinit var tempDir: File
+
+    // Unconfined runs the facility's launched write synchronously on the calling thread, which is
+    // what lets these tests read the file straight after log(). Swap the dispatcher and they
+    // start racing the write.
     private val scope = CoroutineScope(Dispatchers.Unconfined)
 
     @BeforeTest
@@ -128,8 +132,8 @@ class JsonLoggerFacilityTest {
         val contents = soleJsonFile().readText()
         assertContains(contents, "first")
         assertContains(contents, "second")
-        // NOTE: current output is invalid JSON — see bug_json_logger_invalid_array in memory.
-        // This assertion only verifies both entries landed in the file, not that the result parses.
+        // The writer's output does not currently parse as JSON, so this only verifies both entries
+        // landed in the file rather than asserting the document is well-formed.
     }
 
     @Test
@@ -185,9 +189,9 @@ class JsonLoggerFacilityTest {
         facility.log(source = "src", level = LogLevel.INFO, message = message)
 
         val contents = soleJsonFile().readText()
-        // NOTE: current output emits the args block as a bare object without an "args": wrapper,
-        // which produces invalid JSON. See bug_json_logger_invalid_array in memory. This test
-        // only checks the argument values made it into the file.
+        // The args block is currently emitted as a bare object rather than under an "args" key, so
+        // the file is not parseable as JSON and cannot be asserted against a parser yet. These
+        // assertions cover what the writer does produce: the argument values reach the file.
         assertContains(contents, "\"status\":\"200\"")
         assertContains(contents, "\"path\":\"\\/x\"")
     }

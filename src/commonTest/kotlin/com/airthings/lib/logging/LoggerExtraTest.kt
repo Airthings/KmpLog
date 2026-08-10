@@ -24,6 +24,9 @@ class LoggerExtraTest {
     private val logger = Logger(
         source = DEFAULT_SOURCE,
         decoration = null,
+        // Unconfined runs the logger's launched dispatch synchronously, which is what lets these
+        // tests assert on the captured facility straight after log(). Swap the dispatcher and
+        // they start racing it.
         coroutineScope = CoroutineScope(Dispatchers.Unconfined),
     )
 
