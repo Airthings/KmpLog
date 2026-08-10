@@ -1,9 +1,10 @@
 name: "Lint code"
+description: "Runs ktlint and detekt."
 
 runs:
   using: "composite"
   steps:
-    - name: "Set up Adopt OpenJDK 17"
+    - name: "Set up JDK 17"
       uses: ./.github/actions/java
     - name: "Run Detekt"
       shell: sh
