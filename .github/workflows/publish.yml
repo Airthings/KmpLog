@@ -17,17 +17,20 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - uses: touchlab/read-property@0.1
+      # The release version, which names the GitHub release and the tag.
+      - name: "Read LIBRARY_VERSION"
         id: versionPropertyValue
-        with:
-          file: ./gradle.properties
-          property: LIBRARY_VERSION # The release version. Defined in gradle.properties.
+        shell: bash
+        run: |
+          propVal="$(sed -n 's/^LIBRARY_VERSION=//p' gradle.properties | tr -d '[:space:]')"
+          [ -n "$propVal" ] || { echo "LIBRARY_VERSION not found in gradle.properties" >&2; exit 1; }
+          echo "propVal=$propVal" >> "$GITHUB_OUTPUT"
 
       - name: "Print versionPropertyValue"
         id: output
         run: echo "${{ steps.versionPropertyValue.outputs.propVal }}"
 
-      - name: "Set up Adopt OpenJDK 17"
+      - name: "Set up JDK 17"
         uses: ./.github/actions/java
 
       - name: "Setup Gradle"
