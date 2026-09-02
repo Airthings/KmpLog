@@ -214,6 +214,17 @@ tasks.withType<Zip>().matching { it.name == "zipXCFramework" }.configureEach {
     }
 }
 
+// The repack above hooks KMMBridge's task by name, so a rename upstream would leave it silently
+// unapplied and publish a flattened archive again. Fail the publish instead of shipping one.
+gradle.taskGraph.whenReady {
+    val publishing = allTasks.any { it.name == "kmmBridgePublish" }
+    val repacking = allTasks.any { it.name == "zipXCFramework" }
+    check(!publishing || repacking) {
+        "kmmBridgePublish ran without zipXCFramework — the symlink repack in build.gradle.kts " +
+            "no longer applies. Find KMMBridge's current archive task and re-point it."
+    }
+}
+
 addGithubPackagesRepository()
 
 publishing {
