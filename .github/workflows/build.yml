@@ -33,3 +33,30 @@ jobs:
       - name: "Build code"
         shell: sh
         run: sh gradlew build
+
+      # Nothing else exercises the packaging path: `build` skips the XCFramework, and the archive
+      # is only produced by the manual publish workflow — so a malformed one would first be noticed
+      # as a broken release. Extract it the way Swift Package Manager does and check the layout.
+      - name: "Check the published archive's framework layout"
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./gradlew assembleKmpLogReleaseXCFramework zipXCFramework \
+            -PENABLE_PUBLISHING=true -PGITHUB_PUBLISH_TOKEN=unused -PGITHUB_REPO="${{ github.repository }}"
+
+          archive=build/kmmbridge/zip/frameworkarchive.zip
+          test -s "$archive"
+
+          out=$(mktemp -d)
+          ditto -x -k "$archive" "$out"
+          framework="$out/KmpLog.xcframework/macos-arm64_x86_64/KmpLog.framework"
+
+          # A versioned macOS framework keeps its payload in Versions/A and links everything else
+          # to it. Copies instead of links mean readlink fails for consumers, and codesign can
+          # reject the bundle outright.
+          for link in Versions/Current KmpLog Headers Modules Resources; do
+            test -L "$framework/$link" || { echo "$link is not a symlink" >&2; exit 1; }
+          done
+
+          copies=$(find "$framework" -type f -name KmpLog | wc -l | tr -d ' ')
+          test "$copies" -eq 1 || { echo "expected 1 binary in the framework, found $copies" >&2; exit 1; }
