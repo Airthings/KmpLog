@@ -190,6 +190,30 @@ kmmbridge {
     )
 }
 
+// KMMBridge zips the XCFramework with Gradle's Zip task, which resolves symlinks into copies.
+// That flattens the versioned macOS framework layout: `Versions/Current` and the top-level
+// entries become real copies of `Versions/A`, so the binary ships three times and consumers get
+// a bundle whose `Versions/Current` is a directory where a symlink is expected. Repacking with
+// ditto keeps the links. Only registered when publishing is enabled.
+tasks.withType<Zip>().matching { it.name == "zipXCFramework" }.configureEach {
+    val archive = archiveFile
+    val xcframework = layout.buildDirectory.dir("XCFrameworks/release/$iosFrameworkName.xcframework")
+
+    doLast {
+        val source = xcframework.get().asFile
+        check(source.isDirectory) { "No XCFramework to repack at $source" }
+
+        val target = archive.get().asFile
+        target.delete()
+
+        val ditto = ProcessBuilder("ditto", "-c", "-k", "--keepParent", source.path, target.path)
+            .redirectErrorStream(true)
+            .start()
+        val output = ditto.inputStream.bufferedReader().readText()
+        check(ditto.waitFor() == 0) { "ditto failed to repack $source: $output" }
+    }
+}
+
 addGithubPackagesRepository()
 
 publishing {
