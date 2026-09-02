@@ -211,7 +211,19 @@ tasks.withType<Zip>().matching { it.name == "zipXCFramework" }.configureEach {
         val target = archive.get().asFile
         target.delete()
 
-        val ditto = ProcessBuilder("ditto", "-c", "-k", "--keepParent", source.path, target.path)
+        // --norsrc/--noextattr: ditto otherwise stores extended attributes as AppleDouble
+        // sidecars, which land inside the bundle as ._Headers and friends. codesign rejects
+        // that kind of stray file in a framework.
+        val ditto = ProcessBuilder(
+            "ditto",
+            "-c",
+            "-k",
+            "--keepParent",
+            "--norsrc",
+            "--noextattr",
+            source.path,
+            target.path,
+        )
             .redirectErrorStream(true)
             .start()
         val output = ditto.inputStream.bufferedReader().readText()

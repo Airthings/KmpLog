@@ -63,3 +63,7 @@ jobs:
 
           copies=$(find "$framework" -type f -name KmpLog | wc -l | tr -d ' ')
           test "$copies" -eq 1 || { echo "expected 1 binary in the framework, found $copies" >&2; exit 1; }
+
+          # AppleDouble sidecars are the kind of stray file codesign refuses inside a bundle.
+          sidecars=$(find "$framework" -name '._*' | wc -l | tr -d ' ')
+          test "$sidecars" -eq 0 || { echo "found $sidecars AppleDouble files in the framework" >&2; exit 1; }
