@@ -201,7 +201,12 @@ tasks.withType<Zip>().matching { it.name == "zipXCFramework" }.configureEach {
 
     doLast {
         val source = xcframework.get().asFile
-        check(source.isDirectory) { "No XCFramework to repack at $source" }
+        // KMMBridge publishes the release build type; a debug-configured publish would archive a
+        // different directory than this one, so fail rather than repack the wrong tree.
+        check(source.isDirectory) {
+            "No release XCFramework at $source — if KMMBridge is publishing another build type, " +
+                "point this repack at the directory zipXCFramework actually archives."
+        }
 
         val target = archive.get().asFile
         target.delete()

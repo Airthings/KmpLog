@@ -48,14 +48,17 @@ jobs:
           test -s "$archive"
 
           out=$(mktemp -d)
+          trap 'rm -rf "$out"' EXIT
           ditto -x -k "$archive" "$out"
           framework="$out/KmpLog.xcframework/macos-arm64_x86_64/KmpLog.framework"
 
           # A versioned macOS framework keeps its payload in Versions/A and links everything else
           # to it. Copies instead of links mean readlink fails for consumers, and codesign can
-          # reject the bundle outright.
+          # reject the bundle outright. -L alone would also accept a dangling link, so resolve
+          # each one with -e as well.
           for link in Versions/Current KmpLog Headers Modules Resources; do
             test -L "$framework/$link" || { echo "$link is not a symlink" >&2; exit 1; }
+            test -e "$framework/$link" || { echo "$link does not resolve" >&2; exit 1; }
           done
 
           copies=$(find "$framework" -type f -name KmpLog | wc -l | tr -d ' ')
