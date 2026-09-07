@@ -190,6 +190,58 @@ kmmbridge {
     )
 }
 
+// KMMBridge zips the XCFramework with Gradle's Zip task, which resolves symlinks into copies.
+// That flattens the versioned macOS framework layout: `Versions/Current` and the top-level
+// entries become real copies of `Versions/A`, so the binary ships three times and consumers get
+// a bundle whose `Versions/Current` is a directory where a symlink is expected. Repacking with
+// ditto keeps the links. Only registered when publishing is enabled.
+tasks.withType<Zip>().matching { it.name == "zipXCFramework" }.configureEach {
+    val archive = archiveFile
+    val xcframework = layout.buildDirectory.dir("XCFrameworks/release/$iosFrameworkName.xcframework")
+
+    doLast {
+        val source = xcframework.get().asFile
+        // KMMBridge publishes the release build type; a debug-configured publish would archive a
+        // different directory than this one, so fail rather than repack the wrong tree.
+        check(source.isDirectory) {
+            "No release XCFramework at $source — if KMMBridge is publishing another build type, " +
+                "point this repack at the directory zipXCFramework actually archives."
+        }
+
+        val target = archive.get().asFile
+        target.delete()
+
+        // --norsrc/--noextattr: ditto otherwise stores extended attributes as AppleDouble
+        // sidecars, which land inside the bundle as ._Headers and friends. codesign rejects
+        // that kind of stray file in a framework.
+        val ditto = ProcessBuilder(
+            "ditto",
+            "-c",
+            "-k",
+            "--keepParent",
+            "--norsrc",
+            "--noextattr",
+            source.path,
+            target.path,
+        )
+            .redirectErrorStream(true)
+            .start()
+        val output = ditto.inputStream.bufferedReader().readText()
+        check(ditto.waitFor() == 0) { "ditto failed to repack $source: $output" }
+    }
+}
+
+// The repack above hooks KMMBridge's task by name, so a rename upstream would leave it silently
+// unapplied and publish a flattened archive again. Fail the publish instead of shipping one.
+gradle.taskGraph.whenReady {
+    val publishing = allTasks.any { it.name == "kmmBridgePublish" }
+    val repacking = allTasks.any { it.name == "zipXCFramework" }
+    check(!publishing || repacking) {
+        "kmmBridgePublish ran without zipXCFramework — the symlink repack in build.gradle.kts " +
+            "no longer applies. Find KMMBridge's current archive task and re-point it."
+    }
+}
+
 addGithubPackagesRepository()
 
 publishing {
