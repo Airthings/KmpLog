@@ -98,7 +98,10 @@ class FileLoggerFacilityCostTest {
         return started.elapsedNow()
     }
 
-    private fun report(what: String, elapsed: Duration) {
+    private fun report(
+        what: String,
+        elapsed: Duration,
+    ) {
         println("$what: $LINES writes in $elapsed (${elapsed.inWholeMicroseconds / LINES} us each)")
     }
 
@@ -106,7 +109,7 @@ class FileLoggerFacilityCostTest {
         val perWrite = elapsed.inWholeMicroseconds / LINES
         assertTrue(
             perWrite < CEILING_MICROS,
-            "A write costs $perWrite us, over the $CEILING_MICROS us this test was written against"
+            "A write costs $perWrite us, over the $CEILING_MICROS us this test was written against",
         )
     }
 

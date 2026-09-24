@@ -48,7 +48,7 @@ class FileLoggerFacilitySharedFileTest {
         val file = awaitLines(expected = 1)
         assertTrue(
             file.readText().contains("only line"),
-            "A facility built without an explicit scope has to be able to write"
+            "A facility built without an explicit scope has to be able to write",
         )
     }
 
