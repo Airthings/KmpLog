@@ -35,8 +35,10 @@ import com.airthings.lib.logging.platform.PlatformDirectoryListing
 import com.airthings.lib.logging.platform.PlatformFileInputOutput
 import com.airthings.lib.logging.platform.PlatformFileInputOutputImpl
 import com.airthings.lib.logging.platform.PlatformFileInputOutputNotifier
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
@@ -255,6 +257,14 @@ class FileLoggerFacility(
     companion object {
         private const val LOG_TAG: String = "FileLoggerFacility"
 
-        internal fun loggerCoroutineScope(): CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        /**
+         * Appending to a log file opens, seeks and writes, which is blocking work that does not
+         * belong on the main thread. One thread serves every facility built by the convenience
+         * constructors, so their writes to a shared file stay ordered.
+         */
+        @OptIn(ExperimentalCoroutinesApi::class)
+        private val fileDispatcher: CoroutineDispatcher = Dispatchers.Default.limitedParallelism(1)
+
+        internal fun loggerCoroutineScope(): CoroutineScope = CoroutineScope(fileDispatcher + SupervisorJob())
     }
 }
