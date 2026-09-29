@@ -16,18 +16,16 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 
-/**
- * JVM-side coverage for [JsonLoggerFacility]. Uses a real tmp directory for actual file I/O.
- */
 class JsonLoggerFacilityTest {
 
     private lateinit var tempDir: File
-
-    // Unconfined runs the facility's launched write synchronously on the calling thread, which is
-    // what lets these tests read the file straight after log(). Swap the dispatcher and they
-    // start racing the write.
     private val scope = CoroutineScope(Dispatchers.Unconfined)
 
     @BeforeTest
@@ -41,25 +39,149 @@ class JsonLoggerFacilityTest {
     }
 
     @Test
-    fun `isEnabled is always true`() {
-        val facility = JsonLoggerFacility(
-            minimumLogLevel = LogLevel.INFO,
-            baseFolder = tempDir.absolutePath,
-            coroutineScope = scope,
-            notifier = null,
-        )
-        assertTrue(facility.isEnabled())
+    fun `log writes a valid single-entry JSON array`() {
+        val facility = newFacility()
+
+        facility.log(source = "src", level = LogLevel.WARNING, message = LogMessage("caution"))
+
+        val contents = soleJsonFile().readText()
+        assertValidJsonArrayShape(contents, expectedEntries = 1)
+        assertContains(contents, "\"source\":\"src\"")
+        assertContains(contents, "\"level\":\"WARNING\"")
+        assertContains(contents, "\"message\":\"caution\"")
     }
 
     @Test
-    fun `toString describes the facility`() {
-        val facility = JsonLoggerFacility(
-            minimumLogLevel = LogLevel.INFO,
-            baseFolder = tempDir.absolutePath,
-            coroutineScope = scope,
-            notifier = null,
+    fun `log appends entries with a comma separator`() {
+        val facility = newFacility()
+
+        facility.log(source = "src", level = LogLevel.INFO, message = LogMessage("first"))
+        facility.log(source = "src", level = LogLevel.INFO, message = LogMessage("second"))
+        facility.log(source = "src", level = LogLevel.INFO, message = LogMessage("third"))
+
+        val contents = soleJsonFile().readText()
+        assertValidJsonArrayShape(contents, expectedEntries = 3)
+        assertContains(contents, "\"message\":\"first\"")
+        assertContains(contents, "\"message\":\"second\"")
+        assertContains(contents, "\"message\":\"third\"")
+    }
+
+    @Test
+    fun `log drops entries below the minimum level`() {
+        val facility = newFacility(minimumLogLevel = LogLevel.WARNING)
+
+        facility.log(source = "src", level = LogLevel.INFO, message = LogMessage("quiet"))
+
+        assertEquals(0, jsonFiles().size)
+    }
+
+    @Test
+    fun `log with error writes the stack trace under an error key`() {
+        val facility = newFacility()
+        val boom = IllegalStateException("oops")
+
+        facility.log(source = "src", level = LogLevel.ERROR, error = boom)
+
+        val contents = soleJsonFile().readText()
+        assertValidJsonArrayShape(contents, expectedEntries = 1)
+        assertContains(contents, "\"error\":\"")
+        assertContains(contents, "IllegalStateException")
+    }
+
+    @Test
+    fun `log with message and error writes a single entry with both fields`() {
+        val facility = newFacility()
+        val boom = IllegalStateException("oops")
+
+        facility.log(
+            source = "src",
+            level = LogLevel.ERROR,
+            message = LogMessage("hello"),
+            error = boom,
         )
-        assertTrue(facility.toString().startsWith("JsonLoggerFacility("))
+
+        val contents = soleJsonFile().readText()
+        assertValidJsonArrayShape(contents, expectedEntries = 1)
+        assertContains(contents, "\"message\":\"hello\"")
+        assertContains(contents, "\"error\":\"")
+    }
+
+    @Test
+    fun `log includes args under the args key`() {
+        val facility = newFacility()
+        val message = LogMessage(
+            "request",
+            args = listOf(LogArg("status", 200), LogArg("path", "/x")),
+        )
+
+        facility.log(source = "src", level = LogLevel.INFO, message = message)
+
+        val contents = soleJsonFile().readText()
+        assertValidJsonArrayShape(contents, expectedEntries = 1)
+        assertContains(contents, "\"args\":{")
+        assertContains(contents, "\"status\":\"200\"")
+        assertContains(contents, "\"path\":\"\\/x\"")
+    }
+
+    @Test
+    fun `log escapes JSON-special characters in the message`() {
+        val facility = newFacility()
+
+        facility.log(
+            source = "src",
+            level = LogLevel.INFO,
+            message = LogMessage("line1\nline2\twith \"quotes\""),
+        )
+
+        val contents = soleJsonFile().readText()
+        assertValidJsonArrayShape(contents, expectedEntries = 1)
+        assertContains(contents, "line1\\nline2\\twith \\\"quotes\\\"")
+        assertFalse(
+            contents.contains("line1\nline2"),
+            "Raw newline should not appear inside a JSON value: $contents",
+        )
+    }
+
+    @Test
+    fun `a second facility appends to the same file instead of overwriting it`() {
+        // Simulate an app restart: one facility writes an entry, then a fresh facility
+        // targeting the same folder should add a second entry rather than re-init the file.
+        newFacility().log(source = "src", level = LogLevel.INFO, message = LogMessage("prior"))
+        val fileAfterFirst = soleJsonFile()
+        val sizeAfterFirst = fileAfterFirst.length()
+
+        newFacility().log(source = "src", level = LogLevel.INFO, message = LogMessage("new"))
+
+        val contents = soleJsonFile().readText()
+        assertValidJsonArrayShape(contents, expectedEntries = 2)
+        assertContains(contents, "\"message\":\"prior\"")
+        assertContains(contents, "\"message\":\"new\"")
+        assertTrue(soleJsonFile().length() > sizeAfterFirst)
+    }
+
+    @Test
+    fun `isEnabled is true and toString identifies the facility`() {
+        val facility = newFacility()
+        assertTrue(facility.isEnabled())
+        assertContains(facility.toString(), "JsonLoggerFacility(")
+    }
+
+    @Test
+    fun `notifier is invoked when a JSON log file is first opened`() {
+        val opened = mutableListOf<String>()
+        val notifier = object : PlatformFileInputOutputNotifier {
+            override fun onLogFolderInvalid(folder: String) = Unit
+            override fun onLogFileOpened(path: String) {
+                opened += path
+            }
+            override fun onLogFileClosed(path: String) = Unit
+        }
+        val facility = newFacility(notifier = notifier)
+
+        facility.log(source = "src", level = LogLevel.INFO, message = LogMessage("first"))
+
+        assertEquals(1, opened.size)
+        assertTrue(opened.first().endsWith(".json"))
     }
 
     @Test
@@ -75,135 +197,105 @@ class JsonLoggerFacilityTest {
 
     @Test
     fun `secondary constructor with minimumLogLevel+baseFolder+notifier uses default scope`() {
-        // Default scope uses Dispatchers.Main which isn't available in plain JUnit — just verify
-        // construction succeeds; the notifier check below covers behavior with an explicit scope.
-        JsonLoggerFacility(
-            minimumLogLevel = LogLevel.INFO,
-            baseFolder = tempDir.absolutePath,
-            notifier = null,
-        )
-    }
-
-    @Test
-    fun `log writes a JSON array with the entry`() {
+        // The default scope uses Dispatchers.Main which isn't available in plain JUnit; verify
+        // construction succeeds and the basic surface is wired up without invoking log().
         val facility = JsonLoggerFacility(
             minimumLogLevel = LogLevel.INFO,
             baseFolder = tempDir.absolutePath,
-            coroutineScope = scope,
             notifier = null,
         )
 
-        facility.log(source = "src", level = LogLevel.WARNING, message = LogMessage("caution"))
-
-        val contents = soleJsonFile().readText()
-        assertTrue(contents.startsWith("["))
-        assertTrue(contents.endsWith("]"))
-        assertContains(contents, "\"source\":\"src\"")
-        assertContains(contents, "\"level\":\"WARNING\"")
-        assertContains(contents, "\"message\":\"caution\"")
+        assertTrue(facility.isEnabled())
+        assertContains(facility.toString(), "JsonLoggerFacility(")
     }
 
     @Test
-    fun `log drops messages below the minimum level`() {
-        val facility = JsonLoggerFacility(
-            minimumLogLevel = LogLevel.WARNING,
-            baseFolder = tempDir.absolutePath,
-            coroutineScope = scope,
-            notifier = null,
-        )
-
-        facility.log(source = "src", level = LogLevel.INFO, message = LogMessage("quiet"))
-
-        assertEquals(0, jsonFiles().size)
-    }
-
-    @Test
-    fun `log appends multiple entries to the same file`() {
-        val facility = JsonLoggerFacility(
-            minimumLogLevel = LogLevel.INFO,
-            baseFolder = tempDir.absolutePath,
-            coroutineScope = scope,
-            notifier = null,
-        )
-
-        facility.log(source = "src", level = LogLevel.INFO, message = LogMessage("first"))
-        facility.log(source = "src", level = LogLevel.INFO, message = LogMessage("second"))
-
-        val contents = soleJsonFile().readText()
-        assertContains(contents, "first")
-        assertContains(contents, "second")
-        // The writer's output does not currently parse as JSON, so this only verifies both entries
-        // landed in the file rather than asserting the document is well-formed.
-    }
-
-    @Test
-    fun `log with error writes the stack trace field`() {
-        val facility = JsonLoggerFacility(
-            minimumLogLevel = LogLevel.INFO,
-            baseFolder = tempDir.absolutePath,
-            coroutineScope = scope,
-            notifier = null,
-        )
-        val boom = IllegalStateException("oops")
-
-        facility.log(source = "src", level = LogLevel.ERROR, error = boom)
-
-        val contents = soleJsonFile().readText()
-        assertContains(contents, "\"error\":")
-        assertContains(contents, "IllegalStateException")
-        assertContains(contents, "oops")
-    }
-
-    @Test
-    fun `log with message+error includes both fields`() {
-        val facility = JsonLoggerFacility(
-            minimumLogLevel = LogLevel.INFO,
-            baseFolder = tempDir.absolutePath,
-            coroutineScope = scope,
-            notifier = null,
-        )
-        val boom = IllegalStateException("oops")
+    fun `log escapes control characters as backslash-u sequences`() {
+        val facility = newFacility()
 
         facility.log(
             source = "src",
-            level = LogLevel.ERROR,
-            message = LogMessage("hello"),
-            error = boom,
+            level = LogLevel.INFO,
+            message = LogMessage("\u0000-\u000c-\u001f"),
         )
 
         val contents = soleJsonFile().readText()
-        assertContains(contents, "\"message\":\"hello\"")
-        assertContains(contents, "\"error\":")
+        assertValidJsonArrayShape(contents, expectedEntries = 1)
+        assertContains(contents, "\\u0000-\\f-\\u001f")
+        assertFalse(
+            contents.contains("\u000c"),
+            "Raw form-feed should not appear in the output: $contents",
+        )
     }
 
     @Test
-    fun `log includes args when the LogMessage carries them`() {
+    fun `concurrent log calls produce a valid JSON array`() {
+        // The writeMutex serializes the size-check + write that would otherwise interleave
+        // and cause two concurrent launches to both omit the comma. Drive real concurrency
+        // (Dispatchers.Unconfined runs every launch synchronously on the caller, which can't
+        // exercise the bug).
+        val facilityJob = Job()
+        val facilityScope = CoroutineScope(Dispatchers.IO + facilityJob)
         val facility = JsonLoggerFacility(
             minimumLogLevel = LogLevel.INFO,
             baseFolder = tempDir.absolutePath,
-            coroutineScope = scope,
+            coroutineScope = facilityScope,
             notifier = null,
         )
-        val message = LogMessage("request", args = listOf(LogArg("status", 200), LogArg("path", "/x")))
 
-        facility.log(source = "src", level = LogLevel.INFO, message = message)
+        runBlocking {
+            val n = 50
+            coroutineScope {
+                repeat(n) { i ->
+                    launch(Dispatchers.IO) {
+                        facility.log(
+                            source = "src",
+                            level = LogLevel.INFO,
+                            message = LogMessage("entry-$i"),
+                        )
+                    }
+                }
+            }
+            // facility.log is fire-and-forget; wait for all spawned writes to drain.
+            facilityJob.children.toList().joinAll()
+        }
 
         val contents = soleJsonFile().readText()
-        // The args block is currently emitted as a bare object rather than under an "args" key, so
-        // the file is not parseable as JSON and cannot be asserted against a parser yet. These
-        // assertions cover what the writer does produce: the argument values reach the file.
-        assertContains(contents, "\"status\":\"200\"")
-        assertContains(contents, "\"path\":\"\\/x\"")
+        assertValidJsonArrayShape(contents, expectedEntries = 50)
+
+        facilityScope.coroutineContext[Job]?.cancel()
+    }
+
+    @Test
+    fun `notifier callback can call log without deadlocking`() {
+        // The mutex/notifier ordering invariant is that callbacks run outside writeMutex —
+        // a notifier that itself calls log() would otherwise deadlock on a non-reentrant
+        // Mutex. If this test ever hangs, that invariant has regressed.
+        lateinit var facility: JsonLoggerFacility
+        val notifier = object : PlatformFileInputOutputNotifier {
+            override fun onLogFolderInvalid(folder: String) = Unit
+            override fun onLogFileOpened(path: String) {
+                facility.log(
+                    source = "src",
+                    level = LogLevel.INFO,
+                    message = LogMessage("from-notifier"),
+                )
+            }
+            override fun onLogFileClosed(path: String) = Unit
+        }
+        facility = newFacility(notifier = notifier)
+
+        facility.log(source = "src", level = LogLevel.INFO, message = LogMessage("first"))
+
+        val contents = soleJsonFile().readText()
+        assertValidJsonArrayShape(contents, expectedEntries = 2)
+        assertContains(contents, "\"message\":\"first\"")
+        assertContains(contents, "\"message\":\"from-notifier\"")
     }
 
     @Test
     fun `files() returns the JSON log files in the folder`() = runTest {
-        val facility = JsonLoggerFacility(
-            minimumLogLevel = LogLevel.INFO,
-            baseFolder = tempDir.absolutePath,
-            coroutineScope = scope,
-            notifier = null,
-        )
+        val facility = newFacility()
         File(tempDir, "2024-03-05.json").createNewFile()
         File(tempDir, "2024-03-06.json").createNewFile()
 
@@ -214,12 +306,7 @@ class JsonLoggerFacilityTest {
 
     @Test
     fun `files(date) returns only JSON log files newer than the cutoff`() = runTest {
-        val facility = JsonLoggerFacility(
-            minimumLogLevel = LogLevel.INFO,
-            baseFolder = tempDir.absolutePath,
-            coroutineScope = scope,
-            notifier = null,
-        )
+        val facility = newFacility()
         File(tempDir, "2024-03-05.json").createNewFile()
         File(tempDir, "2024-03-07.json").createNewFile()
 
@@ -229,52 +316,17 @@ class JsonLoggerFacilityTest {
         assertTrue(files.first().endsWith("2024-03-07.json"))
     }
 
-    @Test
-    fun `notifier fires when a json log file is first opened`() {
-        val opened = mutableListOf<String>()
-        val notifier = object : PlatformFileInputOutputNotifier {
-            override fun onLogFolderInvalid(folder: String) = Unit
-            override fun onLogFileOpened(path: String) {
-                opened += path
-            }
-            override fun onLogFileClosed(path: String) = Unit
-        }
-        val facility = JsonLoggerFacility(
-            minimumLogLevel = LogLevel.INFO,
-            baseFolder = tempDir.absolutePath,
-            coroutineScope = scope,
-            notifier = notifier,
-        )
-
-        facility.log(source = "src", level = LogLevel.INFO, message = LogMessage("first"))
-
-        assertEquals(1, opened.size)
-        assertTrue(opened.first().endsWith(".json"))
-    }
-
-    @Test
-    fun `log escapes JSON-special characters in the message`() {
-        val facility = JsonLoggerFacility(
-            minimumLogLevel = LogLevel.INFO,
-            baseFolder = tempDir.absolutePath,
-            coroutineScope = scope,
-            notifier = null,
-        )
-
-        facility.log(
-            source = "src",
-            level = LogLevel.INFO,
-            message = LogMessage("line1\nline2\twith \"quotes\" and \\slashes"),
-        )
-
-        val contents = soleJsonFile().readText()
-        assertContains(contents, "line1\\nline2\\twith \\\"quotes\\\" and \\\\slashes")
-        // The raw newline character itself should NOT appear inside the JSON value — it must be
-        // escaped.
-        assertFalse(contents.contains("line1\nline2"))
-    }
-
     // region helpers
+
+    private fun newFacility(
+        minimumLogLevel: LogLevel = LogLevel.INFO,
+        notifier: PlatformFileInputOutputNotifier? = null,
+    ): JsonLoggerFacility = JsonLoggerFacility(
+        minimumLogLevel = minimumLogLevel,
+        baseFolder = tempDir.absolutePath,
+        coroutineScope = scope,
+        notifier = notifier,
+    )
 
     private fun jsonFiles(): List<File> =
         tempDir.listFiles { f -> f.isFile && f.name.endsWith(".json") }?.toList().orEmpty()
@@ -283,6 +335,58 @@ class JsonLoggerFacilityTest {
         val files = jsonFiles()
         check(files.size == 1) { "Expected exactly one .json file, got ${files.map { it.name }}" }
         return files.single()
+    }
+
+    /**
+     * Verifies the file contents look like a well-formed JSON array of `expectedEntries`
+     * top-level objects, without pulling in a full JSON parser.
+     *
+     * Structural invariants checked:
+     *  - Starts with `[` and ends with `]`.
+     *  - Brace count matches (balanced `{` and `}`).
+     *  - Exactly `expectedEntries - 1` top-level `,` separators at depth 0
+     *    (after stripping the outer `[...]`).
+     */
+    private fun assertValidJsonArrayShape(
+        contents: String,
+        expectedEntries: Int,
+    ) {
+        assertTrue(contents.startsWith("["), "Must start with '[': $contents")
+        assertTrue(contents.endsWith("]"), "Must end with ']': $contents")
+
+        var depth = 0
+        var topLevelSeparators = 0
+        var objectCount = 0
+        var inString = false
+        var escaped = false
+        contents.substring(1, contents.length - 1).forEach { ch ->
+            if (escaped) {
+                escaped = false
+                return@forEach
+            }
+            when {
+                ch == '\\' && inString -> escaped = true
+                ch == '"' -> inString = !inString
+                inString -> Unit
+                ch == '{' -> {
+                    if (depth == 0) objectCount++
+                    depth++
+                }
+                ch == '}' -> depth--
+                ch == ',' && depth == 0 -> topLevelSeparators++
+            }
+        }
+        assertEquals(0, depth, "Unbalanced braces: $contents")
+        assertEquals(
+            expectedEntries,
+            objectCount,
+            "Expected $expectedEntries top-level objects: $contents",
+        )
+        assertEquals(
+            (expectedEntries - 1).coerceAtLeast(0),
+            topLevelSeparators,
+            "Expected ${expectedEntries - 1} top-level commas: $contents",
+        )
     }
 
     // endregion
