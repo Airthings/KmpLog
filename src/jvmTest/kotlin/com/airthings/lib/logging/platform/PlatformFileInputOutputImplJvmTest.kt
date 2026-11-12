@@ -135,4 +135,30 @@ class PlatformFileInputOutputImplJvmTest {
     fun `toString identifies the platform`() {
         assertTrue(underTest.toString().isNotBlank())
     }
+
+    @Test
+    fun `write at position -1 overwrites the trailing byte`() = runTest {
+        // FileOutputStream(append=true) silently ignores channel.position(...) — the previous
+        // implementation always wrote at EOF, so a write at position=-1 (intended to overwrite
+        // the trailing "]" of a JSON array) was concatenated instead. RandomAccessFile honors
+        // seek(), which is what JsonLoggerFacility relies on.
+        val path = tempPath("trail.json")
+        java.io.File(path).writeText("[{\"a\":1}]")
+
+        underTest.write(path = path, position = -1L, contents = ",{\"b\":2}]")
+
+        assertEquals("[{\"a\":1},{\"b\":2}]", java.io.File(path).readText())
+    }
+
+    @Test
+    fun `write at position 0 overwrites in place and extends a shorter file`() = runTest {
+        // Used by JsonLoggerFacility to reseed a corrupted/short file (size 0 or 1) back to a clean
+        // "[]". A 1-byte file is extended to 2 bytes by writing 2 bytes from position 0.
+        val path = tempPath("stub.json")
+        java.io.File(path).writeText("[")
+
+        underTest.write(path = path, position = 0L, contents = "[]")
+
+        assertEquals("[]", java.io.File(path).readText())
+    }
 }

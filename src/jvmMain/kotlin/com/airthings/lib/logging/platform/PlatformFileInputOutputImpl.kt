@@ -25,6 +25,7 @@ import com.airthings.lib.logging.PLATFORM_JVM
 import com.airthings.lib.logging.ifAfter
 import java.io.File
 import java.io.FileOutputStream
+import java.io.RandomAccessFile
 
 internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
     private val writeLock = Any()
@@ -47,13 +48,15 @@ internal actual class PlatformFileInputOutputImpl : PlatformFileInputOutput {
         contents: String,
     ) {
         synchronized(writeLock) {
-            FileOutputStream(File(path), true).use {
-                val channel = it.channel
-                val size = channel.size()
+            // `FileOutputStream(file, append=true)` silently ignores `channel.position(...)`
+            // because append mode forces every write to the end of the file. Use
+            // `RandomAccessFile` so `position` is honored.
+            RandomAccessFile(File(path), "rw").use { raf ->
+                val size = raf.length()
                 val relativePosition = position.relativeToSize(size)
 
-                channel.position(relativePosition)
-                it.write(contents.toByteArray())
+                raf.seek(relativePosition)
+                raf.write(contents.toByteArray())
             }
         }
     }
